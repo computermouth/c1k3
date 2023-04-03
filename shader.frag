@@ -7,8 +7,7 @@
 	"uniform sampler2D s;"
 
 	// Lights [(x,y,z), [r,g,b], ...]
-	// R_MAX_LIGHT_V3
-	"uniform vec3 l[64];"
+	"uniform vec3 l["STR(R_MAX_LIGHT_V3)"];"
 
 	"void main(void){"
 		"gl_FragColor=texture2D(s,vt);"
@@ -18,8 +17,7 @@
 
 		// Calculate all lights
 		"vec3 vl;"
-	    // R_MAX_LIGHT_V3
-		"for(int i=0;i<64;i+=2) {"
+		"for(int i=0;i<"STR(R_MAX_LIGHT_V3)";i+=2) {"
 			"vl+="
 				// Angle to normal
 				"max("

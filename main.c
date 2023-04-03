@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "textures.h"
+#include "render.h"
 
 void * map_data = NULL;
 void * model_data = NULL;
@@ -49,11 +50,10 @@ void * sfx_grenade_bounce = NULL;
 void * sfx_grenade_explode = NULL;
 
 // stubs
-void r_init();
 void ttt(void *);
 
 void game_load() {
-	// r_init();
+	r_init();
 
 	/*
 	// Create textures
@@ -184,5 +184,5 @@ int main() {
     // game_load();
     
     printf("%x\n", textures[30].data[2840]);
-    
+    game_load();
 }

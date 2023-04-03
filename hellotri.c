@@ -1,5 +1,5 @@
 // gcc hello_triangle.cpp -lSDL2 -lGLESv2 && ./a.out
-
+#include <stdbool.h>
 #include <SDL2/SDL.h>
 
 #define GL_GLEXT_PROTOTYPES 1
