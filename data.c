@@ -1,75 +1,51 @@
 
-#include "textures.h"
+#include "data.h"
 
-#include  "img/h/0.h"
-#include  "img/h/1.h"
-#include  "img/h/2.h"
-#include  "img/h/3.h"
-#include  "img/h/4.h"
-#include  "img/h/5.h"
-#include  "img/h/6.h"
-#include  "img/h/7.h"
-#include  "img/h/8.h"
-#include  "img/h/9.h"
-#include "img/h/10.h"
-#include "img/h/11.h"
-#include "img/h/12.h"
-#include "img/h/13.h"
-#include "img/h/14.h"
-#include "img/h/15.h"
-#include "img/h/16.h"
-#include "img/h/17.h"
-#include "img/h/18.h"
-#include "img/h/19.h"
-#include "img/h/20.h"
-#include "img/h/21.h"
-#include "img/h/22.h"
-#include "img/h/23.h"
-#include "img/h/24.h"
-#include "img/h/25.h"
-#include "img/h/26.h"
-#include "img/h/27.h"
-#include "img/h/28.h"
-#include "img/h/29.h"
-#include "img/h/30.h"
+#include "assets/maps.h"
 
-// static uint8_t * __alltex[31] = {
-// 	 __0_png,
-// 	 __1_png,
-// 	 __2_png,
-// 	 __3_png,
-// 	 __4_png,
-// 	 __5_png,
-// 	 __6_png,
-// 	 __7_png,
-// 	 __8_png,
-// 	 __9_png,
-// 	__10_png,
-// 	__11_png,
-// 	__12_png,
-// 	__13_png,
-// 	__14_png,
-// 	__15_png,
-// 	__16_png,
-// 	__17_png,
-// 	__18_png,
-// 	__19_png,
-// 	__20_png,
-// 	__21_png,
-// 	__22_png,
-// 	__23_png,
-// 	__24_png,
-// 	__25_png,
-// 	__26_png,
-// 	__27_png,
-// 	__28_png,
-// 	__29_png,
-// 	__30_png,
-// };
+const uint8_t * data_maps = __maps;
+const uint32_t data_maps_len = __maps_len;
 
-// const uint8_t ** textures = __alltex;
+#include "assets/models.h"
 
-static png_bin_t __alltex[31] = {
+const uint8_t * data_models = __models;
+const uint32_t data_models_len = __models_len;
+
+#include  "assets/img.h/0.h"
+#include  "assets/img.h/1.h"
+#include  "assets/img.h/2.h"
+#include  "assets/img.h/3.h"
+#include  "assets/img.h/4.h"
+#include  "assets/img.h/5.h"
+#include  "assets/img.h/6.h"
+#include  "assets/img.h/7.h"
+#include  "assets/img.h/8.h"
+#include  "assets/img.h/9.h"
+#include "assets/img.h/10.h"
+#include "assets/img.h/11.h"
+#include "assets/img.h/12.h"
+#include "assets/img.h/13.h"
+#include "assets/img.h/14.h"
+#include "assets/img.h/15.h"
+#include "assets/img.h/16.h"
+#include "assets/img.h/17.h"
+#include "assets/img.h/18.h"
+#include "assets/img.h/19.h"
+#include "assets/img.h/20.h"
+#include "assets/img.h/21.h"
+#include "assets/img.h/22.h"
+#include "assets/img.h/23.h"
+#include "assets/img.h/24.h"
+#include "assets/img.h/25.h"
+#include "assets/img.h/26.h"
+#include "assets/img.h/27.h"
+#include "assets/img.h/28.h"
+#include "assets/img.h/29.h"
+#include "assets/img.h/30.h"
+
+#define TEXLEN 31
+
+static png_bin_t __alltex[TEXLEN] = {
 	(png_bin_t){
 		.data = __0_png,
 		.len  = __0_png_len,
@@ -196,4 +172,6 @@ static png_bin_t __alltex[31] = {
 	}
 };
 
-const png_bin_t * textures = __alltex;
+const png_bin_t * data_textures = __alltex;
+const uint32_t data_textures_len = TEXLEN;
+
