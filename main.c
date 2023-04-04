@@ -1,9 +1,14 @@
+#include <GLES2/gl2.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "textures.h"
+#include "data.h"
 #include "render.h"
+#include "map.h"
 
-void * map_data = NULL;
+// todo, move this to map.c/map.h??
+map_collection_t map_data = { 0 };
+
 void * model_data = NULL;
 // Particles
 void * model_explosion = NULL;
@@ -51,13 +56,13 @@ void * sfx_grenade_explode = NULL;
 
 void game_load() {
 	r_init();
-
-	/*
-	// Create textures
-	ttt(texture_data).map(r_create_texture);
+	
+	for(int i = 0; i < data_textures_len; i++)
+		r_create_texture(data_textures[i]);
 	
 	// Load map & model containers	
-	map_data = await map_load_container('l');
+	map_data = map_load_container();
+	/*
 	model_data = await model_load_container('m');
 
 	// Create models. Many models share the same geometry just with different
@@ -177,9 +182,29 @@ void run_frame(int time_now) {
 	*/
 };
 
+void quit(){
+	if (r_draw_calls)
+		free(r_draw_calls);
+	if (r_textures)
+		free(r_textures);
+	if (map_data.maps){
+		for(int i = 0; i < map_data.len; i++){
+			if (map_data.maps[i].r){
+				free(map_data.maps[i].r);
+			}
+		}
+		free(map_data.maps);
+	}
+}
+
 int main() {
-    // game_load();
     
-    printf("%x\n", textures[30].data[2840]);
     game_load();
+    
+	GLenum error = glGetError();
+	while (error != GL_NO_ERROR){
+		printf("glerror: %x\n", error);
+		error = glGetError();
+	}
+	quit();
 }

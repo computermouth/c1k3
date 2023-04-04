@@ -1,4 +1,4 @@
-// gcc hello_triangle.cpp -lSDL2 -lGLESv2 && ./a.out
+// gcc hellotri.c -lSDL2 -lGLESv2 && ./a.out
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 
@@ -200,9 +200,9 @@ int main(int argc, char** argv)
     glUseProgram(shaderProgram);
 
     // Specify the layout of the vertex data
-    //~ GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-    //~ glEnableVertexAttribArray(posAttrib);
-    //~ glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+    glEnableVertexAttribArray(posAttrib);
+    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
     
     int a = 1;
     a = a + 1;
