@@ -49,9 +49,6 @@ void * sfx_grenade_shoot = NULL;
 void * sfx_grenade_bounce = NULL;
 void * sfx_grenade_explode = NULL;
 
-// stubs
-void ttt(void *);
-
 void game_load() {
 	r_init();
 

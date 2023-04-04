@@ -8,9 +8,9 @@ typedef struct {
     float z;
 } vec3_t;
 
-float math_clamp (float v, float min, float max);
-float math_scale (float v, float in_min, float in_max, float out_min, float out_max);
-float math_anglemod(float r);
+float clamp (float v, float min, float max);
+float scale (float v, float in_min, float in_max, float out_min, float out_max);
+float anglemod(float r);
 // TODO remove both of these
 vec3_t vec3(float x, float y, float z);
 vec3_t vec3_clone(vec3_t a);

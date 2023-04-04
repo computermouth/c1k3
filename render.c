@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdint.h>
 
 #include "math.h"
 
@@ -29,7 +30,7 @@ int r_num_verts = 0;
 
 // 2 vec3 per light [(x,y,z), [r,g,b], ...]
 float r_light_buffer[R_MAX_LIGHT_V3*3]; 
-int r_num_lights = 0;
+uint32_t r_num_lights = 0;
 
 // Uniform locations
 void * r_u_camera;
@@ -60,3 +61,44 @@ void r_init(){
     printf("vert: %s\n", SHADER_VERT);
     printf("frag: %s\n", SHADER_FRAG);
 }
+
+
+
+void r_push_vert(vec3_t pos, vec3_t normal, float u, float v) {
+	    
+    // todo, memcpy?
+    r_buffer[r_num_verts*8 + 0] = pos.x;
+    r_buffer[r_num_verts*8 + 1] = pos.y;
+    r_buffer[r_num_verts*8 + 2] = pos.z;
+    r_buffer[r_num_verts*8 + 3] = u;
+    r_buffer[r_num_verts*8 + 4] = v;
+    r_buffer[r_num_verts*8 + 5] = normal.x;
+    r_buffer[r_num_verts*8 + 6] = normal.y;
+    r_buffer[r_num_verts*8 + 7] = normal.z;
+
+	r_num_verts++;
+}
+
+void r_push_light(vec3_t pos, float intensity, float r, float g, float b) {
+	// Calculate the distance to the light, fade it out between 768--1024
+	float fade = clamp(
+		scale(
+			vec3_dist(pos, r_camera), 
+			768, 1024, 1, 0
+		),
+		0, 1
+	) * intensity * 10;
+	
+	if (fade && r_num_lights < R_MAX_LIGHT_V3/2) {
+	    
+	    // todo, memcpy?
+	    r_light_buffer[r_num_lights*6 + 0] = pos.x;
+	    r_light_buffer[r_num_lights*6 + 1] = pos.y;
+	    r_light_buffer[r_num_lights*6 + 2] = pos.z;
+	    r_light_buffer[r_num_lights*6 + 3] = r*fade;
+	    r_light_buffer[r_num_lights*6 + 4] = g*fade;
+	    r_light_buffer[r_num_lights*6 + 5] = b*fade;
+	    
+		r_num_lights++;
+	}
+};

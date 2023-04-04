@@ -3,15 +3,15 @@
 
 #include "math.h" // shit, rename
 
-float math_clamp (float v, float min, float max){
+float clamp (float v, float min, float max){
     return v < min ? min : (v > max ? max : v);
 }
 
-float math_scale (float v, float in_min, float in_max, float out_min, float out_max){
+float scale (float v, float in_min, float in_max, float out_min, float out_max){
     return out_min + ((out_max) - out_min) * (((v) - in_min) / ((in_max) - in_min));
 }
 
-float math_anglemod(float r) {
+float anglemod(float r) {
     return atan2f(sinf(r), cosf(r));
 }
 
