@@ -12,20 +12,20 @@
 // the frame. This way the lights buffer will be completely filled and we
 // only need to set it once for all geometry
 typedef struct {
-	vec3_t pos;
-	float yaw;
-	float pitch;
-	GLuint texture;
-	GLint f1;
-	GLint f2;
-	float mix;
-	int num_verts;
+    vec3_t pos;
+    float yaw;
+    float pitch;
+    GLuint texture;
+    GLint f1;
+    GLint f2;
+    float mix;
+    int num_verts;
 } draw_call_t;
 
 typedef struct {
-	GLuint texture;
-	uint32_t width;
-	uint32_t height;
+    GLuint texture;
+    uint32_t width;
+    uint32_t height;
 } meta_tex_t;
 
 // to free on quit
