@@ -13,6 +13,7 @@ typedef struct {
 
 typedef struct {
     block_t * r;
+    uint32_t r_size;
     uint8_t * e;
     uint32_t e_size;
     uint8_t cm[((map_size * map_size * map_size) >> 3)];

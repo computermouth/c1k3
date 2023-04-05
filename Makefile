@@ -6,6 +6,10 @@ INT_H   = data.h map.h math.h render.h
 all:
 	clang -Wall $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2
 
+release:
+	clang -Os -Wall $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2
+	strip main
+
 memtest:
 	valgrind --track-origins=yes --leak-check=yes ./main
 
