@@ -8,6 +8,7 @@ typedef struct {
     float z;
 } vec3_t;
 
+float randf();
 float clamp (float v, float min, float max);
 float scale (float v, float in_min, float in_max, float out_min, float out_max);
 float anglemod(float r);

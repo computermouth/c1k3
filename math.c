@@ -1,7 +1,12 @@
 
 #include <math.h>
+#include <stdlib.h>
 
 #include "math.h" // shit, rename
+
+float randf(){
+    return (float)(rand()) / (float)(RAND_MAX);
+}
 
 float clamp (float v, float min, float max) {
     return v < min ? min : (v > max ? max : v);

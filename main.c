@@ -1,6 +1,7 @@
 #include <GLES2/gl2.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "data.h"
 #include "render.h"
@@ -199,6 +200,10 @@ void quit() {
 
 int main() {
 
+    // todo, more randy
+    time_t t;
+    srand((unsigned) time(&t));
+    
     game_load();
 
     GLenum error = glGetError();
