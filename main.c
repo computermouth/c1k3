@@ -1,7 +1,10 @@
-#include <GLES2/gl2.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengles2.h>
+// #include <GLES2/gl2.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 #include "data.h"
 #include "render.h"
@@ -164,9 +167,11 @@ void game_load() {
     	m.nv = 34;
     	model_gib_pieces.push(m);
     }
-
+    */
 
     r_submit_buffer();
+    /*
+    // set state to render menu
     requestAnimationFrame(run_frame);
 
     f.onclick = () => g.requestFullscreen();
@@ -200,22 +205,35 @@ void game_load() {
 
     	audio_play(audio_create_song(...music_data), 1, 1);
     	game_init(0);
+        // set state to render menu
     	run_frame = game_run;
 
     */
 };
 
-void run_frame(int time_now) {
-    /*
-    r_prepare_frame();
-
-    r_draw(
-    	vec3(0,0,0), 0, 0, 1,
-    	model_q.f[0], model_q.f[0], 0,
-    	model_q.nv
-    );
+// todo, change to something like -- render_menu()
+void run_menu() {
+    
+    struct timespec t;
+	clock_gettime(CLOCK_BOOTTIME, &t);
+	long int time_now = t.tv_sec * 1000 + t.tv_nsec / 1000000;
+    
+    r_prepare_frame(0.0f, 0.0f, 0.0f);
+    
+    r_draw((draw_call_t){
+        .pos = vec3(0,0,0),
+        .yaw = 0,
+        .pitch = 0,
+        .texture = 1,
+        .f1 = model_q.frames[0],
+        .f2 = model_q.frames[0],
+        .mix = 0,
+        .num_verts = model_q.nv
+    });
+    
     r_push_light(
-    	vec3(Math.sin(time_now*0.00033)*200, 100, -100),
+        // +/-200
+    	vec3(sinf(time_now*0.00033)*200, 100, -100),
     	10, 255,192,32
     );
     r_push_light(
@@ -228,8 +246,7 @@ void run_frame(int time_now) {
     );
 
     r_end_frame();
-    requestAnimationFrame(run_frame);
-    */
+
 };
 
 void quit() {
@@ -269,7 +286,6 @@ void quit() {
     if (model_door.frames)                   free(model_door.frames);
     if (model_grenade.frames)                free(model_grenade.frames);
     if (model_plasma.frames)                 free(model_plasma.frames);
-
 }
 
 int main() {
@@ -277,13 +293,47 @@ int main() {
     // todo, more randy
     time_t t;
     srand((unsigned) time(&t));
-
-    game_load();
-
-    GLenum error = glGetError();
-    while (error != GL_NO_ERROR) {
-        printf("glerror: %x\n", error);
-        error = glGetError();
+    
+    if (SDL_Init(SDL_INIT_VIDEO) != 0){
+        printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
     }
+    // Requires at least OpenGL ES 2.0
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    
+    SDL_Window* window = SDL_CreateWindow("c1k3",
+                                          SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                          640, 360,
+                                          SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    SDL_GL_CreateContext(window);
+    
+    game_load();
+    
+    while (1) {
+        SDL_Event e;
+        while(SDL_PollEvent(&e))
+        {
+            if(e.type == SDL_QUIT)
+                goto jump;
+        }
+        run_menu();
+        SDL_GL_SwapWindow(window);
+    }
+    
+    const char * serror = SDL_GetError();
+    while ( strcmp(serror, "") ) {
+        printf("sdlerror: %s\n", serror);
+        serror = SDL_GetError();
+    }
+    
+    GLenum gerror = glGetError();
+    while (gerror != GL_NO_ERROR) {
+        printf("glerror: %x\n", gerror);
+        gerror = glGetError();
+    }
+    
+jump:
+    
     quit();
 }

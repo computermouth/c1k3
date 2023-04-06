@@ -1,5 +1,6 @@
-
 #include <GLES2/gl2.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengles2.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -67,10 +68,16 @@ draw_call_t * r_draw_calls;
 uint32_t r_num_draw_calls = 0;
 
 GLuint r_compile_shader(GLenum type, char* source) {
+    
     GLuint shader = glCreateShader(type);
-    GLint len[] = {strlen(source)};
-    // todo, fukt?
-    glShaderSource(shader, 1, (const GLchar *const *)source, len);
+    const GLchar *g[] = {source};
+    glShaderSource(shader, 1, g, NULL);
+    glCompileShader(shader);
+    GLchar infoLog[501];
+    GLsizei length;
+    glGetShaderInfoLog(shader, 500, &length, infoLog);
+    if (strcmp(infoLog, ""))
+        printf("compiler: %s\n", infoLog);
     return shader;
 }
 
@@ -91,7 +98,7 @@ void r_init() {
     glAttachShader(shader_program, r_compile_shader(GL_FRAGMENT_SHADER, SHADER_FRAG));
     glLinkProgram(shader_program);
     glUseProgram(shader_program);
-
+    
     r_u_camera = glGetUniformLocation(shader_program, "c");
     r_u_lights = glGetUniformLocation(shader_program, "l");
     r_u_mouse = glGetUniformLocation(shader_program, "m");
@@ -195,7 +202,7 @@ void r_end_frame() {
 void r_draw(draw_call_t call) {
     r_num_draw_calls++;
     r_draw_calls = realloc(r_draw_calls, sizeof(draw_call_t) * r_num_draw_calls);
-    r_draw_calls[r_num_draw_calls] = call;
+    r_draw_calls[r_num_draw_calls - 1] = call;
 }
 
 void r_submit_buffer() {
