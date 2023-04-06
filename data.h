@@ -14,4 +14,7 @@ extern const uint32_t data_textures_len;
 extern const uint8_t * data_maps;
 extern const uint32_t data_maps_len;
 
+extern const uint8_t * data_models;
+extern const uint32_t data_models_len;
+
 #endif

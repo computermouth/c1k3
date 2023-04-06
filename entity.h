@@ -24,6 +24,10 @@ typedef struct {
     vec3_t s;
     float f;
     
+    void * _model;
+    animation_t _anim;
+    int32_t _anim_time;
+    
     int32_t _health;
     int32_t _dead;
     int32_t _die_at;
@@ -32,8 +36,6 @@ typedef struct {
     int32_t _gravity;
     float _yaw;
     float _pitch;
-    animation_t _anim;
-    int32_t _anim_time;
     int32_t _on_ground;
     int32_t _keep_off_ledges;
     

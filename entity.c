@@ -22,9 +22,9 @@ void entity_constructor(entity_t * e, vec3_t pos, vec3_t p1, vec3_t p2){
 
 void entity_init(entity_t * e, vec3_t p1, vec3_t p2){}
 
-void entity_update(entity_t * e){
-    if (e->_model) {
-        entity_draw_model(e);
-    }
-}
+// void entity_update(entity_t * e){
+//     if (e->_model) {
+//         entity_draw_model(e);
+//     }
+// }
 

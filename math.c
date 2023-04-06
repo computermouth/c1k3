@@ -4,7 +4,7 @@
 
 #include "math.h" // shit, rename
 
-float randf(){
+float randf() {
     return (float)(rand()) / (float)(RAND_MAX);
 }
 

@@ -1,13 +1,13 @@
 
 EXT_SRC = lodepng.c
-INT_SRC = data.c main.c map.c math.c render.c
-INT_H   = data.h map.h math.h render.h
+INT_SRC = data.c main.c map.c math.c model.c render.c
+INT_H   = data.h map.h math.h model.h render.h
 
 all:
-	clang -Wall $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2
+	clang -Wall -I/usr/include/ $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2
 
 release:
-	clang -Os -Wall $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2
+	clang -Os -flto -Wall $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2
 	strip main
 
 memtest:

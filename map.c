@@ -20,8 +20,8 @@ map_collection_t map_load_container() {
     for(uint32_t i = 0; i < data_maps_len;) {
         tmp_maps_len++;
         tmp_maps = realloc(tmp_maps, sizeof(map_t) * tmp_maps_len);
-		
-        
+
+
         uint32_t blocks_size = data[i] | (data[i+1] << 8);
         i += 2;
         // uint32_t blocks_size = data[i++] | (data[i++] << 8);
@@ -94,7 +94,7 @@ map_collection_t map_load_container() {
 void map_init (map_t * m) {
     // todo, should this just be an index into a global map_collection_t?
     map = m;
-    
+
     printf("map.c/map_init() -- todo");
 
     // entity_t spawn_class[] = {

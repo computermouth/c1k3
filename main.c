@@ -6,39 +6,47 @@
 #include "data.h"
 #include "render.h"
 #include "map.h"
+#include "model.h"
 
 // todo, move this to map.c/map.h??
 map_collection_t map_data = { 0 };
+// todo, move this to model.c/model.h??
+model_collection_t model_data = { 0 };
 
-void * model_data = NULL;
+// todo, change all these to pointers,
+// raise memory management to a higher level
+// Q
+model_t model_q = { 0 };
 // Particles
-void * model_explosion = NULL;
-void * model_blood = NULL;
-void * model_gib = NULL;
-void * model_gib_pieces[] = { NULL} ;
+model_t model_explosion = {0};
+model_t model_blood = {0};
+model_t model_gib = {0};
+model_t model_gib_pieces[] = { {0}} ;
 // Enemies
-void * model_grunt = NULL;
-void * model_enforcer = NULL;
-void * model_ogre = NULL;
-void * model_zombie = NULL;
-void * model_hound = NULL;
+model_t model_grunt = {0};
+model_t model_enforcer = {0};
+model_t model_ogre = {0};
+model_t model_zombie = {0};
+model_t model_hound = {0};
 // Map Objects
-void * model_barrel = NULL;
-void * model_torch = NULL;
+model_t model_barrel = {0};
+model_t model_torch = {0};
 // Weapon view models
-void * model_shotgun = NULL;
-void * model_nailgun = NULL;
-void * model_grenadelauncher = NULL;
+model_t model_shotgun = {0};
+model_t model_nailgun = {0};
+model_t model_grenadelauncher = {0};
 // Pickups
-void * model_pickup_nailgun = NULL;
-void * model_pickup_grenadelauncher = NULL;
-void * model_pickup_box = NULL;
-void * model_pickup_grenades = NULL;
-void * model_pickup_key = NULL;
-void * model_door = NULL;
+model_t model_pickup_nailgun = {0};
+model_t model_pickup_grenadelauncher = {0};
+model_t model_pickup_box = {0};
+model_t model_pickup_grenades = {0};
+model_t model_pickup_key = {0};
+model_t model_door = {0};
 // Projectiles
-void * model_grenade = NULL;
-void * model_plasma = NULL; // aka. nail
+model_t model_grenade = {0};
+model_t model_plasma = {0}; // aka. nail
+
+
 // Sounds
 void * sfx_enemy_hit = NULL;
 void * sfx_enemy_gib = NULL;
@@ -63,8 +71,7 @@ void game_load() {
 
     // Load map & model containers
     map_data = map_load_container();
-    /*
-    model_data = await model_load_container('m');
+    model_data = model_load_container();
 
     // Create models. Many models share the same geometry just with different
     // sizes and textures.
@@ -77,35 +84,77 @@ void game_load() {
     // 6: nailgun
     // 7: torch
 
-    model_q = model_init(model_data[3]);
+    model_q = model_init(model_data.models[3].data, (vec3_t) {
+        1.0f,1.0f,1.0f
+    });
+    model_explosion = model_init(model_data.models[0].data, (vec3_t) {
+        0.1,0.1,0.1
+    });
+    model_blood = model_init(model_data.models[0].data, (vec3_t) {
+        0.1,0.2,0.1
+    });
+    model_gib = model_init(model_data.models[0].data, (vec3_t) {
+        0.3,0.6,0.3
+    });
 
-    model_explosion = model_init(model_data[0], 0.1,0.1,0.1);
-    model_blood = model_init(model_data[0], 0.1,0.2,0.1);
-    model_gib = model_init(model_data[0], 0.3,0.6,0.3);
+    model_grunt = model_init(model_data.models[1].data, (vec3_t) {
+        2.5,2.2,2.5
+    });
+    model_enforcer = model_init(model_data.models[1].data, (vec3_t) {
+        3,2.7,3
+    });
+    model_zombie = model_init(model_data.models[1].data, (vec3_t) {
+        1.5,2,1.5
+    });
+    model_ogre = model_init(model_data.models[1].data, (vec3_t) {
+        4,3,4
+    });
+    model_hound = model_init(model_data.models[4].data, (vec3_t) {
+        2.5,2.5,2.5
+    });
 
-    model_grunt = model_init(model_data[1], 2.5,2.2,2.5);
-    model_enforcer = model_init(model_data[1], 3,2.7,3);
-    model_zombie = model_init(model_data[1], 1.5,2,1.5);
-    model_ogre = model_init(model_data[1], 4,3,4);
-    model_hound = model_init(model_data[4],2.5,2.5,2.5);
+    model_barrel = model_init(model_data.models[2].data, (vec3_t) {
+        2, 2, 2
+    });
+    model_torch = model_init(model_data.models[7].data, (vec3_t) {
+        0.6,1,0.6
+    });
 
-    model_barrel = model_init(model_data[2], 2, 2, 2);
-    model_torch = model_init(model_data[7], 0.6,1,0.6);
+    model_pickup_nailgun = model_init(model_data.models[6].data, (vec3_t) {
+        1, 1, 1
+    });
+    model_pickup_grenadelauncher = model_init(model_data.models[2].data, (vec3_t) {
+        1, 0.5, 0.5
+    });
+    model_pickup_box = model_init(model_data.models[5].data, (vec3_t) {
+        0.7, 0.7, 0.7
+    });
+    model_pickup_grenades = model_init(model_data.models[5].data, (vec3_t) {
+        0.5, 1, 0.5
+    });
+    model_pickup_key = model_init(model_data.models[5].data, (vec3_t) {
+        0.1, 0.7, 0.1
+    });
 
-    model_pickup_nailgun = model_init(model_data[6], 1, 1, 1);
-    model_pickup_grenadelauncher = model_init(model_data[2], 1, 0.5, 0.5);
-    model_pickup_box = model_init(model_data[5], 0.7, 0.7, 0.7);
-    model_pickup_grenades = model_init(model_data[5], 0.5, 1, 0.5);
-    model_pickup_key = model_init(model_data[5], 0.1, 0.7, 0.1);
+    model_door = model_init(model_data.models[5].data, (vec3_t) {
+        5, 5, 0.5
+    });
 
-    model_door = model_init(model_data[5], 5, 5, 0.5);
+    model_shotgun = model_init(model_data.models[2].data, (vec3_t) {
+        1,0.2,0.2
+    });
+    model_grenadelauncher = model_init(model_data.models[2].data, (vec3_t) {
+        0.7,0.4,0.4
+    });
+    model_nailgun = model_init(model_data.models[6].data, (vec3_t) {
+        0.7,0.7,0.7
+    });
 
-    model_shotgun = model_init(model_data[2], 1,0.2,0.2);
-    model_grenadelauncher = model_init(model_data[2], 0.7,0.4,0.4);
-    model_nailgun = model_init(model_data[6], 0.7,0.7,0.7);
-
-    model_grenade = model_init(model_data[2], 0.3,0.3,0.3);
-    model_nail = model_init(model_data[2], 0.5,0.1,0.1);
+    model_grenade = model_init(model_data.models[2].data, (vec3_t) {
+        0.3,0.3,0.3
+    });
+    /*
+    model_nail = model_init(model_data.models[2].data, (vec3_t){0.5,0.1,0.1});
 
     // Take some parts from the grunt model and build individual giblet models
     // from it. Arms and legs and stuff...
@@ -196,6 +245,31 @@ void quit() {
         }
         free(map_data.maps);
     }
+    if (model_data.models)
+        free(model_data.models);
+    if (model_q.frames)                      free(model_q.frames);
+    if (model_explosion.frames)              free(model_explosion.frames);
+    if (model_blood.frames)                  free(model_blood.frames);
+    if (model_gib.frames)                    free(model_gib.frames);
+    if (model_grunt.frames)                  free(model_grunt.frames);
+    if (model_enforcer.frames)               free(model_enforcer.frames);
+    if (model_zombie.frames)                 free(model_zombie.frames);
+    if (model_ogre.frames)                   free(model_ogre.frames);
+    if (model_hound.frames)                  free(model_hound.frames);
+    if (model_barrel.frames)                 free(model_barrel.frames);
+    if (model_torch.frames)                  free(model_torch.frames);
+    if (model_shotgun.frames)                free(model_shotgun.frames);
+    if (model_nailgun.frames)                free(model_nailgun.frames);
+    if (model_grenadelauncher.frames)        free(model_grenadelauncher.frames);
+    if (model_pickup_nailgun.frames)         free(model_pickup_nailgun.frames);
+    if (model_pickup_grenadelauncher.frames) free(model_pickup_grenadelauncher.frames);
+    if (model_pickup_box.frames)             free(model_pickup_box.frames);
+    if (model_pickup_grenades.frames)        free(model_pickup_grenades.frames);
+    if (model_pickup_key.frames)             free(model_pickup_key.frames);
+    if (model_door.frames)                   free(model_door.frames);
+    if (model_grenade.frames)                free(model_grenade.frames);
+    if (model_plasma.frames)                 free(model_plasma.frames);
+
 }
 
 int main() {
@@ -203,7 +277,7 @@ int main() {
     // todo, more randy
     time_t t;
     srand((unsigned) time(&t));
-    
+
     game_load();
 
     GLenum error = glGetError();

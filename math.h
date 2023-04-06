@@ -8,6 +8,9 @@ typedef struct {
     float z;
 } vec3_t;
 
+#define min(a,b) (((a)<(b))?(a):(b))
+#define max(a,b) (((a)>(b))?(a):(b))
+
 float randf();
 float clamp (float v, float min, float max);
 float scale (float v, float in_min, float in_max, float out_min, float out_max);
