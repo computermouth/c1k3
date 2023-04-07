@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengles2.h>
 // #include <GLES2/gl2.h>
+#include <SDL2/SDL_video.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -304,13 +305,26 @@ int main() {
     
     SDL_Window* window = SDL_CreateWindow("c1k3",
                                           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                          640, 360,
-                                          SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+                                          320, 180,
+                                          SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     SDL_GL_CreateContext(window);
+    SDL_GL_SetSwapInterval(0);
     
     game_load();
     
+    time(&t);
+    int oldtime = t;
+    int newtime = t;
+    int frames = 0;
     while (1) {
+        frames++;
+        time(&t);
+        newtime = t;
+        if (newtime - oldtime >=2){
+            printf("fps: %f\n", (float)frames / 2.0f);
+            oldtime = newtime;
+            frames = 0;
+        }
         SDL_Event e;
         while(SDL_PollEvent(&e))
         {
