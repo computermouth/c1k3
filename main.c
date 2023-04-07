@@ -214,14 +214,14 @@ void game_load() {
 
 // todo, change to something like -- render_menu()
 void run_menu() {
-    
+
     struct timespec t;
-	clock_gettime(CLOCK_BOOTTIME, &t);
-	long int time_now = t.tv_sec * 1000 + t.tv_nsec / 1000000;
-    
+    clock_gettime(CLOCK_BOOTTIME, &t);
+    long int time_now = t.tv_sec * 1000 + t.tv_nsec / 1000000;
+
     r_prepare_frame(0.0f, 0.0f, 0.0f);
-    
-    r_draw((draw_call_t){
+
+    r_draw((draw_call_t) {
         .pos = vec3(0,0,0),
         .yaw = 0,
         .pitch = 0,
@@ -231,19 +231,19 @@ void run_menu() {
         .mix = 0,
         .num_verts = model_q.nv
     });
-    
+
     r_push_light(
         // +/-200
-    	vec3(sinf(time_now*0.00033)*200, 100, -100),
-    	10, 255,192,32
+        vec3(sinf(time_now*0.00033)*200, 100, -100),
+        10, 255,192,32
     );
     r_push_light(
-    	vec3_rotate_y(vec3(0, 0, 100),time_now*0.00063),
-    	10, 32,64,255
+        vec3_rotate_y(vec3(0, 0, 100),time_now*0.00063),
+        10, 32,64,255
     );
     r_push_light(
-    	vec3_rotate_y(vec3(100, 0, 0),time_now*0.00053),
-    	10, 196,128,255
+        vec3_rotate_y(vec3(100, 0, 0),time_now*0.00053),
+        10, 196,128,255
     );
 
     r_end_frame();
@@ -294,24 +294,24 @@ int main() {
     // todo, more randy
     time_t t;
     srand((unsigned) time(&t));
-    
-    if (SDL_Init(SDL_INIT_VIDEO) != 0){
+
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
     }
     // Requires at least OpenGL ES 2.0
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-    
+
     SDL_Window* window = SDL_CreateWindow("c1k3",
                                           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                           320, 180,
                                           SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     SDL_GL_CreateContext(window);
     SDL_GL_SetSwapInterval(0);
-    
+
     game_load();
-    
+
     time(&t);
     int oldtime = t;
     int newtime = t;
@@ -320,7 +320,7 @@ int main() {
         frames++;
         time(&t);
         newtime = t;
-        if (newtime - oldtime >=2){
+        if (newtime - oldtime >=2) {
             printf("fps: %f\n", (float)frames / 2.0f);
             oldtime = newtime;
             frames = 0;
@@ -334,20 +334,20 @@ int main() {
         run_menu();
         SDL_GL_SwapWindow(window);
     }
-    
+
     const char * serror = SDL_GetError();
     while ( strcmp(serror, "") ) {
         printf("sdlerror: %s\n", serror);
         serror = SDL_GetError();
     }
-    
+
     GLenum gerror = glGetError();
     while (gerror != GL_NO_ERROR) {
         printf("glerror: %x\n", gerror);
         gerror = glGetError();
     }
-    
+
 jump:
-    
+
     quit();
 }

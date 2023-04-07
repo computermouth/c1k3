@@ -2,6 +2,7 @@
 EXT_SRC = lodepng.c
 INT_SRC = data.c main.c map.c math.c model.c render.c
 INT_H   = data.h map.h math.h model.h render.h
+TST_SRC = tests/test_math.c
 
 all:
 	clang -Wall -I/usr/include/ $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 -lSDL2
@@ -14,4 +15,9 @@ memtest:
 	valgrind --track-origins=yes --leak-check=yes ./main
 
 lint:
-	astyle -n $(INT_SRC) $(INT_H)
+	astyle -n $(INT_SRC) $(INT_H) $(TST_SRC)
+
+test:
+	clang -Wall tests/*.c -o tester
+	./tester
+

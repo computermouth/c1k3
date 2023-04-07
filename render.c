@@ -68,7 +68,7 @@ draw_call_t * r_draw_calls;
 uint32_t r_num_draw_calls = 0;
 
 GLuint r_compile_shader(GLenum type, char* source) {
-    
+
     GLuint shader = glCreateShader(type);
     const GLchar *g[] = {source};
     glShaderSource(shader, 1, g, NULL);
@@ -98,7 +98,7 @@ void r_init() {
     glAttachShader(shader_program, r_compile_shader(GL_FRAGMENT_SHADER, SHADER_FRAG));
     glLinkProgram(shader_program);
     glUseProgram(shader_program);
-    
+
     r_u_camera = glGetUniformLocation(shader_program, "c");
     r_u_lights = glGetUniformLocation(shader_program, "l");
     r_u_mouse = glGetUniformLocation(shader_program, "m");
