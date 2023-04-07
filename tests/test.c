@@ -9,8 +9,9 @@ void tearDown(void) {}
 
 static void test_clamp(void)
 {
-
-    TEST_ASSERT_EQUAL_FLOAT(3.0f, 1.0f + 2.0f);
+    TEST_ASSERT_EQUAL_FLOAT(clamp(1.5, 2.0, 3.0), 2.0);
+    TEST_ASSERT_EQUAL_FLOAT(clamp(2.5, 2.0, 3.0), 2.5);
+    TEST_ASSERT_EQUAL_FLOAT(clamp(3.5, 2.0, 3.0), 3.0);
 }
 
 // Runs the test(s)
