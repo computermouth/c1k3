@@ -75,13 +75,13 @@ model_t model_init(uint8_t * data, vec3_t scale) {
     model_t out = {0};
     // todo, junk
     out.data = data;
+    out.nv = num_indices * 3;
 
     for (uint32_t frame_index = 0; frame_index < num_frames; frame_index++) {
         out.frame_len++;
         out.frames = realloc(out.frames, sizeof(uint32_t) * out.frame_len);
         // todo, some weirdass alternative to pointers??
         out.frames[out.frame_len - 1] = r_num_verts;
-        out.nv = num_vertices;
 
         uint32_t vertex_offset = frame_index * num_vertices * 3;
         for (uint32_t i = 0; i < num_indices * 3; i += 3) {

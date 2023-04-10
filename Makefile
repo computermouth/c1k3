@@ -1,12 +1,12 @@
 
 EXT_SRC = lodepng.c
 MAIN_C  = main.c
-INT_SRC = data.c map.c math.c model.c render.c
-INT_H   = data.h map.h math.h model.h render.h
+INT_SRC = data.c entity.c map.c math.c model.c render.c
+INT_H   = data.h entity.h map.h math.h model.h render.h
 TST_SRC = tests/test.c
 
 all:
-	clang -Wall -I/usr/include/ $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 -lSDL2
+	clang -Wall -g -I/usr/include/ $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 -lSDL2
 
 release:
 	clang -Os -flto -Wall $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 -lSDL2
@@ -23,3 +23,5 @@ test:
 	clang -Wall $(INT_SRC) $(EXT_SRC) tests/*.c -o tester -lSDL2 -lm -lGLESv2
 	./tester
 
+debug: all
+	lldb ./main
