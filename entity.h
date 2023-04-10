@@ -23,11 +23,11 @@ typedef struct {
     vec3_t p;
     vec3_t s;
     float f;
-    
+
     void * _model;
     animation_t _anim;
     int32_t _anim_time;
-    
+
     int32_t _health;
     int32_t _dead;
     int32_t _die_at;
@@ -38,10 +38,10 @@ typedef struct {
     float _pitch;
     int32_t _on_ground;
     int32_t _keep_off_ledges;
-    
+
     int32_t _check_against;
     int32_t _stepped_up_at;
-    
+
 } entity_t;
 
 void entity_constructor(entity_t * e, vec3_t pos, vec3_t p1, vec3_t p2);
