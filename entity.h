@@ -3,8 +3,10 @@
 #define _ENTITY_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "math.h"
+#include "model.h"
 
 typedef enum {
     ENTITY_GROUP_NONE = 0,
@@ -13,8 +15,9 @@ typedef enum {
 } entity_group_t;
 
 typedef struct {
-    uint32_t length;
-    uint32_t * no_idea;
+    float time;
+    uint32_t num_frames;
+    uint32_t * frames;
 } animation_t;
 
 typedef struct {
@@ -22,17 +25,19 @@ typedef struct {
     vec3_t v;
     vec3_t p;
     vec3_t s;
-    float f;
+    float f; // friction?
 
-    void * _model;
+    model_t * _model;
     animation_t _anim;
     int32_t _anim_time;
+    int32_t _texture;
 
     int32_t _health;
     int32_t _dead;
-    int32_t _die_at;
+    bool _expires; // to be used with die at
+    float _die_at; // float because it's compared to game_tim
     int32_t _step_height;
-    int32_t _bounciness;
+    float _bounciness;
     int32_t _gravity;
     float _yaw;
     float _pitch;
@@ -40,15 +45,40 @@ typedef struct {
     int32_t _keep_off_ledges;
 
     int32_t _check_against;
+    void * _check_entities;
     int32_t _stepped_up_at;
+
+    // first param is actually entity_t *
+    void (*_init)(void * e, vec3_t p1, vec3_t p2);
+    void (*_update)(void * e);
+    void (*_update_physics)(void * e);
+    bool (*_collides)(void * e, vec3_t p);
+    void (*_did_collide)(int axis);
+    void (*_did_collide_with_entity)(void * e, void * other);
+    void (*_draw_model)(void * e);
+    void (*_spawn_particles)(void * e, int amount, int speed, model_t * model, int texture, float lifetime);
+    void (*_receive_damage)(void * e, void * from, int32_t amount);
+    void (*_play_sound)(void * e, void * sound);
+    void (*_kill)(void * e);
 
 } entity_t;
 
-void entity_constructor(entity_t * e, vec3_t pos, vec3_t p1, vec3_t p2);
+typedef struct {
+    entity_t * entities;
+    uint32_t length;
+} entity_collection_t;
+
+entity_t entity_constructor();
 void entity_init(entity_t * e, vec3_t p1, vec3_t p2);
 void entity_update(entity_t * e);
 void entity_update_physics(entity_t * e);
-void entity_collides(entity_t * e);
-void entity_did_collide(entity_t * e);
+bool entity_collides(entity_t * e, vec3_t p);
+void entity_did_collide(int axis); // todo, axis should probably be an enum
+void entity_did_collide_with_entity(entity_t * e, entity_t * other);
+void entity_draw_model(entity_t * e);
+void entity_spawn_particles(entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime);
+void entity_receive_damage(entity_t * e, entity_t * from, int32_t amount);
+void entity_play_sound(entity_t * e, void * sound);
+void entity_kill(entity_t * e);
 
 #endif

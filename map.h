@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include "math.h"
+
 #define map_size 128
 
 typedef struct {
@@ -25,5 +27,7 @@ typedef struct {
 } map_collection_t;
 
 map_collection_t map_load_container();
+uint32_t map_block_at(uint32_t x, uint32_t y, uint32_t z);
+int map_block_at_box(vec3_t box_start, vec3_t box_end);
 
 #endif

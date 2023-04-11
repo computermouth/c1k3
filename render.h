@@ -16,8 +16,8 @@ typedef struct {
     float yaw;
     float pitch;
     GLuint texture;
-    GLint f1;
-    GLint f2;
+    GLint f1; // todo, first frame of interpolation
+    GLint f2; // second frame of interpolation
     float mix;
     int num_verts;
 } draw_call_t;
@@ -33,6 +33,8 @@ extern draw_call_t * r_draw_calls;
 extern meta_tex_t * r_textures;
 extern int r_num_verts;
 extern draw_call_t * r_draw_calls;
+extern vec3_t r_camera;
+extern GLfloat r_camera_yaw;
 
 GLuint r_compile_shader(GLenum type, char* source);
 GLint r_vertex_attrib(GLuint shader_program, const GLchar *attrib_name, int count, int vertex_size, long int offset);

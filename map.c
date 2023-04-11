@@ -7,7 +7,6 @@
 
 #include "map.h"
 #include "data.h"
-#include "math.h"
 #include "render.h"
 
 map_t * map;
