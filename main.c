@@ -48,7 +48,7 @@ model_t model_pickup_key = {0};
 model_t model_door = {0};
 // Projectiles
 model_t model_grenade = {0};
-model_t model_plasma = {0}; // aka. nail
+model_t model_nail = {0}; // aka. nail
 
 
 // Sounds
@@ -157,8 +157,11 @@ void game_load() {
     model_grenade = model_init(model_data.models[2].data, (vec3_t) {
         0.3,0.3,0.3
     });
+
+    model_nail = model_init(model_data.models[2].data, (vec3_t) {
+        0.5,0.1,0.1
+    });
     /*
-    model_nail = model_init(model_data.models[2].data, (vec3_t){0.5,0.1,0.1});
 
     // Take some parts from the grunt model and build individual giblet models
     // from it. Arms and legs and stuff...
@@ -286,7 +289,7 @@ void quit() {
     if (model_pickup_key.frames)             free(model_pickup_key.frames);
     if (model_door.frames)                   free(model_door.frames);
     if (model_grenade.frames)                free(model_grenade.frames);
-    if (model_plasma.frames)                 free(model_plasma.frames);
+    if (model_nail.frames)                   free(model_nail.frames);
 }
 
 int main() {

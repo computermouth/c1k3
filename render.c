@@ -163,7 +163,7 @@ void r_prepare_frame(float r, float g, float b) {
     glClearColor(r, g, b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     r_num_lights = 0;
-    memset(r_light_buffer, 0.0f, R_MAX_LIGHT_V3*3);
+    memset(r_light_buffer, 0.0f, R_MAX_LIGHT_V3*3 * sizeof(float));
 }
 
 void r_end_frame() {
