@@ -238,6 +238,7 @@ int r_push_block(float x, float y, float z, float sx, float sy, float sz, int te
 
     uint32_t tex_w = r_textures[texture].width;
     uint32_t tex_h = r_textures[texture].height;
+    int index = r_num_verts;
 
     float tx = sx/tex_w;
     float ty = sy/tex_h;
@@ -261,7 +262,7 @@ int r_push_block(float x, float y, float z, float sx, float sy, float sz, int te
     r_push_quad(v1, v0, v7, v6, tx, ty); // back
     r_push_quad(v3, v1, v5, v7, tz, ty); // right
     r_push_quad(v0, v2, v6, v4, tz, ty); // left
-    return r_num_verts;
+    return index;
 }
 
 void r_push_light(vec3_t pos, float intensity, float r, float g, float b) {
