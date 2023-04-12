@@ -19,6 +19,8 @@ typedef struct {
     uint32_t len;
 } model_collection_t;
 
+extern model_collection_t model_data;
+
 model_collection_t model_load_container();
 model_t model_init(uint8_t * data, vec3_t scale);
 

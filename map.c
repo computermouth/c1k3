@@ -5,11 +5,14 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "game.h"
 #include "map.h"
 #include "data.h"
 #include "render.h"
+#include "entity.h"
 
 map_t * map;
+map_collection_t map_data = { 0 };
 
 map_collection_t map_load_container() {
 
@@ -94,12 +97,43 @@ void map_init (map_t * m) {
     // todo, should this just be an index into a global map_collection_t?
     map = m;
 
-    printf("map.c/map_init() -- todo");
+    // Entity Id to class - must be consistent with map_packer.c line ~900
+    entity_t (*spawn_class[])() = { // todo, obv
+        /* 00 */ entity_constructor,
+        /* 01 */ entity_constructor,
+        /* 02 */ entity_constructor,
+        /* 03 */ entity_constructor,
+        /* 04 */ entity_constructor,
+        /* 05 */ entity_constructor,
+        /* 06 */ entity_constructor,
+        /* 07 */ entity_constructor,
+        /* 08 */ entity_constructor,
+        /* 09 */ entity_constructor,
+        /* 10 */ entity_constructor,
+        /* 11 */ entity_constructor,
+        /* 12 */ entity_constructor,
+        /* 13 */ entity_constructor,
+        /* 14 */ entity_constructor,
+        /* 15 */ entity_constructor,
+        /* 16 */ entity_constructor,
+    };
 
-    // entity_t spawn_class[] = {
-
-    // }
-
+    for (uint32_t i = 0; i < map->e_size;) {
+        entity_t (*func)() = spawn_class[map->e[i++]];
+        int x = m->e[i++] * 32;
+        int y = m->e[i++] * 16;
+        int z = m->e[i++] * 32;
+        uint8_t p1 = m->e[i++];
+        uint8_t p2 = m->e[i++];
+        game_spawn(
+            func,
+        (vec3_t) {
+            .x = x, .y = y, .z = z
+        },
+        p1,
+        p2
+        );
+    }
 }
 
 uint32_t map_block_at(uint32_t x, uint32_t y, uint32_t z) {

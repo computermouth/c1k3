@@ -224,11 +224,7 @@ void entity_draw_model(entity_t * e) {
 
 void entity_spawn_particles(entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime) {
     for (uint32_t i = 0; i < amount; i++) {
-        entity_t particle = game_spawn(entity_particle_constructor, e->p, (vec3_t) {
-            0
-        }, (vec3_t) {
-            0
-        });
+        entity_t particle = game_spawn(entity_particle_constructor, e->p, 0, 0);
         particle._model = model;
         particle._texture = texture;
         particle._die_at = game_time + lifetime + randf() * lifetime * 0.2;

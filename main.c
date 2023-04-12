@@ -11,11 +11,7 @@
 #include "render.h"
 #include "map.h"
 #include "model.h"
-
-// todo, move this to map.c/map.h??
-map_collection_t map_data = { 0 };
-// todo, move this to model.c/model.h??
-model_collection_t model_data = { 0 };
+#include "game.h"
 
 // todo, change all these to pointers,
 // raise memory management to a higher level
@@ -161,22 +157,21 @@ void game_load() {
     model_nail = model_init(model_data.models[2].data, (vec3_t) {
         0.5,0.1,0.1
     });
-    /*
 
     // Take some parts from the grunt model and build individual giblet models
     // from it. Arms and legs and stuff...
-    for (let i = 0; i < 204; i+=34) {
-    	let m = model_init(model_data[1], 2,1,2);
-    	m.f[0] += i;
-    	m.nv = 34;
-    	model_gib_pieces.push(m);
+    model_collection_t model_gib_pieces = {0};
+    for (uint32_t i = 0; i < 204; i+=34) {
+        model_t m = model_init(model_data.models[1].data, vec3(2,1,2));
+        m.frames[0] += i;
+        m.nv = 34;
+        model_gib_pieces.len++;
+        model_gib_pieces.models = realloc(model_gib_pieces.models, sizeof(model_t) * model_gib_pieces.len);
+        model_gib_pieces.models[model_gib_pieces.len - 1] = m;
     }
-    */
 
     r_submit_buffer();
     /*
-    // set state to render menu
-    requestAnimationFrame(run_frame);
 
     f.onclick = () => g.requestFullscreen();
     g.onclick = () => {
@@ -216,7 +211,7 @@ void game_load() {
 };
 
 // todo, change to something like -- render_menu()
-void run_menu() {
+void menu_run() {
 
     struct timespec t;
     clock_gettime(CLOCK_BOOTTIME, &t);
@@ -250,6 +245,21 @@ void run_menu() {
     );
 
     r_end_frame();
+
+    /*
+        SDL_Event e;
+        while(SDL_PollEvent(&e))
+        {
+            if(e.type == SDL_QUIT)
+                goto quit;
+            if(e.type == MOUSE_CLICK){
+                // change state or game loop
+                game_init(0);
+                while (1)
+                    game_run();
+            }
+        }
+    */
 
 };
 
@@ -319,6 +329,7 @@ int main() {
     int oldtime = t;
     int newtime = t;
     int frames = 0;
+
     while (1) {
         frames++;
         time(&t);
@@ -334,7 +345,12 @@ int main() {
             if(e.type == SDL_QUIT)
                 goto jump;
         }
-        run_menu();
+        // perform based on state
+        // move event handling into update loop
+        // todo, move
+        // game_init(0);
+        // game_run(0.0f);
+        menu_run();
         SDL_GL_SwapWindow(window);
     }
 

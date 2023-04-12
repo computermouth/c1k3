@@ -7,6 +7,8 @@
 #include "data.h"
 #include "render.h"
 
+model_collection_t model_data = { 0 };
+
 model_collection_t model_load_container() {
 
     const uint8_t * data = data_models;
