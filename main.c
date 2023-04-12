@@ -1,4 +1,6 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_timer.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -207,12 +209,7 @@ void game_load() {
     */
 };
 
-// todo, change to something like -- render_menu()
-void menu_run() {
-
-    struct timespec t;
-    clock_gettime(CLOCK_BOOTTIME, &t);
-    long int time_now = t.tv_sec * 1000 + t.tv_nsec / 1000000;
+void menu_run(float time_now) {
 
     r_prepare_frame(0.0f, 0.0f, 0.0f);
 
@@ -242,21 +239,6 @@ void menu_run() {
     );
 
     r_end_frame();
-
-    /*
-        SDL_Event e;
-        while(SDL_PollEvent(&e))
-        {
-            if(e.type == SDL_QUIT)
-                goto quit;
-            if(e.type == MOUSE_CLICK){
-                // change state or game loop
-                game_init(0);
-                while (1)
-                    game_run();
-            }
-        }
-    */
 
 };
 
@@ -320,24 +302,24 @@ int main() {
     SDL_GL_CreateContext(window);
     SDL_GL_SetSwapInterval(0);
     // todo, vsync?
-  //   SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-  //   SDL_Texture * target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
-		// SDL_TEXTUREACCESS_TARGET, 320, 180);
-  //   SDL_RenderClear(renderer);
-  //   SDL_SetRenderTarget(renderer, target);
-    
+    //   SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+    //   SDL_Texture * target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
+    // SDL_TEXTUREACCESS_TARGET, 320, 180);
+    //   SDL_RenderClear(renderer);
+    //   SDL_SetRenderTarget(renderer, target);
+
     game_load();
 
     time(&t);
     int oldtime = t;
     int newtime = t;
     int frames = 0;
-    
+
     typedef enum {
         MENU_STATE,
         GAME_STATE
     } state_t;
-    
+
     state_t state = MENU_STATE;
 
     while (1) {
@@ -354,7 +336,7 @@ int main() {
         {
             if(e.type == SDL_QUIT)
                 goto jump;
-            if(state == MENU_STATE && e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_LEFT){
+            if(state == MENU_STATE && e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_LEFT) {
                 state = GAME_STATE;
                 game_init(0);
             }
@@ -363,14 +345,14 @@ int main() {
         // move event handling into update loop
         // todo, move
         if (state == GAME_STATE)
-            game_run(0.0f); // time in ms since page load?
+            game_run(SDL_GetTicks()); // time in ms since page load?
         else
-            menu_run();
+            menu_run(SDL_GetTicks());
         // SDL_SetRenderTarget(renderer, NULL);
         // SDL_RenderCopy(renderer, target, NULL, NULL);
         // SDL_RenderPresent(renderer);
         // SDL_SetRenderTarget(renderer, target);
-        
+
         SDL_GL_SwapWindow(window);
     }
 
