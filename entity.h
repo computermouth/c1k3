@@ -43,6 +43,13 @@ typedef struct {
     float _pitch;
     int32_t _on_ground;
     int32_t _keep_off_ledges;
+    int32_t _speed;
+    float _bob;
+    bool _can_jump;
+    float _can_shoot_at;
+
+    void * _weapons;
+    uint32_t _weapon_index;
 
     int32_t _check_against;
     void * _check_entities;
@@ -68,7 +75,14 @@ typedef struct {
     uint32_t length;
 } entity_collection_t;
 
-entity_t entity_constructor();
+// todo, fuck, get rid of this entirely?
+// loop over entire entity collection and check ENTITY_GROUP?
+typedef struct {
+    entity_t ** entities;
+    uint32_t length;
+} entity_ref_collection_t;
+
+void entity_constructor(entity_t *e, vec3_t pos, vec3_t p1, vec3_t p2);
 void entity_init(entity_t * e, vec3_t p1, vec3_t p2);
 void entity_update(entity_t * e);
 void entity_update_physics(entity_t * e);

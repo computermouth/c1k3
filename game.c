@@ -15,9 +15,9 @@ float game_real_time_last = 0;
 float game_message_timeout = 0;
 
 entity_collection_t game_entities = {0};
-entity_collection_t game_entities_friendly = {0};
-entity_collection_t game_entities_enemies = {0};
-entity_t game_entity_player = {0};
+entity_ref_collection_t game_entities_friendly = {0};
+entity_ref_collection_t game_entities_enemies = {0};
+entity_t * game_entity_player = NULL;
 int game_map_index = 0;
 bool game_jump_to_next_level = false;
 
@@ -27,10 +27,10 @@ void game_init(int map_index) {
     game_entities = (entity_collection_t) {
         0
     };
-    game_entities_friendly = (entity_collection_t) {
+    game_entities_friendly = (entity_ref_collection_t) {
         0
     };
-    game_entities_enemies = (entity_collection_t) {
+    game_entities_enemies = (entity_ref_collection_t) {
         0
     };
 
@@ -44,12 +44,19 @@ void game_next_level() {
 
 // todo, is this fuckin goofy?
 // pos -> game_spawn -> constructor -> init -> constructor -> init
-entity_t game_spawn (entity_t (*func)(), vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_t tmp = func(pos, p1, p2);
+entity_t * game_spawn (void (*func)(), vec3_t pos, uint8_t p1, uint8_t p2) {
+    // todo, constructor should probably take a pointer
+    // to already allocated game_entities.entities[what]
+    // instead of create, copy value, return pointer to where
+    // value was copied
     game_entities.length++;
     game_entities.entities = realloc(game_entities.entities, sizeof(entity_t) * game_entities.length);
-    game_entities.entities[game_entities.length - 1] = tmp;
-    return tmp;
+    game_entities.entities[game_entities.length - 1] = (entity_t) {
+        0
+    };
+    entity_t * e = &(game_entities.entities[game_entities.length - 1]);
+    func(e, pos, p1, p2);
+    return e;
 }
 
 void game_show_message(char *txt) {
@@ -102,7 +109,7 @@ void game_run(float time_now) {
         game_map_index++;
         if (game_map_index == 2) {
             title_show_message("THE END", "THANKS FOR PLAYING ❤");
-            game_entity_player._dead = 1;
+            game_entity_player->_dead = 1;
 
             // Set camera position for end screen
             r_camera = vec3(1856,784,2272);

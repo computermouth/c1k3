@@ -12,40 +12,32 @@
 
 uint32_t no_idea_placeholder[] = {0};
 
-entity_t entity_constructor() {
+void entity_constructor(entity_t *e, vec3_t pos, vec3_t p1, vec3_t p2) {
 
-    entity_t tmp = {0};
-
-    tmp.p = (vec3_t) {
-        0.0f, 0.0f, 0.0f
-    };
-    tmp.s = (vec3_t) {
+    e->p = pos;
+    e->s = (vec3_t) {
         2.0f, 2.0f, 2.0f
     };
 
-    tmp._health = 50;
-    tmp._gravity = 1;
-    tmp._anim = (animation_t) {
-        .time = 0, .num_frames = 0, .frames = NULL
-    };
-    tmp._anim_time = randf();
+    e->_health = 50;
+    e->_gravity = 1;
+    // todo, maybe??? e->_anim
+    e->_anim_time = randf();
 
     // todo, rename, f_init?
-    tmp._init = (void (*)(void *, vec3_t, vec3_t))entity_init;
-    tmp._update = (void (*)(void *))entity_update;
-    tmp._update_physics = (void (*)(void *))entity_update_physics;
-    tmp._collides = (bool (*)(void * e, vec3_t p))entity_collides;
-    tmp._did_collide = (void (*)(int axis))entity_did_collide;
-    tmp._did_collide_with_entity = (void (*)(void * e, void * other))entity_did_collide_with_entity;
-    tmp._draw_model = (void (*)(void * e))entity_draw_model;
-    tmp._spawn_particles = (void (*)(void * e, int amount, int speed, model_t * model, int texture, float lifetime))entity_spawn_particles;
-    tmp._receive_damage = (void (*)(void * e, void * from, int32_t amount))entity_receive_damage;
-    tmp._play_sound = (void (*)(void * e, void * sound))entity_play_sound;
-    tmp._kill = (void (*)(void * e))entity_kill;
+    e->_init = (void (*)(void *, vec3_t, vec3_t))entity_init;
+    e->_update = (void (*)(void *))entity_update;
+    e->_update_physics = (void (*)(void *))entity_update_physics;
+    e->_collides = (bool (*)(void * e, vec3_t p))entity_collides;
+    e->_did_collide = (void (*)(int axis))entity_did_collide;
+    e->_did_collide_with_entity = (void (*)(void * e, void * other))entity_did_collide_with_entity;
+    e->_draw_model = (void (*)(void * e))entity_draw_model;
+    e->_spawn_particles = (void (*)(void * e, int amount, int speed, model_t * model, int texture, float lifetime))entity_spawn_particles;
+    e->_receive_damage = (void (*)(void * e, void * from, int32_t amount))entity_receive_damage;
+    e->_play_sound = (void (*)(void * e, void * sound))entity_play_sound;
+    e->_kill = (void (*)(void * e))entity_kill;
 
-    entity_init(&tmp, (vec3_t) {}, (vec3_t) {});
-
-    return tmp;
+    entity_init(e, (vec3_t) {}, (vec3_t) {});
 }
 
 // only to do something dynamic to every entity
@@ -224,15 +216,15 @@ void entity_draw_model(entity_t * e) {
 
 void entity_spawn_particles(entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime) {
     for (uint32_t i = 0; i < amount; i++) {
-        entity_t particle = game_spawn(entity_particle_constructor, e->p, 0, 0);
-        particle._model = model;
-        particle._texture = texture;
-        particle._die_at = game_time + lifetime + randf() * lifetime * 0.2;
-        particle.v = vec3(
-                         (randf() - 0.5) * speed,
-                         randf() * speed,
-                         (randf() - 0.5) * speed
-                     );
+        entity_t * particle = game_spawn(entity_particle_constructor, e->p, 0, 0);
+        particle->_model = model;
+        particle->_texture = texture;
+        particle->_die_at = game_time + lifetime + randf() * lifetime * 0.2;
+        particle->v = vec3(
+                          (randf() - 0.5) * speed,
+                          randf() * speed,
+                          (randf() - 0.5) * speed
+                      );
     }
 }
 

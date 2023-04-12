@@ -10,6 +10,7 @@
 #include "data.h"
 #include "render.h"
 #include "entity.h"
+#include "entity_player.h"
 
 map_t * map;
 map_collection_t map_data = { 0 };
@@ -98,8 +99,8 @@ void map_init (map_t * m) {
     map = m;
 
     // Entity Id to class - must be consistent with map_packer.c line ~900
-    entity_t (*spawn_class[])() = { // todo, obv
-        /* 00 */ entity_constructor,
+    void (*spawn_class[])() = { // todo, obv
+        /* 00 */ entity_player_constructor,
         /* 01 */ entity_constructor,
         /* 02 */ entity_constructor,
         /* 03 */ entity_constructor,
@@ -119,7 +120,7 @@ void map_init (map_t * m) {
     };
 
     for (uint32_t i = 0; i < map->e_size;) {
-        entity_t (*func)() = spawn_class[map->e[i++]];
+        void (*func)() = spawn_class[map->e[i++]];
         int x = m->e[i++] * 32;
         int y = m->e[i++] * 16;
         int z = m->e[i++] * 32;
