@@ -1,8 +1,8 @@
 
 EXT_SRC = lodepng.c
 MAIN_C  = main.c
-INT_SRC = data.c entity.c entity_light.c entity_particle.c entity_player.c game.c input.c map.c math.c model.c render.c
-INT_H   = data.h entity.h entity_light.h entity_particle.h entity_player.h game.h input.h map.h math.h model.h render.h
+INT_SRC = data.c entity.c entity_barrel.c entity_light.c entity_particle.c entity_player.c game.c input.c map.c math.c model.c render.c
+INT_H   = data.h entity.h entity_barrel.h entity_light.h entity_particle.h entity_player.h game.h input.h map.h math.h model.h render.h
 TST_SRC = tests/test.c
 
 all:

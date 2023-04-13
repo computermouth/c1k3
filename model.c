@@ -8,6 +8,38 @@
 #include "render.h"
 
 model_collection_t model_data = { 0 };
+// todo, change all these to pointers,
+// raise memory management to a higher level
+// Q
+model_t model_q = { 0 };
+// Particles
+model_t model_explosion = {0};
+model_t model_blood = {0};
+model_t model_gib = {0};
+model_collection_t model_gib_pieces = { 0 } ;
+// Enemies
+model_t model_grunt = {0};
+model_t model_enforcer = {0};
+model_t model_ogre = {0};
+model_t model_zombie = {0};
+model_t model_hound = {0};
+// Map Objects
+model_t model_barrel = {0};
+model_t model_torch = {0};
+// Weapon view models
+model_t model_shotgun = {0};
+model_t model_nailgun = {0};
+model_t model_grenadelauncher = {0};
+// Pickups
+model_t model_pickup_nailgun = {0};
+model_t model_pickup_grenadelauncher = {0};
+model_t model_pickup_box = {0};
+model_t model_pickup_grenades = {0};
+model_t model_pickup_key = {0};
+model_t model_door = {0};
+// Projectiles
+model_t model_grenade = {0};
+model_t model_nail = {0}; // aka. nail
 
 model_collection_t model_load_container() {
 
