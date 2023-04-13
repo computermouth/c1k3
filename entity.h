@@ -47,6 +47,10 @@ typedef struct {
     float _bob;
     bool _can_jump;
     float _can_shoot_at;
+    uint32_t _light;
+    float _spawn_time;
+    bool _flicker;
+    uint8_t _color[3];
 
     void * _weapons;
     uint32_t _weapon_index;
@@ -56,7 +60,7 @@ typedef struct {
     int32_t _stepped_up_at;
 
     // first param is actually entity_t *
-    void (*_init)(void * e, vec3_t p1, vec3_t p2);
+    void (*_init)(void * e, uint8_t p1, uint8_t p2);
     void (*_update)(void * e);
     void (*_update_physics)(void * e);
     bool (*_collides)(void * e, vec3_t p);
@@ -82,8 +86,10 @@ typedef struct {
     uint32_t length;
 } entity_ref_collection_t;
 
-void entity_constructor(entity_t *e, vec3_t pos, vec3_t p1, vec3_t p2);
-void entity_init(entity_t * e, vec3_t p1, vec3_t p2);
+// todo, jesus christ, I think p1 and p2 are typeless and subject to usage
+// might have to pass void pointers and hope for the best
+void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2);
+void entity_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_update(entity_t * e);
 void entity_update_physics(entity_t * e);
 bool entity_collides(entity_t * e, vec3_t p);

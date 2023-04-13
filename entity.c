@@ -12,7 +12,7 @@
 
 uint32_t no_idea_placeholder[] = {0};
 
-void entity_constructor(entity_t *e, vec3_t pos, vec3_t p1, vec3_t p2) {
+void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
 
     e->p = pos;
     e->s = (vec3_t) {
@@ -25,7 +25,7 @@ void entity_constructor(entity_t *e, vec3_t pos, vec3_t p1, vec3_t p2) {
     e->_anim_time = randf();
 
     // todo, rename, f_init?
-    e->_init = (void (*)(void *, vec3_t, vec3_t))entity_init;
+    e->_init = (void (*)(void *, uint8_t, uint8_t))entity_init;
     e->_update = (void (*)(void *))entity_update;
     e->_update_physics = (void (*)(void *))entity_update_physics;
     e->_collides = (bool (*)(void * e, vec3_t p))entity_collides;
@@ -36,12 +36,23 @@ void entity_constructor(entity_t *e, vec3_t pos, vec3_t p1, vec3_t p2) {
     e->_receive_damage = (void (*)(void * e, void * from, int32_t amount))entity_receive_damage;
     e->_play_sound = (void (*)(void * e, void * sound))entity_play_sound;
     e->_kill = (void (*)(void * e))entity_kill;
+    // e->_init = NULL;
+    // e->_update = NULL;
+    // e->_update_physics = NULL;
+    // e->_collides = NULL;
+    // e->_did_collide = NULL;
+    // e->_did_collide_with_entity = NULL;
+    // e->_draw_model = NULL;
+    // e->_spawn_particles = NULL;
+    // e->_receive_damage = NULL;
+    // e->_play_sound = NULL;
+    // e->_kill = NULL;
 
-    entity_init(e, (vec3_t) {}, (vec3_t) {});
+    entity_init(e, 0, 0);
 }
 
 // only to do something dynamic to every entity
-void entity_init(entity_t * e, vec3_t p1, vec3_t p2) {}
+void entity_init(entity_t * e, uint8_t p1, uint8_t p2) {}
 
 void entity_update(entity_t * e) {
     if (e->_model) {
@@ -157,7 +168,7 @@ bool entity_collides(entity_t * e, vec3_t p) {
         return false;
 
     entity_collection_t * check = e->_check_entities;
-    for (uint32_t i = 0; i < check->length; i++) {
+    for (uint32_t i = 0; check !=NULL && i < check->length; i++) {
         entity_t * chk_e = &(check->entities[i]);
         if (vec3_dist(p, chk_e->p) < e->s.y + chk_e->s.y) {
             // If we collide with an entity set the step height to 0,
@@ -216,7 +227,7 @@ void entity_draw_model(entity_t * e) {
 
 void entity_spawn_particles(entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime) {
     for (uint32_t i = 0; i < amount; i++) {
-        entity_t * particle = game_spawn(entity_particle_constructor, e->p, 0, 0);
+        entity_t * particle = game_spawn((void (*)(entity_t *, vec3_t, uint8_t, uint8_t))entity_particle_constructor, e->p, 0, 0);
         particle->_model = model;
         particle->_texture = texture;
         particle->_die_at = game_time + lifetime + randf() * lifetime * 0.2;

@@ -1,14 +1,14 @@
 
 #include "entity_particle.h"
 
-void entity_particle_init(entity_t * e, vec3_t p1, vec3_t p2);
+void entity_particle_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_particle_update(entity_t * e);
 
-void entity_particle_constructor(entity_t * e, vec3_t pos, vec3_t p1, vec3_t p2) {
+void entity_particle_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
     entity_constructor(e, pos, p1, p2);
 
     // todo, these casts kinda suck
-    e->_init = (void (*)(void *, vec3_t, vec3_t))entity_particle_init;
+    e->_init = (void (*)(void *, uint8_t, uint8_t))entity_particle_init;
     e->_update = (void (*)(void *))entity_particle_update;
 
     // todo, kinda goofy paradigm to set the callback, immediately invoke
@@ -16,7 +16,7 @@ void entity_particle_constructor(entity_t * e, vec3_t pos, vec3_t p1, vec3_t p2)
     e->_init(e, p1, p2);
 }
 
-void entity_particle_init(entity_t * e, vec3_t p1, vec3_t p2) {
+void entity_particle_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_bounciness = 0.5f;
     e->f = 0.1f;
 }

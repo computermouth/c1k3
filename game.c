@@ -44,7 +44,7 @@ void game_next_level() {
 
 // todo, is this fuckin goofy?
 // pos -> game_spawn -> constructor -> init -> constructor -> init
-entity_t * game_spawn (void (*func)(), vec3_t pos, uint8_t p1, uint8_t p2) {
+entity_t * game_spawn (void (*func)(entity_t *, vec3_t, uint8_t, uint8_t), vec3_t pos, uint8_t p1, uint8_t p2) {
     // todo, constructor should probably take a pointer
     // to already allocated game_entities.entities[what]
     // instead of create, copy value, return pointer to where

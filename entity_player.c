@@ -10,17 +10,17 @@
 #include "input.h"
 #include "render.h"
 
-void entity_player_init(entity_t * e, vec3_t p1, vec3_t p2);
+void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_player_update(entity_t * e);
 void entity_player_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 void entity_player_kill(entity_t * e);
 
-void entity_player_constructor(entity_t *e, vec3_t pos, vec3_t p1, vec3_t p2) {
+void entity_player_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
 
     entity_constructor(e, pos, p1, p2);
 
     // todo, these casts kinda suck
-    e->_init = (void (*)(void *, vec3_t, vec3_t))entity_player_init;
+    e->_init = (void (*)(void *, uint8_t, uint8_t))entity_player_init;
     e->_update = (void (*)(void *))entity_player_update;
     e->_receive_damage = (void (*)(void * e, void * from, int32_t amount))entity_player_receive_damage;
     e->_kill = (void (*)(void *))entity_player_kill;
@@ -30,7 +30,7 @@ void entity_player_constructor(entity_t *e, vec3_t pos, vec3_t p1, vec3_t p2) {
     e->_init(e, p1, p2);
 }
 
-void entity_player_init(entity_t * e, vec3_t p1, vec3_t p2) {
+void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2) {
 
     e->s = vec3(12,24,12);
     e->f = 10;

@@ -11,6 +11,7 @@
 #include "render.h"
 #include "entity.h"
 #include "entity_player.h"
+#include "entity_light.h"
 
 map_t * map;
 map_collection_t map_data = { 0 };
@@ -99,7 +100,7 @@ void map_init (map_t * m) {
     map = m;
 
     // Entity Id to class - must be consistent with map_packer.c line ~900
-    void (*spawn_class[])() = { // todo, obv
+    void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
         /* 00 */ entity_player_constructor,
         /* 01 */ entity_constructor,
         /* 02 */ entity_constructor,
@@ -112,7 +113,7 @@ void map_init (map_t * m) {
         /* 09 */ entity_constructor,
         /* 10 */ entity_constructor,
         /* 11 */ entity_constructor,
-        /* 12 */ entity_constructor,
+        /* 12 */ entity_light_constructor,
         /* 13 */ entity_constructor,
         /* 14 */ entity_constructor,
         /* 15 */ entity_constructor,
@@ -120,7 +121,7 @@ void map_init (map_t * m) {
     };
 
     for (uint32_t i = 0; i < map->e_size;) {
-        void (*func)() = spawn_class[map->e[i++]];
+        void (*func)(entity_t *, vec3_t, uint8_t, uint8_t) = spawn_class[map->e[i++]];
         int x = m->e[i++] * 32;
         int y = m->e[i++] * 16;
         int z = m->e[i++] * 32;
