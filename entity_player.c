@@ -9,6 +9,8 @@
 #include "math.h"
 #include "input.h"
 #include "render.h"
+#include "game.h"
+#include "weapon.h"
 
 void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_player_update(entity_t * e);
@@ -43,7 +45,15 @@ void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_check_against = ENTITY_GROUP_ENEMY;
 
     // todo, e->_weapons = [new weapon_shotgun_t];
-    e->_weapons = NULL;
+    e->_weapons[0] = (weapon_t) {
+        0
+    };
+    e->_weapons[1] = (weapon_t) {
+        0
+    };
+    e->_weapons[2] = (weapon_t) {
+        0
+    };
     e->_weapon_index = 0;
 
     // Map 1 needs some rotation of the starting look-at direction
@@ -52,9 +62,7 @@ void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2) {
 
     game_entity_player = e;
 
-    game_entities_friendly.length++;
-    game_entities_friendly.entities = realloc(game_entities_friendly.entities, sizeof(entity_t *) * game_entities_friendly.length);
-    game_entities_friendly.entities[game_entities_friendly.length - 1] = e;
+    game_entities_friendly_push(e);
 }
 
 void entity_player_update(entity_t * e) {

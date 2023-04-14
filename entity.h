@@ -7,6 +7,7 @@
 
 #include "math.h"
 #include "model.h"
+#include "weapon.h"
 
 typedef enum {
     ENTITY_GROUP_NONE = 0,
@@ -51,8 +52,12 @@ typedef struct {
     float _spawn_time;
     bool _flicker;
     uint8_t _color[3];
+    vec3_t _start_pos;
+    uint32_t _reset_state_at;
+    bool _open;
+    bool _needs_key;
 
-    void * _weapons;
+    weapon_t _weapons[3];
     uint32_t _weapon_index;
 
     int32_t _check_against;

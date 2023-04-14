@@ -36,17 +36,6 @@ void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_receive_damage = (void (*)(void * e, void * from, int32_t amount))entity_receive_damage;
     e->_play_sound = (void (*)(void * e, void * sound))entity_play_sound;
     e->_kill = (void (*)(void * e))entity_kill;
-    // e->_init = NULL;
-    // e->_update = NULL;
-    // e->_update_physics = NULL;
-    // e->_collides = NULL;
-    // e->_did_collide = NULL;
-    // e->_did_collide_with_entity = NULL;
-    // e->_draw_model = NULL;
-    // e->_spawn_particles = NULL;
-    // e->_receive_damage = NULL;
-    // e->_play_sound = NULL;
-    // e->_kill = NULL;
 
     entity_init(e, 0, 0);
 }
@@ -253,6 +242,7 @@ void entity_play_sound(entity_t * e, void * sound) {
     float pan = sinf(vec3_2d_angle(e->p, r_camera)-r_camera_yaw)*-1;
     // todo -- remove and actually play sound
     volume = pan;
+    pan = volume;
     // audio_play(sound, volume, 0, pan);
 }
 

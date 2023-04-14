@@ -1,0 +1,88 @@
+
+#include <stdlib.h>
+
+#include "entity.h"
+#include "game.h"
+#include "model.h"
+#include "weapon.h"
+
+void weapon_shoot(weapon_t * w, vec3_t pos, float yaw, float pitch);
+void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch);
+
+weapon_t weapon_constructor() {
+    weapon_t w = {
+        ._needs_ammo = 1,
+        ._projectile_offset = (vec3_t){0},
+        ._init = NULL,
+    };
+    return w;
+}
+
+void weapon_shoot(weapon_t * w, vec3_t pos, float yaw, float pitch) {
+    if (w->_needs_ammo)
+        w->_ammo--;
+    // todo
+    // audio_play(w->_sound);
+    w->_spawn_projectile(w, pos, yaw, pitch);
+}
+
+void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
+    entity_t * projectile =
+        game_spawn(
+            (void (*)(entity_t *, vec3_t, uint8_t, uint8_t))w->_projectile_type,
+            vec3_add(
+                pos,
+                vec3_add(
+                    vec3(0, 12, 0),
+                    vec3_rotate_yaw_pitch(
+                        w->_projectile_offset,
+                        yaw, pitch
+                    )
+                )
+            ),
+            0,
+            0
+        );
+
+    projectile->v = vec3_rotate_yaw_pitch(
+                        vec3(0, 0, w->_projectile_speed),
+                        yaw, pitch
+                    );
+
+    projectile->_yaw = yaw - PI / 2.0f;
+    projectile->_pitch = -pitch;
+    projectile->_check_against = ENTITY_GROUP_ENEMY;
+
+    // Alternate left/right fire for next projectile (nailgun)
+    w->_projectile_offset.x *= -1;
+}
+
+void weapon_shotgun_init(weapon_t * w);
+void weapon_shotgun_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch);
+
+weapon_t weapon_shotgun_constructor() {
+    weapon_t w = weapon_constructor();
+    w._init = (void (*)(void * w))weapon_shotgun_init;
+    w._spawn_projectile = (void (*)(void * w, vec3_t pos, float yaw, float pitch))weapon_shotgun_spawn_projectile;
+    w._init(&w);
+    return w;
+}
+
+void weapon_shotgun_init(weapon_t * w) {
+    w->_texture = 7;
+    w->_model = &model_shotgun;
+    w->_sound = NULL; // todo, sound
+    w->_needs_ammo = 0;
+    w->_reload = 0.9f;
+    w->_projectile_type = NULL; // todo, entity_projectile_shell_constructor
+    w->_projectile_speed = 10000;
+}
+
+void weapon_shotgun_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
+    // todo
+    // setTimeout(()=>audio_play(sfx_shotgun_reload), 200);
+    // setTimeout(()=>audio_play(sfx_shotgun_reload), 350);
+    for (uint32_t i = 0; i < 8; i++) {
+        weapon_spawn_projectile(w, pos, yaw + randf() * 0.08 - 0.04, pitch + randf() * 0.08 - 0.04);
+    }
+}

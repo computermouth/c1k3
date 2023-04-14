@@ -21,6 +21,45 @@ entity_t * game_entity_player = NULL;
 int game_map_index = 0;
 bool game_jump_to_next_level = false;
 
+void game_entities_push(entity_ref_collection_t * c, entity_t * e) {
+    c->length++;
+    c->entities = realloc(c->entities, sizeof(entity_t *) * c->length);
+    c->entities[c->length - 1] = e;
+}
+
+void game_entities_pop(entity_ref_collection_t * c, entity_t * e) {
+    for(uint32_t i = 0; i < c->length; i++) {
+        if (c->entities[i] == e) {
+            c->length--;
+            // check if it's empty
+            if (c->length == 0) {
+                free(c->entities);
+                c->entities = NULL;
+            } else { // otherwise remove
+                entity_t * end = c->entities[c->length];
+                c->entities[i] = end;
+                c->entities = realloc(c->entities, sizeof(entity_t *) * c->length);
+            }
+        }
+    }
+}
+
+void game_entities_enemies_push(entity_t * e) {
+    game_entities_push(&game_entities_enemies, e);
+}
+
+void game_entities_enemies_pop(entity_t * e) {
+    game_entities_pop(&game_entities_enemies, e);
+}
+
+void game_entities_friendly_push(entity_t * e) {
+    game_entities_push(&game_entities_enemies, e);
+}
+
+void game_entities_friendly_pop(entity_t * e) {
+    game_entities_pop(&game_entities_enemies, e);
+}
+
 void game_init(int map_index) {
 
     // probably for reloads
