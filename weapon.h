@@ -8,6 +8,13 @@
 #include "math.h"
 #include "model.h"
 
+typedef enum {
+    WEAPON_SHOTGUN,
+    WEAPON_NAILGUN,
+    WEAPON_GRENADELAUNCHER,
+    WEAPON_END
+} weapon_type_t;
+
 typedef struct {
     bool _needs_ammo;
     vec3_t _projectile_offset;
@@ -23,5 +30,9 @@ typedef struct {
     void (*_shoot)(void * w, vec3_t pos, float yaw, float pitch);
     void (*_spawn_projectile)(void * w, vec3_t pos, float yaw, float pitch);
 } weapon_t;
+
+weapon_t weapon_shotgun_constructor();
+weapon_t weapon_nailgun_constructor();
+weapon_t weapon_grenadelauncher_constructor();
 
 #endif

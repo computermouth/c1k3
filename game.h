@@ -7,6 +7,7 @@
 
 extern float game_tick;
 extern float game_time;
+extern entity_collection_t game_entities;
 extern entity_ref_collection_t game_entities_friendly;
 extern entity_ref_collection_t game_entities_enemies;
 extern entity_t * game_entity_player;
@@ -21,5 +22,6 @@ entity_t * game_spawn (void (*func)(entity_t *, vec3_t, uint8_t, uint8_t), vec3_
 void game_run(float time_now);
 void game_show_message(char *txt);
 void title_show_message(char *txt, char *sub);
+void game_next_level();
 
 #endif

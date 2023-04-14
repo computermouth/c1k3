@@ -11,7 +11,22 @@
 #include "render.h"
 #include "entity.h"
 #include "entity_player.h"
+#include "entity_enemy_grunt.h"
+#include "entity_enemy_enforcer.h"
+#include "entity_enemy_ogre.h"
+#include "entity_enemy_zombie.h"
+#include "entity_enemy_hound.h"
+#include "entity_pickup_nailgun.h"
+#include "entity_pickup_grenadelauncher.h"
+#include "entity_pickup_health.h"
+#include "entity_pickup_nails.h"
+#include "entity_pickup_grenades.h"
+#include "entity_barrel.h"
 #include "entity_light.h"
+#include "entity_trigger_level.h"
+#include "entity_door.h"
+#include "entity_pickup_key.h"
+#include "entity_torch.h"
 
 map_t * map;
 map_collection_t map_data = { 0 };
@@ -99,25 +114,26 @@ void map_init (map_t * m) {
     // todo, should this just be an index into a global map_collection_t?
     map = m;
 
+    // backup -- entity_constructor
     // Entity Id to class - must be consistent with map_packer.c line ~900
     void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
         /* 00 */ entity_player_constructor,
-        /* 01 */ entity_constructor,
-        /* 02 */ entity_constructor,
-        /* 03 */ entity_constructor,
-        /* 04 */ entity_constructor,
-        /* 05 */ entity_constructor,
-        /* 06 */ entity_constructor,
-        /* 07 */ entity_constructor,
-        /* 08 */ entity_constructor,
-        /* 09 */ entity_constructor,
-        /* 10 */ entity_constructor,
-        /* 11 */ entity_constructor,
+        /* 01 */ entity_enemy_grunt_constructor,
+        /* 02 */ entity_enemy_enforcer_constructor,
+        /* 03 */ entity_enemy_ogre_constructor,
+        /* 04 */ entity_enemy_zombie_constructor,
+        /* 05 */ entity_enemy_hound_constructor,
+        /* 06 */ entity_pickup_nailgun_constructor,
+        /* 07 */ entity_pickup_grenadelauncher_constructor,
+        /* 08 */ entity_pickup_health_constructor,
+        /* 09 */ entity_pickup_nails_constructor,
+        /* 10 */ entity_pickup_grenades_constructor,
+        /* 11 */ entity_barrel_constructor,
         /* 12 */ entity_light_constructor,
-        /* 13 */ entity_constructor,
-        /* 14 */ entity_constructor,
-        /* 15 */ entity_constructor,
-        /* 16 */ entity_constructor,
+        /* 13 */ entity_trigger_level_constructor,
+        /* 14 */ entity_door_constructor,
+        /* 15 */ entity_pickup_key_constructor,
+        /* 16 */ entity_torch_constructor,
     };
 
     for (uint32_t i = 0; i < map->e_size;) {
@@ -148,6 +164,8 @@ uint32_t map_block_at(uint32_t x, uint32_t y, uint32_t z) {
         ] & (1 << (x & 7));
 }
 
+// todo, investigate if this should modify a
+// it shouldn't, return bool, and don't modify a or b
 vec3_t * map_trace(vec3_t * a, vec3_t * b) {
     vec3_t diff = vec3_sub(*a, *b);
     vec3_t step_dir = vec3_mulf(vec3_normalize(diff), 16);

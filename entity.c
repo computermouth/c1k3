@@ -12,6 +12,19 @@
 
 uint32_t no_idea_placeholder[] = {0};
 
+animation_t default_anim[] = {
+    {
+        .frames = (uint32_t[]){ 0 },
+        .num_frames = 1,
+        .time = 1,
+    }
+};
+
+animation_collection_t default_anim_collection = {
+    .animations = default_anim,
+    .num_animations = 1,
+};
+
 void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
 
     e->p = pos;
@@ -22,20 +35,37 @@ void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_health = 50;
     e->_gravity = 1;
     // todo, maybe??? e->_anim
-    e->_anim_time = randf();
+    e->_animation_collection = default_anim_collection;
+    e->_anim = &(default_anim_collection.animations[0]);
+    // e->_anim_time = randf();
+    e->_anim_time = 0.696969;
+
+    // todo, I hate this
+    e->_STATE_IDLE = -1;
+    e->_STATE_PATROL = -1;
+    e->_STATE_FOLLOW = -1;
+    e->_STATE_ATTACK_RECOVER = -1;
+    e->_STATE_ATTACK_EXEC = -1;
+    e->_STATE_ATTACK_PREPARE = -1;
+    e->_STATE_ATTACK_AIM = -1;
+    e->_STATE_EVADE = -1;
 
     // todo, rename, f_init?
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_init;
     e->_update = (void (*)(void *))entity_update;
     e->_update_physics = (void (*)(void *))entity_update_physics;
     e->_collides = (bool (*)(void * e, vec3_t p))entity_collides;
-    e->_did_collide = (void (*)(int axis))entity_did_collide;
+    e->_did_collide = (void (*)(void * e, int axis))entity_did_collide;
     e->_did_collide_with_entity = (void (*)(void * e, void * other))entity_did_collide_with_entity;
     e->_draw_model = (void (*)(void * e))entity_draw_model;
     e->_spawn_particles = (void (*)(void * e, int amount, int speed, model_t * model, int texture, float lifetime))entity_spawn_particles;
     e->_receive_damage = (void (*)(void * e, void * from, int32_t amount))entity_receive_damage;
     e->_play_sound = (void (*)(void * e, void * sound))entity_play_sound;
     e->_kill = (void (*)(void * e))entity_kill;
+    e->_pickup = (void (*)(void * e))entity_pickup;
+    e->_set_state = (void (*)(void * e, uint32_t state))entity_set_state;
+    e->_spawn_projectile = (void * (*)(void * e, void (*)(void *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset))entity_pickup;
+    e->_attack = (void (*)(void * e))entity_attack;
 
     entity_init(e, 0, 0);
 }
@@ -104,7 +134,7 @@ void entity_update_physics(entity_t * e) {
                 !e->_step_height || !e->_on_ground || e->v.y > 0 ||
                 e->_collides(e, vec3(e->p.x, lp.y + e->_step_height, lp.z))
             ) {
-                e->_did_collide(0);
+                e->_did_collide(e, 0);
                 e->p.x = lp.x;
                 e->v.x = -(e->v.x) * e->_bounciness;
             } else {
@@ -122,7 +152,7 @@ void entity_update_physics(entity_t * e) {
                 !e->_step_height || !e->_on_ground || e->v.y > 0 ||
                 e->_collides(e, vec3(e->p.x, lp.y+e->_step_height, e->p.z))
             ) {
-                e->_did_collide(2);
+                e->_did_collide(e, 2);
                 e->p.z = lp.z;
                 e->v.z = -(e->v.z) * e->_bounciness;
             } else {
@@ -136,7 +166,7 @@ void entity_update_physics(entity_t * e) {
 
         // Collision with ground/Ceiling
         if (e->_collides(e, e->p)) {
-            e->_did_collide(1);
+            e->_did_collide(e, 1);
             e->p.y = lp.y;
 
             // Only bounce from ground/ceiling if we have enough velocity
@@ -182,17 +212,18 @@ bool entity_collides(entity_t * e, vec3_t p) {
     return map_block_at_box(vec3_sub(p, e->s), vec3_add(p, e->s));
 }
 
-void entity_did_collide(int axis) {}
+void entity_did_collide(entity_t * e, int axis) {}
 
 void entity_did_collide_with_entity(entity_t * e, entity_t * other) {}
 
 void entity_draw_model(entity_t * e) {
     e->_anim_time += game_tick;
+
     // Calculate which frames to use and how to mix them
-    float f = e->_anim_time / (float)e->_anim.time;
+    float f = e->_anim_time / (float)e->_anim->time;
     float mix = f - floorf(f);
-    uint32_t frame_cur = e->_anim.frames[(int32_t)f % e->_anim.num_frames];
-    uint32_t frame_next = e->_anim.frames[(1 + (int32_t)f) % e->_anim.num_frames];
+    uint32_t frame_cur = e->_anim->frames[(int32_t)f % e->_anim->num_frames];
+    uint32_t frame_next = e->_anim->frames[(1 + (int32_t)f) % e->_anim->num_frames];
 
     // Swap frames if we're looping to the first frame again
     if (frame_next < frame_cur) {
@@ -248,4 +279,11 @@ void entity_play_sound(entity_t * e, void * sound) {
 
 void entity_kill(entity_t * e) {
     e->_dead = 1;
+}
+
+void entity_pickup(entity_t * e) {}
+void entity_set_state(entity_t * e, uint32_t state) {}
+void entity_attack(entity_t * e) {}
+entity_t * entity_spawn_projectile(entity_t * e, void (*func)(entity_t *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset) {
+    return NULL;
 }
