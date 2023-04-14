@@ -31,7 +31,7 @@ char * SHADER_FRAG =
     ;
 
 // 8 properties per vert [x,y,z, u,v, nx,ny,nz]
-float r_buffer[R_MAX_VERTS*8];
+float r_buffer[R_MAX_VERTS*8] = {0};
 int r_num_verts = 0;
 
 // 2 vec3 per light [(x,y,z), [r,g,b], ...]
@@ -204,11 +204,10 @@ void r_draw(draw_call_t call) {
 }
 
 void r_submit_buffer() {
-    glBufferData(GL_ARRAY_BUFFER, R_MAX_VERTS*8 * sizeof(float), r_buffer, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, r_num_verts*8 * sizeof(float), r_buffer, GL_STATIC_DRAW);
 }
 
 void r_push_vert(vec3_t pos, vec3_t normal, float u, float v) {
-
     // todo, memcpy?
     r_buffer[r_num_verts*8 + 0] = pos.x;
     r_buffer[r_num_verts*8 + 1] = pos.y;

@@ -45,9 +45,7 @@ void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_check_against = ENTITY_GROUP_ENEMY;
 
     // todo, e->_weapons = [new weapon_shotgun_t];
-    e->_weapons[0] = (weapon_t) {
-        0
-    };
+    e->_weapons[0] = weapon_shotgun_constructor();
     e->_weapons[1] = (weapon_t) {
         0
     };
@@ -100,27 +98,27 @@ void entity_player_update(entity_t * e) {
     		this._weapon_index = (
     			this._weapon_index + keys[key_next] + this._weapons.length - keys[key_prev]
     		) % this._weapons.length;
-
-    		let shoot_wait = this._can_shoot_at - game_time,
-    			weapon = this._weapons[this._weapon_index];
-
-    		// Shoot Weapon
-    		if (keys[key_action] && shoot_wait < 0) {
-    			this._can_shoot_at = game_time + weapon._reload;
-
-    			if (weapon._needs_ammo && weapon._ammo == 0) {
-    				audio_play(sfx_no_ammo);
-    			}
-    			else {
-    				weapon._shoot(this.p, this._yaw, this._pitch);
-    				game_spawn(entity_light_t, this.p, 10, 0xff)._die_at = game_time + 0.1;
-    			}
-    		}
-
-    		this._bob += vec3_length(this.a) * 0.0001;
-    		this.f = this._on_ground ? 10 : 2.5;
-    		this._update_physics();
     */
+    float shoot_wait = e->_can_shoot_at - game_time;
+    weapon_t * weapon = &(e->_weapons[e->_weapon_index]);
+    /*
+        		// Shoot Weapon
+        		if (keys[key_action] && shoot_wait < 0) {
+        			this._can_shoot_at = game_time + weapon._reload;
+
+        			if (weapon._needs_ammo && weapon._ammo == 0) {
+        				audio_play(sfx_no_ammo);
+        			}
+        			else {
+        				weapon._shoot(this.p, this._yaw, this._pitch);
+        				game_spawn(entity_light_t, this.p, 10, 0xff)._die_at = game_time + 0.1;
+        			}
+        		}
+
+        		this._bob += vec3_length(this.a) * 0.0001;
+        		this.f = this._on_ground ? 10 : 2.5;
+        		this._update_physics();
+        */
     r_camera.x = e->p.x;
     r_camera.z = e->p.z;
 
@@ -129,29 +127,36 @@ void entity_player_update(entity_t * e) {
 
     r_camera_yaw = e->_yaw;
     r_camera_pitch = e->_pitch;
+
+    // Draw weapon at camera position at an offset and add the current
+    // recoil (calculated from shoot_wait and weapon._reload) accounting
+    // for the current view yaw/pitch
+
+    draw_call_t d = {
+        .pos = vec3_add(
+            r_camera,
+            vec3_rotate_yaw_pitch(
+                vec3(
+                    0,
+                    -10 + sinf(e->_bob)*0.3,
+                    12 + clamp(scale(shoot_wait, 0, weapon->_reload, 5, 0), 0, 5)
+                ),
+                e->_yaw, e->_pitch
+            )
+        ),
+        .yaw = e->_yaw + PI / 2.0f,
+        .pitch = e->_pitch,
+        .texture = weapon->_texture,
+        .f1 = weapon->_model->frames[0],
+        .f2 = weapon->_model->frames[0],
+        .mix = 0,
+        .num_verts = weapon->_model->nv
+    };
+
+    r_draw(d);
+
     /*
-
-    		// Draw weapon at camera position at an offset and add the current
-    		// recoil (calculated from shoot_wait and weapon._reload) accounting
-    		// for the current view yaw/pitch
-
-    		r_draw(
-    			vec3_add(
-    				r_camera,
-    				vec3_rotate_yaw_pitch(
-    					vec3(
-    						0,
-    						-10 + Math.sin(this._bob)*0.3,
-    						12 + clamp(scale(shoot_wait, 0, weapon._reload, 5, 0), 0, 5)
-    					),
-    					this._yaw, this._pitch
-    				)
-    			),
-    			this._yaw + Math.PI/2, this._pitch,
-    			weapon._texture, weapon._model.f[0], weapon._model.f[0], 0,
-    			weapon._model.nv
-    		);
-
+    		// todo, text
     		h.textContent = this._health|0;
     		a.textContent = weapon._needs_ammo ? weapon._ammo : '∞';
 
