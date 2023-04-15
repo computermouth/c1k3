@@ -6,10 +6,10 @@ INT_H   = data.h entity_barrel.h entity.h entity_door.h entity_enemy.h entity_en
 TST_SRC = tests/test.c
 
 all:
-	clang -Wall -g -I/usr/include/ $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 -lSDL2
+	clang -Wall -g $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 -lSDL2
 
 release:
-	clang -Os -flto -Wall $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 -lSDL2
+	clang -Os -flto -Wall $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 -lSDL2
 	strip main
 
 memtest:

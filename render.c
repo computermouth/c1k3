@@ -83,8 +83,7 @@ GLuint r_compile_shader(GLenum type, char* source) {
 GLint r_vertex_attrib(GLuint shader_program, const GLchar *attrib_name, int count, int vertex_size, long int offset) {
     GLint location = glGetAttribLocation(shader_program, attrib_name);
     glEnableVertexAttribArray(location);
-    // todo, fukt?
-    glVertexAttribPointer(location, count, GL_FLOAT, GL_FALSE, vertex_size * 4, (void *)(offset * 4));
+    glVertexAttribPointer(location, count, GL_FLOAT, GL_FALSE, vertex_size*4,(void *)(offset * 4));
     return location;
 }
 
@@ -105,7 +104,6 @@ void r_init() {
     r_u_rotation = glGetUniformLocation(shader_program, "mr");
     r_u_frame_mix = glGetUniformLocation(shader_program, "f");
 
-    // todo, fukt?
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 
@@ -204,7 +202,7 @@ void r_draw(draw_call_t call) {
 }
 
 void r_submit_buffer() {
-    glBufferData(GL_ARRAY_BUFFER, r_num_verts*8 * sizeof(float), r_buffer, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, r_num_verts * 8 * sizeof(float), r_buffer, GL_STATIC_DRAW);
 }
 
 void r_push_vert(vec3_t pos, vec3_t normal, float u, float v) {
