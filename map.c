@@ -116,7 +116,7 @@ void map_init (map_t * m) {
 
     // backup -- entity_constructor
     // Entity Id to class - must be consistent with map_packer.c line ~900
-    void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
+    void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = {
         /* 00 */ entity_player_constructor,
         /* 01 */ entity_enemy_grunt_constructor,
         /* 02 */ entity_enemy_enforcer_constructor,
@@ -135,6 +135,25 @@ void map_init (map_t * m) {
         /* 15 */ entity_pickup_key_constructor,
         /* 16 */ entity_torch_constructor,
     };
+//    void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
+//        /* 00 */ entity_player_constructor,
+//        /* 01 */ entity_constructor,
+//        /* 02 */ entity_constructor,
+//        /* 03 */ entity_constructor,
+//        /* 04 */ entity_constructor,
+//        /* 05 */ entity_constructor,
+//        /* 06 */ entity_constructor,
+//        /* 07 */ entity_constructor,
+//        /* 08 */ entity_constructor,
+//        /* 09 */ entity_constructor,
+//        /* 10 */ entity_constructor,
+//        /* 11 */ entity_constructor,
+//        /* 12 */ entity_light_constructor,
+//        /* 13 */ entity_constructor,
+//        /* 14 */ entity_constructor,
+//        /* 15 */ entity_constructor,
+//        /* 16 */ entity_constructor,
+//    };
 
     for (uint32_t i = 0; i < map->e_size;) {
         void (*func)(entity_t *, vec3_t, uint8_t, uint8_t) = spawn_class[map->e[i++]];
