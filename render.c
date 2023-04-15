@@ -1,3 +1,4 @@
+#include <GLES2/gl2.h>
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -35,7 +36,7 @@ float r_buffer[R_MAX_VERTS*8] = {0};
 int r_num_verts = 0;
 
 // 2 vec3 per light [(x,y,z), [r,g,b], ...]
-float r_light_buffer[R_MAX_LIGHT_V3*3];
+float r_light_buffer[R_MAX_LIGHT_V3*3] = {0};
 uint32_t r_num_lights = 0;
 
 // Uniform locations
@@ -62,7 +63,7 @@ GLfloat r_camera_yaw = 0;
 // We collect all draw calls in an array and draw them all at once at the end
 // the frame. This way the lights buffer will be completely filled and we
 // only need to set it once for all geometry
-draw_call_t * r_draw_calls;
+draw_call_t * r_draw_calls = NULL;
 uint32_t r_num_draw_calls = 0;
 
 GLuint r_compile_shader(GLenum type, char* source) {
@@ -113,7 +114,7 @@ void r_init() {
     r_vertex_attrib(shader_program, "n", 3, 8, 5);
 
     r_va_p2 = r_vertex_attrib(shader_program, "p2", 3, 8, 0);
-    r_va_p2 = r_vertex_attrib(shader_program, "n2", 3, 8, 5);
+    r_va_n2 = r_vertex_attrib(shader_program, "n2", 3, 8, 5);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -167,8 +168,7 @@ void r_prepare_frame(float r, float g, float b) {
 void r_end_frame() {
     glUniform4f(r_u_camera, r_camera.x, r_camera.y, r_camera.z, 16.0f/9.0f);
     glUniform2f(r_u_mouse, r_camera_yaw, r_camera_pitch);
-    // todo, fukt?
-    glUniform3fv(r_u_lights, R_MAX_LIGHT_V3*3, r_light_buffer);
+    glUniform3fv(r_u_lights, r_num_lights * 6, r_light_buffer);
 
     long int vo = 0;
     int last_texture = -1;

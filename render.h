@@ -32,7 +32,6 @@ typedef struct {
 extern draw_call_t * r_draw_calls;
 extern meta_tex_t * r_textures;
 extern int r_num_verts;
-extern draw_call_t * r_draw_calls;
 extern vec3_t r_camera;
 extern GLfloat r_camera_pitch;
 extern GLfloat r_camera_yaw;
