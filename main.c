@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include "data.h"
+#include "input.h"
 #include "render.h"
 #include "map.h"
 #include "model.h"
@@ -262,10 +263,11 @@ int main() {
     // SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");
     SDL_Window* window = SDL_CreateWindow("c1k3",
                                           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                          320, 180,
+                                          // 320, 180,
+                                          960, 540,
                                           SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     SDL_GL_CreateContext(window);
-    SDL_GL_SetSwapInterval(0);
+    // SDL_GL_SetSwapInterval(0);
     // todo, vsync?
     //   SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
     //   SDL_Texture * target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
@@ -280,13 +282,6 @@ int main() {
     int newtime = t;
     int frames = 0;
 
-    typedef enum {
-        MENU_STATE,
-        GAME_STATE
-    } state_t;
-
-    state_t state = MENU_STATE;
-
     while (1) {
         frames++;
         time(&t);
@@ -296,20 +291,25 @@ int main() {
             oldtime = newtime;
             frames = 0;
         }
-        SDL_Event e;
-        while(SDL_PollEvent(&e))
-        {
-            if(e.type == SDL_QUIT)
-                goto jump;
-            if(state == MENU_STATE && e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_LEFT) {
-                state = GAME_STATE;
-                game_init(0);
-            }
+
+        input_consume();
+
+        if (input_quit)
+            goto jump;
+
+        if(game_state == MENU_STATE && keys[KEY_ACTION] ) {
+            game_state = GAME_STATE;
+            game_init(0);
+            mouse_x = 0.0f;
+            mouse_y = 0.0f;
+            keys[KEY_NEXT] = 0;
+            keys[KEY_PREV] = 0;
         }
+
         // perform based on state
         // move event handling into update loop
         // todo, move
-        if (state == GAME_STATE)
+        if (game_state == GAME_STATE)
             game_run(SDL_GetTicks()); // time in ms since page load?
         else
             menu_run(SDL_GetTicks());

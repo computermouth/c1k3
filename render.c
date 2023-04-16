@@ -118,7 +118,8 @@ void r_init() {
     glEnable(GL_BLEND);
     glEnable(GL_CULL_FACE);
     // todo, window dimensions??
-    glViewport(0, 0, 320, 180);
+    // glViewport(0, 0, 320, 180);
+    glViewport(0, 0, 960, 540);
 
 }
 

@@ -9,6 +9,8 @@
 #include "render.h"
 #include "input.h"
 
+
+state_t game_state = MENU_STATE;
 float game_tick = 0.0f;
 float game_time = 0.016f;
 float game_real_time_last = 0;
@@ -136,12 +138,11 @@ void game_run(float time_now) {
     map_draw();
     r_end_frame();
 
+    // reset mouse movement and buttons that can't be held
     mouse_x = 0.0f;
     mouse_y = 0.0f;
-
-    // todo, keymap stuff
-    // keys[key_next] = 0;
-    // keys[keys_prev] = 0;
+    keys[KEY_NEXT] = 0;
+    keys[KEY_PREV] = 0;
 
     if (game_jump_to_next_level) {
         game_jump_to_next_level = 0;

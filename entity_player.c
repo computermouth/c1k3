@@ -11,6 +11,7 @@
 #include "render.h"
 #include "game.h"
 #include "weapon.h"
+#include "input.h"
 
 void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_player_update(entity_t * e);
@@ -72,33 +73,33 @@ void entity_player_update(entity_t * e) {
     e->_yaw = fmodf((e->_yaw + mouse_x * mouse_speed * 0.00015), PI * 2);
 
     // big todo, needs input.c
-    /*
-    		// Acceleration in movement direction
-    		this.a = vec3_mulf(
-    			vec3_rotate_y(
-    				vec3(
-    					keys[key_right] - keys[key_left],
-    					0,
-    					keys[key_up] - keys[key_down]
-    				),
-    				this._yaw
-    			),
-    			this._speed * (this._on_ground ? 1 : 0.3)
-    		);
+    // Acceleration in movement direction
+    e->a = vec3_mulf(
+               vec3_rotate_y(
+                   vec3(
+                       keys[KEY_RIGHT] - keys[KEY_LEFT],
+                       0,
+                       keys[KEY_UP] - keys[KEY_DOWN]
+                   ),
+                   e->_yaw
+               ),
+               e->_speed * (e->_on_ground ? 1 : 0.3)
+           );
 
-    		if (keys[key_jump] && this._on_ground && this._can_jump) {
-    			this.v.y = 400;
-    			this._on_ground = 0;
-    			this._can_jump = 0;
-    		}
-    		if (!keys[key_jump]) {
-    			this._can_jump = 1;
-    		}
+    if (keys[KEY_JUMP] && e->_on_ground && e->_can_jump) {
+        e->v.y = 400;
+        e->_on_ground = 0;
+        e->_can_jump = 0;
+    }
+    if (!keys[KEY_JUMP]) {
+        e->_can_jump = 1;
+    }
 
-    		this._weapon_index = (
-    			this._weapon_index + keys[key_next] + this._weapons.length - keys[key_prev]
-    		) % this._weapons.length;
-    */
+    int num_weapons = 3;
+    e->_weapon_index = (
+                           e->_weapon_index + keys[KEY_NEXT] + num_weapons - keys[KEY_PREV]
+                       ) % num_weapons; // num_weapons
+
     float shoot_wait = e->_can_shoot_at - game_time;
     weapon_t * weapon = &(e->_weapons[e->_weapon_index]);
     /*

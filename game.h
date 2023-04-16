@@ -5,6 +5,12 @@
 #include "entity.h"
 #include <stdint.h>
 
+typedef enum {
+    MENU_STATE,
+    GAME_STATE
+} state_t;
+
+extern state_t game_state;
 extern float game_tick;
 extern float game_time;
 extern entity_collection_t game_entities;
