@@ -5,18 +5,27 @@
 #include "game.h"
 #include "model.h"
 #include "weapon.h"
+#include "entity_projectile_shell.h"
+#include "entity_projectile_nail.h"
+#include "entity_projectile_grenade.h"
 
+void weapon_init(weapon_t * w);
 void weapon_shoot(weapon_t * w, vec3_t pos, float yaw, float pitch);
 void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch);
 
 weapon_t weapon_constructor() {
-    weapon_t w = {
-        ._needs_ammo = 1,
-        ._projectile_offset = (vec3_t){0},
-        ._init = NULL,
-    };
+    weapon_t w = {0};
+    w._needs_ammo = 1;
+    w._projectile_offset = (vec3_t){0};
+    w._init = (void (*)(void * w))weapon_init;
+    w._shoot = (void (*)(void * w, vec3_t pos, float yaw, float pitch))weapon_shoot;
+    w._spawn_projectile = (void (*)(void * w, vec3_t pos, float yaw, float pitch))weapon_spawn_projectile;
+    
+    weapon_init(&w);
     return w;
 }
+
+void weapon_init(weapon_t * w){}
 
 void weapon_shoot(weapon_t * w, vec3_t pos, float yaw, float pitch) {
     if (w->_needs_ammo)
@@ -75,8 +84,9 @@ void weapon_shotgun_init(weapon_t * w) {
     w->_model = &model_shotgun;
     w->_sound = NULL; // todo, sound
     w->_needs_ammo = 0;
-    w->_reload = 0.9f;
-    w->_projectile_type = NULL; // todo, entity_projectile_shell_constructor
+    // w->_reload = 0.9f;
+    w->_reload = 0.01f;
+    w->_projectile_type = (void (*)(void * e, vec3_t pos, uint8_t p1, uint8_t p2))entity_projectile_shell_constructor;
     w->_projectile_speed = 10000;
 }
 
@@ -106,7 +116,7 @@ void weapon_nailgun_init(weapon_t * w) {
     // todo, w->_sound = sfx_nailgun_shoot;
     w->_ammo = 100;
     w->_reload = 0.09;
-    // todo, w->_projectile_type = entity_projectile_nail_t;
+    w->_projectile_type = (void (*)(void * e, vec3_t pos, uint8_t p1, uint8_t p2))entity_projectile_nail_constructor;
     w->_projectile_speed = 1300;
     w->_projectile_offset = vec3(6,0,8);
 }
@@ -128,6 +138,6 @@ void weapon_grenadelauncher_init(weapon_t * w) {
     // todo, w->_sound = sfx_grenade_shoot;
     w->_ammo = 10;
     w->_reload = 0.650;
-    // todo w->_projectile_type = entity_projectile_grenade_t;
+    w->_projectile_type = (void (*)(void * e, vec3_t pos, uint8_t p1, uint8_t p2))entity_projectile_grenade_constructor;
     w->_projectile_speed = 900;
 }
