@@ -30,7 +30,7 @@ extern map_collection_t map_data;
 
 map_collection_t map_load_container();
 void map_init (map_t * m);
-uint32_t map_block_at(uint32_t x, uint32_t y, uint32_t z);
+uint8_t map_block_at(uint32_t x, uint32_t y, uint32_t z);
 int map_block_at_box(vec3_t box_start, vec3_t box_end);
 void map_draw();
 vec3_t * map_trace(vec3_t * a, vec3_t * b);

@@ -135,25 +135,25 @@ void map_init (map_t * m) {
         /* 15 */ entity_pickup_key_constructor,
         /* 16 */ entity_torch_constructor,
     };
-//    void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
-//        /* 00 */ entity_player_constructor,
-//        /* 01 */ entity_constructor,
-//        /* 02 */ entity_constructor,
-//        /* 03 */ entity_constructor,
-//        /* 04 */ entity_constructor,
-//        /* 05 */ entity_constructor,
-//        /* 06 */ entity_constructor,
-//        /* 07 */ entity_constructor,
-//        /* 08 */ entity_constructor,
-//        /* 09 */ entity_constructor,
-//        /* 10 */ entity_constructor,
-//        /* 11 */ entity_constructor,
-//        /* 12 */ entity_light_constructor,
-//        /* 13 */ entity_constructor,
-//        /* 14 */ entity_constructor,
-//        /* 15 */ entity_constructor,
-//        /* 16 */ entity_constructor,
-//    };
+   // void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
+   //     /* 00 */ entity_player_constructor,
+   //     /* 01 */ entity_constructor,
+   //     /* 02 */ entity_constructor,
+   //     /* 03 */ entity_constructor,
+   //     /* 04 */ entity_constructor,
+   //     /* 05 */ entity_constructor,
+   //     /* 06 */ entity_constructor,
+   //     /* 07 */ entity_constructor,
+   //     /* 08 */ entity_constructor,
+   //     /* 09 */ entity_constructor,
+   //     /* 10 */ entity_constructor,
+   //     /* 11 */ entity_constructor,
+   //     /* 12 */ entity_light_constructor,
+   //     /* 13 */ entity_constructor,
+   //     /* 14 */ entity_constructor,
+   //     /* 15 */ entity_constructor,
+   //     /* 16 */ entity_constructor,
+   // };
 
     for (uint32_t i = 0; i < map->e_size;) {
         void (*func)(entity_t *, vec3_t, uint8_t, uint8_t) = spawn_class[map->e[i++]];
@@ -173,7 +173,7 @@ void map_init (map_t * m) {
     }
 }
 
-uint32_t map_block_at(uint32_t x, uint32_t y, uint32_t z) {
+uint8_t map_block_at(uint32_t x, uint32_t y, uint32_t z) {
     return map->cm[
                (
                    z * map_size * map_size +
@@ -201,9 +201,19 @@ vec3_t * map_trace(vec3_t * a, vec3_t * b) {
 }
 
 int map_block_at_box(vec3_t box_start, vec3_t box_end) {
-    for (int32_t z = (int32_t)(box_start.z) >> 5; z <= (int32_t)(box_end.z) >> 5; z++) {
-        for (int32_t y = (int32_t)(box_start.y) >> 4; y <= (int32_t)(box_end.y) >> 4; y++) {
-            for (int32_t x = (int32_t)(box_start.x) >> 5; x <= (int32_t)(box_end.x) >> 5; x++) {
+    // because valgrind thinks these are uninitialized
+    // if we just cast from floats inline in the loops
+    int32_t bsx = (int32_t)(box_start.x) >> 5;
+    int32_t bsy = (int32_t)(box_start.y) >> 4;
+    int32_t bsz = (int32_t)(box_start.z) >> 5;
+    
+    int32_t bex = (int32_t)(box_end.x) >> 5;
+    int32_t bey = (int32_t)(box_end.y) >> 4;
+    int32_t bez = (int32_t)(box_end.z) >> 5;
+    
+    for (int32_t z = bsz; z <= bez; z++) {
+        for (int32_t y = bsy; y <= bey; y++) {
+            for (int32_t x = bsx; x <= bex; x++) {
                 if (map_block_at(x, y, z)) {
                     return 1;
                 }
