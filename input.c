@@ -3,6 +3,7 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_video.h>
 
 #include "input.h"
 #include "game.h"
@@ -95,6 +96,16 @@ void input_consume() {
                 break;
             }
         }
+        if(e.type == SDL_MOUSEBUTTONUP) {
+            switch (e.button.button) {
+            case SDL_BUTTON_LEFT:
+                keys[KEY_ACTION] = 0;
+                break;
+            case SDL_BUTTON_RIGHT:
+                keys[KEY_ACTION + 1] = 0;
+                break;
+            }
+        }
         if(e.type == SDL_MOUSEWHEEL) {
             if (e.wheel.y > 0) { // up
                 keys[KEY_PREV] = 1;
@@ -103,9 +114,14 @@ void input_consume() {
                 keys[KEY_NEXT] = 1;
             }
         }
-        if(e.type == SDL_MOUSEMOTION) {
+        if(e.type == SDL_MOUSEMOTION && SDL_GetRelativeMouseMode() == true) {
             mouse_x += e.motion.xrel;
             mouse_y += e.motion.yrel;
+        }
+        if(e.type == SDL_WINDOWEVENT){
+            if(e.window.event == SDL_WINDOWEVENT_FOCUS_LOST && SDL_GetRelativeMouseMode() == true) {
+                SDL_SetRelativeMouseMode(false);
+            }
         }
     }
 
