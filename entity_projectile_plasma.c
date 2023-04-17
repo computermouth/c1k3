@@ -29,6 +29,7 @@ void entity_projectile_plasma_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_texture = 21;
     e->_model = &model_nail;
     e->_gravity = 0;
+    e->_expires = true;
     e->_die_at = game_time + 3;
 }
 
@@ -43,6 +44,7 @@ void entity_projectile_plasma_did_collide(entity_t * e, int axis) {
     // todo, e->_play_sound(sfx_nailgun_hit);
     e->_spawn_particles(e, 2, 80, &model_explosion, 8, 0.4);
     entity_t * tmp_light = game_spawn(entity_light_constructor, vec3_add(e->p, vec3(0,10,0)), 5, 0xf5);
+    tmp_light->_expires = true;
     tmp_light->_die_at = game_time + 0.1;
 }
 

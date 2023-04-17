@@ -27,6 +27,7 @@ void entity_door_init(entity_t * e, uint8_t texture, uint8_t dir) {
     e->_reset_state_at = 0;
     e->_yaw = (float)dir * PI/2.0f;
     e->_open = 0;
+    e->_group = ENTITY_GROUP_ALL;
 
     // Map 1 only has one door and it needs a key. Should be a flag
     // in the entity data instead :/

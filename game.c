@@ -1,5 +1,6 @@
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "entity.h"
@@ -115,20 +116,46 @@ void title_show_message(char *txt, char *sub) {
 void game_run(float time_now) {
 
     time_now *= 0.001f;
-    // todo, sospechoso
-    game_tick = min((time_now - (game_real_time_last||time_now)), 0.05f);
+    // todo, sospechoso, not sure what this was for
+    // game_tick = min((time_now - (game_real_time_last||time_now)), 0.05f);
+    game_tick = (time_now - (game_real_time_last));
     game_real_time_last = time_now;
     game_time += game_tick;
 
     r_prepare_frame(0.1, 0.2, 0.5);
     entity_collection_t alive_entities = {0};
+    
+    if (game_entities_friendly.entities != NULL){
+        free(game_entities_friendly.entities);
+        game_entities_friendly = (entity_ref_collection_t) { 0 };
+    }
+    if (game_entities_enemies.entities != NULL){
+        free(game_entities_enemies.entities);
+        game_entities_enemies = (entity_ref_collection_t) { 0 };
+    }
+    
     for (uint32_t i = 0; i < game_entities.length; i++) {
         entity_t * e = &(game_entities.entities[i]);
         if (!e->_dead) {
             e->_update(e);
             alive_entities.length++;
-            alive_entities.entities = realloc(alive_entities.entities, sizeof(entity_t) * alive_entities.length);
+            alive_entities.entities = reallocarray(alive_entities.entities, alive_entities.length, sizeof(entity_t) );
             alive_entities.entities[alive_entities.length - 1] = *e;
+            e = &(alive_entities.entities[alive_entities.length - 1]);
+            switch (e->_group){
+                case ENTITY_GROUP_ENEMY: 
+                    game_entities_enemies_push(e);
+                    break;
+                case ENTITY_GROUP_PLAYER: 
+                    game_entities_friendly_push(e);
+                    break;
+                case ENTITY_GROUP_ALL: 
+                    game_entities_enemies_push(e);
+                    game_entities_friendly_push(e);
+                    break;
+                default:
+                    break;
+            }
         }
     }
     if (game_entities.entities != NULL)

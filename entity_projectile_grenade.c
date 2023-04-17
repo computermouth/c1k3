@@ -32,6 +32,7 @@ void entity_projectile_grenade_constructor(entity_t * e, vec3_t pos, uint8_t p1,
 void entity_projectile_grenade_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_texture = 8;
     e->_model = &model_grenade;
+    e->_expires = true;
     e->_die_at = game_time + 2;
     e->_bounciness = 0.5;
     e->_damage = 120;
@@ -69,5 +70,6 @@ void entity_projectile_grenade_kill(entity_t * e) {
     // todo, e->_play_sound(sfx_grenade_explode);
     e->_spawn_particles(e, 20, 800, &model_explosion, 8, 1);
     entity_t * tmplight = game_spawn(entity_light_constructor, vec3_add(e->p, vec3(0,16,0)), 250, 0x08f);
+    tmplight->_expires = true;
     tmplight->_die_at = game_time + 0.2;
 }

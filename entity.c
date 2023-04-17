@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "game.h"
 #include "entity.h"
@@ -81,7 +82,8 @@ void entity_update(entity_t * e) {
 
 void entity_update_physics(entity_t * e) {
     // todo, move to entity_update?
-    if (e->_expires && e->_die_at < game_tick) {
+    // todo, uncomment and debug mass entity crashes?
+    if (e->_expires && e->_die_at < game_time) {
         e->_kill(e);
     }
 
@@ -250,6 +252,7 @@ void entity_spawn_particles(entity_t * e, int amount, int speed, model_t * model
         entity_t * particle = game_spawn((void (*)(entity_t *, vec3_t, uint8_t, uint8_t))entity_particle_constructor, e->p, 0, 0);
         particle->_model = model;
         particle->_texture = texture;
+        particle->_expires = true;
         particle->_die_at = game_time + lifetime + randf() * lifetime * 0.2;
         particle->v = vec3(
                           (randf() - 0.5) * speed,

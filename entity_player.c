@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "entity.h"
+#include "entity_light.h"
 #include "entity_player.h"
 #include "game.h"
 #include "math.h"
@@ -43,6 +44,7 @@ void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_can_shoot_at = 0.0f;
     e->_health = 100;
 
+    e->_group = ENTITY_GROUP_PLAYER;
     e->_check_against = ENTITY_GROUP_ENEMY;
 
     // todo, e->_weapons = [new weapon_shotgun_t];
@@ -102,24 +104,26 @@ void entity_player_update(entity_t * e) {
 
     float shoot_wait = e->_can_shoot_at - game_time;
     weapon_t * weapon = &(e->_weapons[e->_weapon_index]);
-    /*
-        		// Shoot Weapon
-        		if (keys[key_action] && shoot_wait < 0) {
-        			this._can_shoot_at = game_time + weapon._reload;
 
-        			if (weapon._needs_ammo && weapon._ammo == 0) {
-        				audio_play(sfx_no_ammo);
-        			}
-        			else {
-        				weapon._shoot(this.p, this._yaw, this._pitch);
-        				game_spawn(entity_light_t, this.p, 10, 0xff)._die_at = game_time + 0.1;
-        			}
-        		}
+    // Shoot Weapon
+    if (keys[KEY_ACTION] && shoot_wait < 0) {
+        e->_can_shoot_at = game_time + weapon->_reload;
 
-        		this._bob += vec3_length(this.a) * 0.0001;
-        		this.f = this._on_ground ? 10 : 2.5;
-        		this._update_physics();
-        */
+        if (weapon->_needs_ammo && weapon->_ammo == 0) {
+            // todo, audio_play(sfx_no_ammo);
+        }
+        else {
+            weapon->_shoot(weapon, e->p, e->_yaw, e->_pitch);
+            entity_t * tmp_light = game_spawn(entity_light_constructor, e->p, 10, 0xff);
+            tmp_light->_expires = game_time + 0.1;
+            tmp_light->_die_at = game_time + 0.1;
+        }
+    }
+
+    e->_bob += vec3_length(e->a) * 0.0001;
+    e->f = e->_on_ground ? 10 : 2.5;
+    e->_update_physics(e);
+
     r_camera.x = e->p.x;
     r_camera.z = e->p.z;
 

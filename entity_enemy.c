@@ -114,6 +114,7 @@ void entity_enemy_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
     e->_keep_off_ledges = 1;
     e->_turn_bias = 1;
 
+    e->_group = ENTITY_GROUP_ENEMY;
     e->_check_against = ENTITY_GROUP_PLAYER;
 
     game_entities_enemies_push(e);

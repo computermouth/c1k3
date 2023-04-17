@@ -26,6 +26,7 @@ void entity_projectile_gib_constructor(entity_t * e, vec3_t pos, uint8_t p1, uin
 void entity_projectile_gib_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_texture = 18;
     e->_bounciness = 0;
+    e->_expires = true;
     e->_die_at = game_time + 2;
     e->_model = &model_gib;
 

@@ -37,7 +37,7 @@ void entity_light_update(entity_t * e) {
     uint32_t intensity = e->_light;
 
     // If this light is a temporary one, fade it out over its lifetime
-    if (e->_die_at) {
+    if (e->_expires) {
         if (e->_die_at < game_time) {
             e->_kill(e);
         }

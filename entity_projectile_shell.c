@@ -26,6 +26,7 @@ void entity_projectile_shell_constructor(entity_t * e, vec3_t pos, uint8_t p1, u
 
 void entity_projectile_shell_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_gravity = 0;
+    e->_expires = true;
     e->_die_at = game_time + 0.1;
 }
 
@@ -39,6 +40,7 @@ void entity_projectile_shell_did_collide(entity_t * e, int axis) {
     // todo, change parameter types to float, fuck it
     // entity_t * tmp_light = game_spawn(entity_light_constructor, e->p, 0.5, 0xff);
     entity_t * tmp_light = game_spawn(entity_light_constructor, e->p, 1, 0xff);
+    tmp_light->_expires = true;
     tmp_light->_die_at = game_time + 0.1;
 }
 

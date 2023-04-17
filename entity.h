@@ -46,6 +46,7 @@ typedef enum {
     ENTITY_GROUP_NONE = 0,
     ENTITY_GROUP_PLAYER = 1,
     ENTITY_GROUP_ENEMY = 2,
+    ENTITY_GROUP_ALL = 3,
 } entity_group_t;
 
 typedef struct {
@@ -121,6 +122,7 @@ typedef struct {
     weapon_t _weapons[WEAPON_END];
     weapon_type_t _weapon_index;
 
+    int32_t _group;
     int32_t _check_against;
     void * _check_entities;
     int32_t _stepped_up_at;
