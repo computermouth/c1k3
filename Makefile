@@ -12,8 +12,8 @@ release:
 	clang -Os -flto -Wall $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 -lSDL2
 	strip main
 
-memtest:
-	valgrind --track-origins=yes --leak-check=yes --suppressions=extra/suppressions.valg ./main
+memtest: all
+	valgrind --track-origins=yes --leak-check=yes --gen-suppressions=all --suppressions=extra/suppressions.valg ./main
 
 lint:
 	astyle -n $(MAIN_C) $(INT_SRC) $(INT_H) $(TST_SRC)
