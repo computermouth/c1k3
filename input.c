@@ -118,7 +118,7 @@ void input_consume() {
             mouse_x += e.motion.xrel;
             mouse_y += e.motion.yrel;
         }
-        if(e.type == SDL_WINDOWEVENT){
+        if(e.type == SDL_WINDOWEVENT) {
             if(e.window.event == SDL_WINDOWEVENT_FOCUS_LOST && SDL_GetRelativeMouseMode() == true) {
                 SDL_SetRelativeMouseMode(false);
             }

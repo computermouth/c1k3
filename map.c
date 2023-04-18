@@ -40,13 +40,12 @@ map_collection_t map_load_container() {
         tmp_maps_len++;
         tmp_maps = realloc(tmp_maps, sizeof(map_t) * tmp_maps_len);
 
-
         uint32_t blocks_size = data[i] | (data[i+1] << 8);
         i += 2;
         // uint32_t blocks_size = data[i++] | (data[i++] << 8);
         uint8_t * b = (uint8_t *)&data[i];
         i += blocks_size;
-        uint8_t cm[((map_size * map_size * map_size) >> 3) * sizeof(uint8_t)];
+        uint8_t cm[((map_size * map_size * map_size) >> 3) * sizeof(uint8_t)] = {0};
         // todo, globalize and whatever;
         block_t * r = NULL;
         uint32_t r_size = 0;
@@ -97,6 +96,9 @@ map_collection_t map_load_container() {
         i += e_size;
 
         // todo, gross
+        tmp_maps[tmp_maps_len - 1] = (map_t) {
+            0
+        };
         memcpy(tmp_maps[tmp_maps_len - 1].cm, cm, ((map_size * map_size * map_size) >> 3) * sizeof(uint8_t));
         tmp_maps[tmp_maps_len - 1].e = e;
         tmp_maps[tmp_maps_len - 1].e_size = e_size;
@@ -116,44 +118,44 @@ void map_init (map_t * m) {
 
     // backup -- entity_constructor
     // Entity Id to class - must be consistent with map_packer.c line ~900
-    void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = {
+    // void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = {
+    //     /* 00 */ entity_player_constructor,
+    //     /* 01 */ entity_enemy_grunt_constructor,
+    //     /* 02 */ entity_enemy_enforcer_constructor,
+    //     /* 03 */ entity_enemy_ogre_constructor,
+    //     /* 04 */ entity_enemy_zombie_constructor,
+    //     /* 05 */ entity_enemy_hound_constructor,
+    //     /* 06 */ entity_pickup_nailgun_constructor,
+    //     /* 07 */ entity_pickup_grenadelauncher_constructor,
+    //     /* 08 */ entity_pickup_health_constructor,
+    //     /* 09 */ entity_pickup_nails_constructor,
+    //     /* 10 */ entity_pickup_grenades_constructor,
+    //     /* 11 */ entity_barrel_constructor,
+    //     /* 12 */ entity_light_constructor,
+    //     /* 13 */ entity_trigger_level_constructor,
+    //     /* 14 */ entity_door_constructor,
+    //     /* 15 */ entity_pickup_key_constructor,
+    //     /* 16 */ entity_torch_constructor,
+    // };
+    void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
         /* 00 */ entity_player_constructor,
-        /* 01 */ entity_enemy_grunt_constructor,
-        /* 02 */ entity_enemy_enforcer_constructor,
-        /* 03 */ entity_enemy_ogre_constructor,
-        /* 04 */ entity_enemy_zombie_constructor,
-        /* 05 */ entity_enemy_hound_constructor,
-        /* 06 */ entity_pickup_nailgun_constructor,
-        /* 07 */ entity_pickup_grenadelauncher_constructor,
-        /* 08 */ entity_pickup_health_constructor,
-        /* 09 */ entity_pickup_nails_constructor,
-        /* 10 */ entity_pickup_grenades_constructor,
-        /* 11 */ entity_barrel_constructor,
+        /* 01 */ entity_constructor,
+        /* 02 */ entity_constructor,
+        /* 03 */ entity_constructor,
+        /* 04 */ entity_constructor,
+        /* 05 */ entity_constructor,
+        /* 06 */ entity_constructor,
+        /* 07 */ entity_constructor,
+        /* 08 */ entity_constructor,
+        /* 09 */ entity_constructor,
+        /* 10 */ entity_constructor,
+        /* 11 */ entity_constructor,
         /* 12 */ entity_light_constructor,
-        /* 13 */ entity_trigger_level_constructor,
-        /* 14 */ entity_door_constructor,
-        /* 15 */ entity_pickup_key_constructor,
-        /* 16 */ entity_torch_constructor,
+        /* 13 */ entity_constructor,
+        /* 14 */ entity_constructor,
+        /* 15 */ entity_constructor,
+        /* 16 */ entity_constructor,
     };
-   // void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
-   //     /* 00 */ entity_player_constructor,
-   //     /* 01 */ entity_constructor,
-   //     /* 02 */ entity_constructor,
-   //     /* 03 */ entity_constructor,
-   //     /* 04 */ entity_constructor,
-   //     /* 05 */ entity_constructor,
-   //     /* 06 */ entity_constructor,
-   //     /* 07 */ entity_constructor,
-   //     /* 08 */ entity_constructor,
-   //     /* 09 */ entity_constructor,
-   //     /* 10 */ entity_constructor,
-   //     /* 11 */ entity_constructor,
-   //     /* 12 */ entity_light_constructor,
-   //     /* 13 */ entity_constructor,
-   //     /* 14 */ entity_constructor,
-   //     /* 15 */ entity_constructor,
-   //     /* 16 */ entity_constructor,
-   // };
 
     for (uint32_t i = 0; i < map->e_size;) {
         void (*func)(entity_t *, vec3_t, uint8_t, uint8_t) = spawn_class[map->e[i++]];
@@ -201,19 +203,9 @@ vec3_t * map_trace(vec3_t * a, vec3_t * b) {
 }
 
 int map_block_at_box(vec3_t box_start, vec3_t box_end) {
-    // because valgrind thinks these are uninitialized
-    // if we just cast from floats inline in the loops
-    int32_t bsx = (int32_t)(box_start.x) >> 5;
-    int32_t bsy = (int32_t)(box_start.y) >> 4;
-    int32_t bsz = (int32_t)(box_start.z) >> 5;
-    
-    int32_t bex = (int32_t)(box_end.x) >> 5;
-    int32_t bey = (int32_t)(box_end.y) >> 4;
-    int32_t bez = (int32_t)(box_end.z) >> 5;
-    
-    for (int32_t z = bsz; z <= bez; z++) {
-        for (int32_t y = bsy; y <= bey; y++) {
-            for (int32_t x = bsx; x <= bex; x++) {
+    for (int32_t z = (int32_t)(box_start.z) >> 5; z <= (int32_t)(box_end.z) >> 5; z++) {
+        for (int32_t y = (int32_t)(box_start.y) >> 4; y <= (int32_t)(box_end.y) >> 4; y++) {
+            for (int32_t x = (int32_t)(box_start.x) >> 5; x <= (int32_t)(box_end.x) >> 5; x++) {
                 if (map_block_at(x, y, z)) {
                     return 1;
                 }

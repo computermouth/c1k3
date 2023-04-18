@@ -56,11 +56,11 @@ void game_entities_enemies_pop(entity_t * e) {
 }
 
 void game_entities_friendly_push(entity_t * e) {
-    game_entities_push(&game_entities_enemies, e);
+    game_entities_push(&game_entities_friendly, e);
 }
 
 void game_entities_friendly_pop(entity_t * e) {
-    game_entities_pop(&game_entities_enemies, e);
+    game_entities_pop(&game_entities_friendly, e);
 }
 
 void game_init(int map_index) {
@@ -124,16 +124,20 @@ void game_run(float time_now) {
 
     r_prepare_frame(0.1, 0.2, 0.5);
     entity_collection_t alive_entities = {0};
-    
-    if (game_entities_friendly.entities != NULL){
+
+    if (game_entities_friendly.entities != NULL) {
         free(game_entities_friendly.entities);
-        game_entities_friendly = (entity_ref_collection_t) { 0 };
+        game_entities_friendly = (entity_ref_collection_t) {
+            0
+        };
     }
-    if (game_entities_enemies.entities != NULL){
+    if (game_entities_enemies.entities != NULL) {
         free(game_entities_enemies.entities);
-        game_entities_enemies = (entity_ref_collection_t) { 0 };
+        game_entities_enemies = (entity_ref_collection_t) {
+            0
+        };
     }
-    
+
     for (uint32_t i = 0; i < game_entities.length; i++) {
         entity_t * e = &(game_entities.entities[i]);
         if (!e->_dead) {
@@ -142,19 +146,19 @@ void game_run(float time_now) {
             alive_entities.entities = reallocarray(alive_entities.entities, alive_entities.length, sizeof(entity_t) );
             alive_entities.entities[alive_entities.length - 1] = *e;
             e = &(alive_entities.entities[alive_entities.length - 1]);
-            switch (e->_group){
-                case ENTITY_GROUP_ENEMY: 
-                    game_entities_enemies_push(e);
-                    break;
-                case ENTITY_GROUP_PLAYER: 
-                    game_entities_friendly_push(e);
-                    break;
-                case ENTITY_GROUP_ALL: 
-                    game_entities_enemies_push(e);
-                    game_entities_friendly_push(e);
-                    break;
-                default:
-                    break;
+            switch (e->_group) {
+            case ENTITY_GROUP_ENEMY:
+                game_entities_enemies_push(e);
+                break;
+            case ENTITY_GROUP_PLAYER:
+                game_entities_friendly_push(e);
+                break;
+            case ENTITY_GROUP_ALL:
+                game_entities_enemies_push(e);
+                game_entities_friendly_push(e);
+                break;
+            default:
+                break;
             }
         }
     }

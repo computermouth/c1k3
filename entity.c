@@ -104,6 +104,8 @@ void entity_update_physics(entity_t * e) {
     // _check_entities.push(ptr_to_enemies)
     // _check_entities.push(ptr_to_friendlies)
     // todo, also move to _init or something, why is this here???
+    // actually needs to happen currently, because the addresses
+    // here change on each loop
     switch(e->_check_against) {
     case ENTITY_GROUP_NONE:
         e->_check_entities = NULL;
