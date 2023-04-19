@@ -126,7 +126,7 @@ typedef struct {
     int32_t _group;
     int32_t _check_against;
     void * _check_entities;
-    int32_t _stepped_up_at;
+    float _stepped_up_at;
 
     // first param is actually entity_t *
     void (*_init)(void * e, uint8_t p1, uint8_t p2);
