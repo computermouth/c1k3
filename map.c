@@ -151,10 +151,10 @@ void map_init (map_t * m) {
         /* 10 */ NULL,
         /* 11 */ NULL,
         /* 12 */ entity_light_constructor,
-        /* 13 */ NULL,
+        /* 13 */ entity_trigger_level_constructor,
         /* 14 */ entity_door_constructor,
         /* 15 */ NULL,
-        /* 16 */ NULL,
+        /* 16 */ entity_torch_constructor,
     };
 
     for (uint32_t i = 0; i < map->e_size;) {

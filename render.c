@@ -192,7 +192,9 @@ void r_end_frame() {
         glDrawArrays(GL_TRIANGLES, c.f1, c.num_verts);
     }
 
-    memset(r_draw_calls, 0, sizeof(draw_call_t) * r_num_draw_calls);
+    // memset(r_draw_calls, 0, sizeof(draw_call_t) * r_num_draw_calls);
+    free(r_draw_calls);
+    r_draw_calls = NULL;
     r_num_draw_calls = 0;
 }
 

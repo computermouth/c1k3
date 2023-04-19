@@ -63,9 +63,17 @@ void game_entities_friendly_pop(entity_t * e) {
     game_entities_pop(&game_entities_friendly, e);
 }
 
-void game_init(int map_index) {
-
-    // probably for reloads
+void game_free_entities(){
+    if (game_entities.entities) {
+        for(int i = 0; i < game_entities.length; i++) {
+            if (game_entities.entities[i]) {
+                free(game_entities.entities[i]);
+            }
+        }
+        free(game_entities.entities);
+    }
+    if (game_entities_friendly.entities)     free(game_entities_friendly.entities);
+    if (game_entities_enemies.entities)      free(game_entities_enemies.entities);
     game_entities = (entity_ref_collection_t) {
         0
     };
@@ -75,6 +83,12 @@ void game_init(int map_index) {
     game_entities_enemies = (entity_ref_collection_t) {
         0
     };
+}
+
+void game_init(int map_index) {
+
+    // cleanup
+    game_free_entities();
 
     game_map_index = map_index;
     map_init(&(map_data.maps[game_map_index]));

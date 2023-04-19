@@ -31,9 +31,4 @@
 
 		// Debug: full bright lights
 		// "vl = vec3(2,2,2);"
-
-		"gl_FragColor.rgb=floor("
-			"gl_FragColor.rgb*pow(vl,vec3(0.75))" // Light, Gamma
-			"*16.0+0.5"
-		")/16.0;" // Reduce final output color for some extra dirty looks
 	"}"

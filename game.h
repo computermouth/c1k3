@@ -19,6 +19,7 @@ extern entity_ref_collection_t game_entities_enemies;
 extern entity_t * game_entity_player;
 extern int game_map_index;
 
+void game_free_entities();
 void game_entities_enemies_push(entity_t * e);
 void game_entities_enemies_pop(entity_t * e);
 void game_entities_friendly_push(entity_t * e);
