@@ -84,8 +84,7 @@ void weapon_shotgun_init(weapon_t * w) {
     w->_model = &model_shotgun;
     w->_sound = NULL; // todo, sound
     w->_needs_ammo = 0;
-    // w->_reload = 0.9f;
-    w->_reload = 0.01f;
+    w->_reload = 0.9f;
     w->_projectile_type = (void (*)(void * e, vec3_t pos, uint8_t p1, uint8_t p2))entity_projectile_shell_constructor;
     w->_projectile_speed = 10000;
 }

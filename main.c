@@ -221,6 +221,16 @@ void quit() {
         }
         free(map_data.maps);
     }
+    if (game_entities.entities) {
+        for(int i = 0; i < game_entities.length; i++) {
+            if (game_entities.entities[i]) {
+                free(game_entities.entities[i]);
+            }
+        }
+        free(game_entities.entities);
+    }
+    if (game_entities_friendly.entities)     free(game_entities_friendly.entities);
+    if (game_entities_enemies.entities)      free(game_entities_enemies.entities);
     if (model_data.models)
         free(model_data.models);
     if (model_q.frames)                      free(model_q.frames);

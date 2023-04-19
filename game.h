@@ -13,7 +13,7 @@ typedef enum {
 extern state_t game_state;
 extern float game_tick;
 extern float game_time;
-extern entity_collection_t game_entities;
+extern entity_ref_collection_t game_entities;
 extern entity_ref_collection_t game_entities_friendly;
 extern entity_ref_collection_t game_entities_enemies;
 extern entity_t * game_entity_player;

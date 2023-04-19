@@ -29,8 +29,8 @@ void entity_pickup_key_pickup(entity_t * e) {
     // todo, audio_play(sfx_pickup);
     game_show_message("YOU GOT THE KEY!");
     for (uint32_t i = 0; i < game_entities.length; i++) {
-        if (game_entities.entities[i]._needs_key) {
-            game_entities.entities[i]._needs_key = 0;
+        if (game_entities.entities[i]->_needs_key) {
+            game_entities.entities[i]->_needs_key = 0;
             break;
         }
     }
