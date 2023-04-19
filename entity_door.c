@@ -49,9 +49,9 @@ void entity_door_update(entity_t * e) {
     }
 
     if (e->_reset_state_at < game_time)
-        e->_open = max(0, e->_open-game_tick);
+        e->_open = max(0.0f, e->_open-game_tick);
     else
-        e->_open = min(1, e->_open + game_tick);
+        e->_open = min(1.0f, e->_open + game_tick);
 
     e->p = vec3_add(e->_start_pos, vec3_rotate_y(vec3(96 * e->_open,0,0), e->_yaw));
 }

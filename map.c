@@ -139,22 +139,22 @@ void map_init (map_t * m) {
     // };
     void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
         /* 00 */ entity_player_constructor,
-        /* 01 */ entity_constructor,
-        /* 02 */ entity_constructor,
-        /* 03 */ entity_constructor,
-        /* 04 */ entity_constructor,
-        /* 05 */ entity_constructor,
-        /* 06 */ entity_constructor,
-        /* 07 */ entity_constructor,
-        /* 08 */ entity_constructor,
-        /* 09 */ entity_constructor,
-        /* 10 */ entity_constructor,
-        /* 11 */ entity_constructor,
+        /* 01 */ NULL,
+        /* 02 */ NULL,
+        /* 03 */ NULL,
+        /* 04 */ NULL,
+        /* 05 */ NULL,
+        /* 06 */ NULL,
+        /* 07 */ NULL,
+        /* 08 */ NULL,
+        /* 09 */ NULL,
+        /* 10 */ NULL,
+        /* 11 */ NULL,
         /* 12 */ entity_light_constructor,
-        /* 13 */ entity_constructor,
-        /* 14 */ entity_constructor,
-        /* 15 */ entity_constructor,
-        /* 16 */ entity_constructor,
+        /* 13 */ NULL,
+        /* 14 */ entity_door_constructor,
+        /* 15 */ NULL,
+        /* 16 */ NULL,
     };
 
     for (uint32_t i = 0; i < map->e_size;) {
@@ -164,6 +164,8 @@ void map_init (map_t * m) {
         int z = m->e[i++] * 32;
         uint8_t p1 = m->e[i++];
         uint8_t p2 = m->e[i++];
+        if (func == NULL)
+            continue;
         game_spawn(
             func,
         (vec3_t) {
@@ -194,7 +196,7 @@ vec3_t * map_trace(vec3_t * a, vec3_t * b) {
 
     for (uint32_t i = 0; i < steps; i++) {
         *a = vec3_add(*a, step_dir);
-        if (map_block_at((int32_t)(a->x) >> 5, (int32_t)(a->y) >> 4, (int32_t)(a->z) >> 5)) {
+        if (map_block_at((uint32_t)(a->x) >> 5, (uint32_t)(a->y) >> 4, (uint32_t)(a->z) >> 5)) {
             return a;
         }
     }
@@ -203,9 +205,9 @@ vec3_t * map_trace(vec3_t * a, vec3_t * b) {
 }
 
 int map_block_at_box(vec3_t box_start, vec3_t box_end) {
-    for (int32_t z = (int32_t)(box_start.z) >> 5; z <= (int32_t)(box_end.z) >> 5; z++) {
-        for (int32_t y = (int32_t)(box_start.y) >> 4; y <= (int32_t)(box_end.y) >> 4; y++) {
-            for (int32_t x = (int32_t)(box_start.x) >> 5; x <= (int32_t)(box_end.x) >> 5; x++) {
+    for (uint32_t z = (uint32_t)(box_start.z) >> 5; z <= (uint32_t)(box_end.z) >> 5; z++) {
+        for (uint32_t y = (uint32_t)(box_start.y) >> 4; y <= (uint32_t)(box_end.y) >> 4; y++) {
+            for (uint32_t x = (uint32_t)(box_start.x) >> 5; x <= (uint32_t)(box_end.x) >> 5; x++) {
                 if (map_block_at(x, y, z)) {
                     return 1;
                 }

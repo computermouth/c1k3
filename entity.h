@@ -96,8 +96,8 @@ typedef struct {
     bool _flicker;
     uint8_t _color[3];
     vec3_t _start_pos;
-    uint32_t _reset_state_at;
-    bool _open;
+    float _reset_state_at;
+    float _open;
     bool _needs_key;
     int32_t _damage;
     vec3_t _light_pos;

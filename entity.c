@@ -206,8 +206,8 @@ bool entity_collides(entity_t * e, vec3_t p) {
     // off of ledges.
     if (
         e->_on_ground && e->_keep_off_ledges &&
-        !map_block_at( (int32_t)(p.x) >> 5, (int32_t)(p.y - e->s.y - 8) >> 4, (int32_t)(p.z) >> 5 ) &&
-        !map_block_at( (int32_t)(p.x) >> 5, (int32_t)(p.y - e->s.y - 24) >> 4, (int32_t)(p.z) >> 5)
+        !map_block_at( (uint32_t)(p.x) >> 5, (uint32_t)(p.y - e->s.y - 8) >> 4, (uint32_t)(p.z) >> 5 ) &&
+        !map_block_at( (uint32_t)(p.x) >> 5, (uint32_t)(p.y - e->s.y - 24) >> 4, (uint32_t)(p.z) >> 5)
     ) {
         return true;
     }
