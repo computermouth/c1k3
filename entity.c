@@ -190,9 +190,9 @@ bool entity_collides(entity_t * e, vec3_t p) {
     if (e->_dead)
         return false;
 
-    entity_collection_t * check = e->_check_entities;
+    entity_ref_collection_t * check = e->_check_entities;
     for (uint32_t i = 0; check !=NULL && i < check->length; i++) {
-        entity_t * chk_e = &(check->entities[i]);
+        entity_t * chk_e = check->entities[i];
         if (vec3_dist(p, chk_e->p) < e->s.y + chk_e->s.y) {
             // If we collide with an entity set the step height to 0,
             // so we don't climb up on its shoulders :/

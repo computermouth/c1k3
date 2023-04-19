@@ -140,7 +140,6 @@ void game_run(float time_now) {
         if (e->_dead){
             free(e);
         } else {
-            e->_update(e);
             alive_entities.length++;
             alive_entities.entities = realloc(alive_entities.entities, alive_entities.length * sizeof(entity_t) );
             alive_entities.entities[alive_entities.length - 1] = e;
@@ -163,6 +162,11 @@ void game_run(float time_now) {
     if (game_entities.entities != NULL)
         free(game_entities.entities);
     game_entities = alive_entities;
+    
+    for (uint32_t i = 0; i < game_entities.length; i++) {
+        entity_t * e = game_entities.entities[i];
+        e->_update(e);
+    }
 
     map_draw();
     r_end_frame();

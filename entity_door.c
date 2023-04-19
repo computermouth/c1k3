@@ -27,15 +27,12 @@ void entity_door_init(entity_t * e, uint8_t texture, uint8_t dir) {
     e->_reset_state_at = 0;
     e->_yaw = (float)dir * PI/2.0f;
     e->_open = 0;
+    // Doors block enemies and players
     e->_group = ENTITY_GROUP_ALL;
 
     // Map 1 only has one door and it needs a key. Should be a flag
     // in the entity data instead :/
     e->_needs_key = (game_map_index == 1);
-
-    // Doors block enemies and players
-    game_entities_enemies_push(e);
-    game_entities_friendly_push(e);
 }
 
 void entity_door_update(entity_t * e) {
