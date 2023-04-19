@@ -37,7 +37,9 @@ void entity_door_init(entity_t * e, uint8_t texture, uint8_t dir) {
 
 void entity_door_update(entity_t * e) {
     e->_draw_model(e);
-    if (vec3_dist(e->p, game_entity_player->p) < 128) {
+
+    // check to make sure player is alive and game isn't over
+    if (game_entity_player != NULL && vec3_dist(e->p, game_entity_player->p) < 128) {
         if (e->_needs_key) {
             game_show_message("YOU NEED THE KEY...");
             return;

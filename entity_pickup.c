@@ -19,11 +19,14 @@ void entity_pickup_init(entity_t * e, uint8_t p1, uint8_t p2) {
 }
 
 void entity_pickup_update(entity_t * e) {
+
     if (!e->_on_ground) {
         e->_update_physics(e);
     }
     e->_draw_model(e);
-    if (vec3_dist(e->p, game_entity_player->p) < 40) {
+
+    // check to make sure player is alive and game isn't over
+    if (game_entity_player != NULL && vec3_dist(e->p, game_entity_player->p) < 40) {
         e->_pickup(e);
     }
 }

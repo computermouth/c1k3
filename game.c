@@ -116,10 +116,13 @@ void game_show_message(char *txt) {
     // todo, show message for period of time
     // clearTimeout(game_message_timeout);
     // game_message_timeout = setTimeout(()=>msg.style.display = 'none', 2000);
+    fprintf(stderr, "%s\n", txt);
 }
 
 void title_show_message(char *txt, char *sub) {
     // todo, probably change game_show_message to accept size params
+    fprintf(stderr, "%s\n", txt);
+    fprintf(stderr, "  -- %s\n", sub);
 }
 
 void game_run(float time_now) {
@@ -151,6 +154,9 @@ void game_run(float time_now) {
         entity_t * e = game_entities.entities[i];
         if (e->_dead) {
             free(e);
+            if (e == game_entity_player) {
+                game_entity_player = NULL;
+            }
         } else {
             alive_entities.length++;
             alive_entities.entities = realloc(alive_entities.entities, alive_entities.length * sizeof(entity_t) );
