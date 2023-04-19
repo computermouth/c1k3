@@ -121,6 +121,7 @@ typedef struct {
 
     weapon_t _weapons[WEAPON_END];
     weapon_type_t _weapon_index;
+    weapon_type_t _weapon_length;
 
     int32_t _group;
     int32_t _check_against;

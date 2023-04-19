@@ -144,7 +144,7 @@ void map_init (map_t * m) {
         /* 03 */ NULL,
         /* 04 */ NULL,
         /* 05 */ NULL,
-        /* 06 */ NULL,
+        /* 06 */ entity_pickup_nailgun_constructor,
         /* 07 */ NULL,
         /* 08 */ entity_pickup_health_constructor,
         /* 09 */ entity_pickup_nails_constructor,
