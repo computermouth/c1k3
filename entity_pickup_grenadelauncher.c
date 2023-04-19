@@ -30,7 +30,7 @@ void entity_pickup_grenadelauncher_pickup(entity_t * e) {
     // todo, audio_play(sfx_pickup);
     // todo, hate this
     // don't run these if we've already got all the weapons
-    if (game_entity_player->_weapon_length < WEAPON_END){
+    if (game_entity_player->_weapon_length < WEAPON_END) {
         game_entity_player->_weapon_length++;
         game_entity_player->_weapons[game_entity_player->_weapon_length - 1] = weapon_grenadelauncher_constructor();
         game_entity_player->_weapon_index = game_entity_player->_weapon_length - 1;

@@ -63,7 +63,7 @@ void game_entities_friendly_pop(entity_t * e) {
     game_entities_pop(&game_entities_friendly, e);
 }
 
-void game_free_entities(){
+void game_free_entities() {
     if (game_entities.entities) {
         for(int i = 0; i < game_entities.length; i++) {
             if (game_entities.entities[i]) {
@@ -107,7 +107,7 @@ entity_t * game_spawn (void (*func)(entity_t *, vec3_t, uint8_t, uint8_t), vec3_
     game_entities.entities = realloc(game_entities.entities, sizeof(entity_t*) * game_entities.length);
     entity_t * e = calloc(1, sizeof(entity_t));
     game_entities.entities[game_entities.length - 1] = e;
-    
+
     func(e, pos, p1, p2);
     return e;
 }
@@ -116,12 +116,10 @@ void game_show_message(char *txt) {
     // todo, show message for period of time
     // clearTimeout(game_message_timeout);
     // game_message_timeout = setTimeout(()=>msg.style.display = 'none', 2000);
-    txt[0] = txt[0];
 }
 
 void title_show_message(char *txt, char *sub) {
     // todo, probably change game_show_message to accept size params
-    txt[0] = txt[0];
 }
 
 void game_run(float time_now) {
@@ -151,7 +149,7 @@ void game_run(float time_now) {
     entity_ref_collection_t alive_entities = {0};
     for (uint32_t i = 0; i < game_entities.length; i++) {
         entity_t * e = game_entities.entities[i];
-        if (e->_dead){
+        if (e->_dead) {
             free(e);
         } else {
             alive_entities.length++;
@@ -176,7 +174,7 @@ void game_run(float time_now) {
     if (game_entities.entities != NULL)
         free(game_entities.entities);
     game_entities = alive_entities;
-    
+
     for (uint32_t i = 0; i < game_entities.length; i++) {
         entity_t * e = game_entities.entities[i];
         e->_update(e);

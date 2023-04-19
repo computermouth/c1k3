@@ -145,15 +145,15 @@ void map_init (map_t * m) {
         /* 04 */ NULL,
         /* 05 */ NULL,
         /* 06 */ entity_pickup_nailgun_constructor,
-        /* 07 */ NULL,
+        /* 07 */ entity_pickup_grenadelauncher_constructor,
         /* 08 */ entity_pickup_health_constructor,
         /* 09 */ entity_pickup_nails_constructor,
-        /* 10 */ NULL,
+        /* 10 */ entity_pickup_grenades_constructor,
         /* 11 */ entity_barrel_constructor,
         /* 12 */ entity_light_constructor,
         /* 13 */ entity_trigger_level_constructor,
         /* 14 */ entity_door_constructor,
-        /* 15 */ NULL,
+        /* 15 */ entity_pickup_key_constructor,
         /* 16 */ entity_torch_constructor,
     };
 
