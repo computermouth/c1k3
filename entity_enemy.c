@@ -159,7 +159,7 @@ void entity_enemy_update(entity_t * e) {
         if (e->_state == e->_STATE_FOLLOW) {
 
             // Do we have a line of sight?
-            if (!map_trace(&(e->p), &(game_entity_player->p))) {
+            if (!map_trace(e->p, game_entity_player->p)) {
                 e->_target_yaw = angle_to_player;
             }
 
@@ -192,7 +192,7 @@ void entity_enemy_update(entity_t * e) {
         if (e->_state == ENEMY_STATE_PATROL || e->_state == ENEMY_STATE_IDLE) {
             if (
                 distance_to_player < 700 &&
-                !map_trace(&(e->p), &(game_entity_player->p))
+                !map_trace(e->p, game_entity_player->p)
             ) {
                 e->_set_state(e, ENEMY_STATE_ATTACK_AIM);
             }
@@ -204,7 +204,7 @@ void entity_enemy_update(entity_t * e) {
             e->_target_yaw = angle_to_player;
 
             // No line of sight? Randomly shuffle around :/
-            if (map_trace(&(e->p), &(game_entity_player->p))) {
+            if (map_trace(e->p, game_entity_player->p)) {
                 e->_set_state(e, ENEMY_STATE_EVADE);
             }
         }

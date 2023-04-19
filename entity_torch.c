@@ -52,7 +52,7 @@ void entity_torch_init(entity_t * e, uint8_t p1, uint8_t p2) {
     for(uint32_t i = 0; i < 4; i++) {
         vec3_t trace_dir = v[i];
         vec3_t trace_end = vec3_add(e->p, trace_dir);
-        if(map_trace(&e->p, &trace_end)) {
+        if(map_trace(e->p, trace_end)) {
             e->p = vec3_add(e->p, vec3_mulf(trace_dir, 0.4));
             e->_light_pos = vec3_sub(e->p, vec3_mulf(trace_dir, 2));
             break;

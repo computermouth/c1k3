@@ -139,7 +139,7 @@ void map_init (map_t * m) {
     // };
     void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
         /* 00 */ entity_player_constructor,
-        /* 01 */ NULL,
+        /* 01 */ entity_enemy_zombie_constructor,
         /* 02 */ NULL,
         /* 03 */ NULL,
         /* 04 */ NULL,
@@ -189,19 +189,19 @@ uint8_t map_block_at(uint32_t x, uint32_t y, uint32_t z) {
 
 // todo, investigate if this should modify a
 // it shouldn't, return bool, and don't modify a or b
-vec3_t * map_trace(vec3_t * a, vec3_t * b) {
-    vec3_t diff = vec3_sub(*a, *b);
+bool map_trace(vec3_t a, vec3_t b) {
+    vec3_t diff = vec3_sub(a, b);
     vec3_t step_dir = vec3_mulf(vec3_normalize(diff), 16);
     float steps = vec3_length(diff) / 16;
 
     for (uint32_t i = 0; i < steps; i++) {
-        *a = vec3_add(*a, step_dir);
-        if (map_block_at((uint32_t)(a->x) >> 5, (uint32_t)(a->y) >> 4, (uint32_t)(a->z) >> 5)) {
-            return a;
+        a = vec3_add(a, step_dir);
+        if (map_block_at((uint32_t)(a.x) >> 5, (uint32_t)(a.y) >> 4, (uint32_t)(a.z) >> 5)) {
+            return true;
         }
     }
 
-    return NULL;
+    return false;
 }
 
 int map_block_at_box(vec3_t box_start, vec3_t box_end) {
