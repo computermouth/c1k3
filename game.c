@@ -85,12 +85,10 @@ void game_next_level() {
 }
 
 // todo, is this fuckin goofy?
-// pos -> game_spawn -> constructor -> init -> constructor -> init
+// it is, the pointer that gets returned here is potentially destroyed after update
+// functions are ran and game_entities is completely replaced with new values in new
+// memory from the new alive_entities collection
 entity_t * game_spawn (void (*func)(entity_t *, vec3_t, uint8_t, uint8_t), vec3_t pos, uint8_t p1, uint8_t p2) {
-    // todo, constructor should probably take a pointer
-    // to already allocated game_entities.entities[what]
-    // instead of create, copy value, return pointer to where
-    // value was copied
     game_entities.length++;
     game_entities.entities = realloc(game_entities.entities, sizeof(entity_t) * game_entities.length);
     game_entities.entities[game_entities.length - 1] = (entity_t) {

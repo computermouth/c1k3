@@ -74,7 +74,6 @@ void entity_player_update(entity_t * e) {
                 );
     e->_yaw = fmodf((e->_yaw + mouse_x * mouse_speed * 0.00015), PI * 2);
 
-    // big todo, needs input.c
     // Acceleration in movement direction
     e->a = vec3_mulf(
                vec3_rotate_y(

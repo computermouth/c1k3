@@ -304,6 +304,8 @@ int main() {
             mouse_y = 0.0f;
             keys[KEY_NEXT] = 0;
             keys[KEY_PREV] = 0;
+            // don't shoot on first frame
+            keys[KEY_ACTION] = 0;
         }
 
         // perform based on state
