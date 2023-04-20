@@ -34,7 +34,7 @@ void entity_light_init(entity_t * e, uint8_t light, uint8_t color) {
 void entity_light_update(entity_t * e) {
     if (e->_flicker && randf() > 0.9)
         e->_light = randf() > 0.5 ? 10 : 0;
-    uint32_t intensity = e->_light;
+    float intensity = e->_light;
 
     // If this light is a temporary one, fade it out over its lifetime
     if (e->_expires) {

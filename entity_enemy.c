@@ -147,8 +147,9 @@ void entity_enemy_update(entity_t * e) {
         // Choose a new turning bias for FOLLOW/EVADE when we hit a wall
         e->_turn_bias = randf() > 0.5 ? 0.5 : -0.5;
 
-        float distance_to_player = vec3_dist(e->p, game_entity_player->p),
-              angle_to_player = vec3_2d_angle(e->p, game_entity_player->p);
+        // don't if player is dead
+        float distance_to_player = game_entity_player ? 0.0f : vec3_dist(e->p, game_entity_player->p);
+        float angle_to_player = game_entity_player ? 0.0f : vec3_2d_angle(e->p, game_entity_player->p);
 
         // if there is a next_state, set it
         if (e->_state_collection.states[e->_state].next_state != e->_STATE_NULL) {

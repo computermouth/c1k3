@@ -92,7 +92,7 @@ typedef struct {
     float _bob;
     bool _can_jump;
     float _can_shoot_at;
-    uint32_t _light;
+    float _light;
     float _spawn_time;
     bool _flicker;
     uint8_t _color[3];

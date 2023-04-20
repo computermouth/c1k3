@@ -177,7 +177,7 @@ void map_init (map_t * m) {
     }
 }
 
-uint8_t map_block_at(uint32_t x, uint32_t y, uint32_t z) {
+uint8_t map_block_at(int32_t x, int32_t y, int32_t z) {
     return map->cm[
                (
                    z * map_size * map_size +
@@ -196,7 +196,7 @@ bool map_trace(vec3_t a, vec3_t b) {
 
     for (uint32_t i = 0; i < steps; i++) {
         a = vec3_add(a, step_dir);
-        if (map_block_at((uint32_t)(a.x) >> 5, (uint32_t)(a.y) >> 4, (uint32_t)(a.z) >> 5)) {
+        if (map_block_at((int32_t)(a.x) >> 5, (int32_t)(a.y) >> 4, (int32_t)(a.z) >> 5)) {
             return true;
         }
     }
@@ -205,9 +205,9 @@ bool map_trace(vec3_t a, vec3_t b) {
 }
 
 int map_block_at_box(vec3_t box_start, vec3_t box_end) {
-    for (uint32_t z = (uint32_t)(box_start.z) >> 5; z <= (uint32_t)(box_end.z) >> 5; z++) {
-        for (uint32_t y = (uint32_t)(box_start.y) >> 4; y <= (uint32_t)(box_end.y) >> 4; y++) {
-            for (uint32_t x = (uint32_t)(box_start.x) >> 5; x <= (uint32_t)(box_end.x) >> 5; x++) {
+    for (int32_t z = (int32_t)(box_start.z) >> 5; z <= (int32_t)(box_end.z) >> 5; z++) {
+        for (uint32_t y = (uint32_t)(box_start.y) >> 4; y <= (int32_t)(box_end.y) >> 4; y++) {
+            for (int32_t x = (int32_t)(box_start.x) >> 5; x <= (int32_t)(box_end.x) >> 5; x++) {
                 if (map_block_at(x, y, z)) {
                     return 1;
                 }

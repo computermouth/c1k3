@@ -157,6 +157,7 @@ void game_run(float time_now) {
             if (e == game_entity_player) {
                 game_entity_player = NULL;
             }
+            e = NULL;
         } else {
             alive_entities.length++;
             alive_entities.entities = realloc(alive_entities.entities, alive_entities.length * sizeof(entity_t) );

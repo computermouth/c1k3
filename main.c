@@ -300,7 +300,7 @@ int main() {
 
         if(game_state == MENU_STATE && keys[KEY_ACTION] ) {
             game_state = GAME_STATE;
-            game_init(0);
+            game_init(1);
             mouse_x = 0.0f;
             mouse_y = 0.0f;
             keys[KEY_NEXT] = 0;
