@@ -13,10 +13,10 @@
 		"gl_FragColor=texture2D(s,vt);"
 
 		// Debug: no textures
-		// "gl_FragColor=vec4(1.0,1.0,1.0,1.0);" 
+		// "gl_FragColor=vec4(.5,.5,.5,1.0);" 
 
 		// Calculate all lights
-		"vec3 vl;"
+		"vec3 vl = vec3(0,0,0);"
 		"for(int i=0;i<"STR(R_MAX_LIGHT_V3)";i+=2) {"
 			"vl+="
 				// Angle to normal
@@ -31,4 +31,9 @@
 
 		// Debug: full bright lights
 		// "vl = vec3(2,2,2);"
+
+		"gl_FragColor.rgb=floor("
+			"gl_FragColor.rgb*pow(vl,vec3(0.75))" // Light, Gamma
+			"*16.0+0.5"
+		")/16.0;" // Reduce final output color for some extra dirty looks
 	"}"

@@ -139,7 +139,7 @@ void map_init (map_t * m) {
     // };
     void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
         /* 00 */ entity_player_constructor,
-        /* 01 */ entity_enemy_zombie_constructor,
+        /* 01 */ NULL,
         /* 02 */ NULL,
         /* 03 */ NULL,
         /* 04 */ NULL,
