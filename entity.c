@@ -112,6 +112,7 @@ void entity_update_physics(entity_t * e) {
         break;
     case ENTITY_GROUP_PLAYER:
         e->_check_entities = &game_entities_friendly;
+        break;
     case ENTITY_GROUP_ENEMY:
         e->_check_entities = &game_entities_enemies;
         break;
@@ -121,7 +122,7 @@ void entity_update_physics(entity_t * e) {
     // projectiles may just move through walls.
     int32_t original_step_height = e->_step_height;
     vec3_t move_dist = vec3_mulf(e->v, game_tick);
-    int32_t steps = ceilf(vec3_length(move_dist) / 16.0f);
+    float steps = ceilf(vec3_length(move_dist) / 16.0f);
     vec3_t move_step = vec3_mulf(move_dist, 1.0f/(float)steps);
 
     for (int s = 0; s < steps; s++) {

@@ -1,4 +1,5 @@
 
+#include <SDL2/SDL_timer.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,7 +15,6 @@
 state_t game_state = MENU_STATE;
 float game_tick = 0.0f;
 float game_time = 0.016f;
-float game_real_time_last = 0;
 float game_message_timeout = 0;
 
 entity_ref_collection_t game_entities = {0};
@@ -92,6 +92,14 @@ void game_init(int map_index) {
 
     game_map_index = map_index;
     map_init(&(map_data.maps[game_map_index]));
+
+    // make sure that first frame won't have
+    // massive ticks, and also not divide by 0's
+    // just fake one 60Hz frame
+    float time_now = SDL_GetTicks();
+    time_now *= 0.001f;
+    game_tick = 0.016f;
+    game_time = (time_now - game_tick);
 }
 
 void game_next_level() {
@@ -128,11 +136,8 @@ void title_show_message(char *txt, char *sub) {
 void game_run(float time_now) {
 
     time_now *= 0.001f;
-    // todo, sospechoso, not sure what this was for
-    // game_tick = min((time_now - (game_real_time_last||time_now)), 0.05f);
-    game_tick = (time_now - (game_real_time_last));
-    game_real_time_last = time_now;
-    game_time += game_tick;
+    game_tick = (time_now - game_time);
+    game_time = time_now;
 
     r_prepare_frame(0.1, 0.2, 0.5);
 
