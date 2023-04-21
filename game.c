@@ -153,10 +153,10 @@ void game_run(float time_now) {
             0
         };
     }
-    
+
     // todo, should be some kind of timed callback on death
     // dead, restart level -- also maybe remove null check
-    if (game_entity_player == NULL || game_entity_player->_dead == 1){
+    if (game_entity_player == NULL || game_entity_player->_dead == 1) {
         if (game_map_index == 2)
             game_map_index = 0;
         game_init(game_map_index);

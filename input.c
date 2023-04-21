@@ -87,7 +87,7 @@ void input_consume() {
         if(e.type == SDL_MOUSEBUTTONDOWN) {
             switch (e.button.button) {
             case SDL_BUTTON_LEFT:
-                if (SDL_GetRelativeMouseMode() == false){
+                if (SDL_GetRelativeMouseMode() == false) {
                     SDL_SetRelativeMouseMode(true);
                     break;
                 }
