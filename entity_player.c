@@ -63,8 +63,6 @@ void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_bob = 0;
 
     game_entity_player = e;
-
-    game_entities_friendly_push(e);
 }
 
 void entity_player_update(entity_t * e) {
@@ -182,7 +180,8 @@ void entity_player_kill(entity_t * e) {
     // todo
     // h.textContent = this._health|0;
     title_show_message("YOU DIED", "");
+    // game_entities_friendly_pop(e);
+    // game_entity_player = NULL;
     // todo
     // setTimeout(() => game_init(game_map_index), 2000);
-    game_init(game_map_index);
 }

@@ -139,11 +139,11 @@ void map_init (map_t * m) {
     // };
     void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
         /* 00 */ entity_player_constructor,
-        /* 01 */ NULL,
-        /* 02 */ NULL,
-        /* 03 */ NULL,
-        /* 04 */ NULL,
-        /* 05 */ NULL,
+        /* 01 */ entity_enemy_grunt_constructor,
+        /* 02 */ entity_enemy_enforcer_constructor,
+        /* 03 */ entity_enemy_ogre_constructor,
+        /* 04 */ entity_enemy_zombie_constructor,
+        /* 05 */ entity_enemy_hound_constructor,
         /* 06 */ entity_pickup_nailgun_constructor,
         /* 07 */ entity_pickup_grenadelauncher_constructor,
         /* 08 */ entity_pickup_health_constructor,
@@ -190,7 +190,7 @@ uint8_t map_block_at(int32_t x, int32_t y, int32_t z) {
 // todo, investigate if this should modify a
 // it shouldn't, return bool, and don't modify a or b
 bool map_trace(vec3_t a, vec3_t b) {
-    vec3_t diff = vec3_sub(a, b);
+    vec3_t diff = vec3_sub(b, a);
     vec3_t step_dir = vec3_mulf(vec3_normalize(diff), 16);
     float steps = vec3_length(diff) / 16;
 

@@ -27,8 +27,6 @@ void entity_barrel_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_health = 10;
     e->s = vec3(8, 32, 8);
     e->_group = ENTITY_GROUP_ENEMY;
-
-    game_entities_enemies_push(e);
 }
 
 void entity_barrel_kill(entity_t * e) {

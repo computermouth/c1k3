@@ -82,7 +82,6 @@ void entity_update(entity_t * e) {
 
 void entity_update_physics(entity_t * e) {
     // todo, move to entity_update?
-    // todo, uncomment and debug mass entity crashes?
     if (e->_expires && e->_die_at < game_time) {
         e->_kill(e);
     }

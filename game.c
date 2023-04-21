@@ -153,15 +153,22 @@ void game_run(float time_now) {
             0
         };
     }
+    
+    // todo, should be some kind of timed callback on death
+    // dead, restart level -- also maybe remove null check
+    if (game_entity_player == NULL || game_entity_player->_dead == 1){
+        if (game_map_index == 2)
+            game_map_index = 0;
+        game_init(game_map_index);
+    }
 
     entity_ref_collection_t alive_entities = {0};
     for (uint32_t i = 0; i < game_entities.length; i++) {
         entity_t * e = game_entities.entities[i];
         if (e->_dead) {
+            game_entities_friendly_pop(e);
+            game_entities_enemies_pop(e);
             free(e);
-            if (e == game_entity_player) {
-                game_entity_player = NULL;
-            }
             e = NULL;
         } else {
             alive_entities.length++;

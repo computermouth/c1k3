@@ -117,8 +117,6 @@ void entity_enemy_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
     e->_group = ENTITY_GROUP_ENEMY;
     e->_check_against = ENTITY_GROUP_PLAYER;
 
-    game_entities_enemies_push(e);
-
     // If patrol_dir is non-zero it determines the partrol direction in
     // increments of 90°. Otherwise we just idle.
     if (patrol_dir) {
@@ -160,7 +158,7 @@ void entity_enemy_update(entity_t * e) {
         if (e->_state == e->_STATE_FOLLOW) {
 
             // Do we have a line of sight?
-            if (!map_trace(e->p, game_entity_player->p)) {
+            if (game_entity_player && !map_trace(e->p, game_entity_player->p)) {
                 e->_target_yaw = angle_to_player;
             }
 
