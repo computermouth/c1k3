@@ -2,6 +2,7 @@
 #include "entity_pickup_key.h"
 #include "entity_pickup.h"
 #include "game.h"
+#include "audio.h"
 
 void entity_pickup_key_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_pickup_key_update(entity_t * e);
@@ -26,7 +27,7 @@ void entity_pickup_key_update(entity_t * e) {
 }
 
 void entity_pickup_key_pickup(entity_t * e) {
-    // todo, audio_play(sfx_pickup);
+    audio_play(sfx_pickup);
     game_show_message("YOU GOT THE KEY!");
     for (uint32_t i = 0; i < game_entities.length; i++) {
         if (game_entities.entities[i]->_needs_key) {

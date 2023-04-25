@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "entity_enemy.h"
 #include "entity_projectile_gib.h"
+#include "audio.h"
 
 animation_t zombie_animations[] = {
     {   // 0: Idle
@@ -83,6 +84,6 @@ void entity_enemy_zombie_receive_damage(entity_t * e, entity_t * from, int32_t a
 }
 
 void entity_enemy_zombie_attack(entity_t * e) {
-    // todo, e->_play_sound(sfx_enemy_hit);
+    e->_play_sound(e, sfx_enemy_hit);
     e->_spawn_projectile(e, (void (*)(void *, vec3_t, uint8_t, uint8_t))entity_projectile_gib_constructor, 600, 0, -0.5);
 }

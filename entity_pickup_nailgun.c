@@ -4,6 +4,7 @@
 #include "entity_pickup.h"
 #include "game.h"
 #include "weapon.h"
+#include "audio.h"
 
 void entity_pickup_nailgun_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_pickup_nailgun_update(entity_t * e);
@@ -29,7 +30,7 @@ void entity_pickup_nailgun_update(entity_t * e) {
 }
 
 void entity_pickup_nailgun_pickup(entity_t * e) {
-    // todo, audio_play(sfx_pickup);
+    audio_play(sfx_pickup);
     // todo, hate this
     if (game_entity_player->_weapon_length < WEAPON_END) {
         game_entity_player->_weapon_length++;

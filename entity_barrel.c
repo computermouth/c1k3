@@ -7,6 +7,7 @@
 #include "entity_barrel.h"
 #include "game.h"
 #include "model.h"
+#include "audio.h"
 
 void entity_barrel_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_barrel_kill(entity_t * e);
@@ -40,7 +41,7 @@ void entity_barrel_kill(entity_t * e) {
     }
 
     entity_kill(e);
-    // todo e->_play_sound(sfx_grenade_explode);
+    e->_play_sound(e, sfx_grenade_explode);
     for (uint32_t i = 0; i < model_gib_pieces.len; i++) {
         model_t * m = &(model_gib_pieces.models[i]);
         e->_spawn_particles(e, 2, 600, m, 21, 1);

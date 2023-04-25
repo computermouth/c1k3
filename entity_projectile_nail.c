@@ -4,6 +4,7 @@
 #include "game.h"
 #include "math.h"
 #include "entity_light.h"
+#include "audio.h"
 
 void entity_projectile_nail_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_projectile_nail_update(entity_t * e);
@@ -39,7 +40,7 @@ void entity_projectile_nail_update(entity_t * e) {
 
 void entity_projectile_nail_did_collide(entity_t * e, int axis) {
     e->_kill(e);
-    // todo, e->_play_sound(sfx_nailgun_hit);
+    e->_play_sound(e, sfx_nailgun_hit);
     e->_spawn_particles(e, 2, 80, &model_explosion, 8, 0.4);
     entity_t * tmp_light = game_spawn(entity_light_constructor, e->p, 1, 0xff);
     tmp_light->_expires = true;

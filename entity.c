@@ -10,6 +10,7 @@
 #include "render.h"
 #include "map.h"
 #include "entity_particle.h"
+#include "audio.h"
 
 uint32_t no_idea_placeholder[] = {0};
 
@@ -61,7 +62,7 @@ void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_draw_model = (void (*)(void * e))entity_draw_model;
     e->_spawn_particles = (void (*)(void * e, int amount, int speed, model_t * model, int texture, float lifetime))entity_spawn_particles;
     e->_receive_damage = (void (*)(void * e, void * from, int32_t amount))entity_receive_damage;
-    e->_play_sound = (void (*)(void * e, void * sound))entity_play_sound;
+    e->_play_sound = (void (*)(void * e, Mix_Chunk * sound))entity_play_sound;
     e->_kill = (void (*)(void * e))entity_kill;
     e->_pickup = (void (*)(void * e))entity_pickup;
     e->_set_state = (void (*)(void * e, uint32_t state))entity_set_state;
@@ -273,13 +274,10 @@ void entity_receive_damage(entity_t * e, entity_t * from, int32_t amount) {
         e->_kill(e);
 }
 
-void entity_play_sound(entity_t * e, void * sound) {
+void entity_play_sound(entity_t * e, Mix_Chunk * sound) {    
     float volume = clamp(scale(vec3_dist(e->p, r_camera), 64, 1200, 1, 0),0,1);
     float pan = sinf(vec3_2d_angle(e->p, r_camera)-r_camera_yaw)*-1;
-    // todo -- remove and actually play sound
-    volume = pan;
-    pan = volume;
-    // audio_play(sound, volume, 0, pan);
+    audio_play_opt(sound, volume, 0, pan);
 }
 
 void entity_kill(entity_t * e) {

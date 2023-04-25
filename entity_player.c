@@ -13,6 +13,7 @@
 #include "game.h"
 #include "weapon.h"
 #include "input.h"
+#include "audio.h"
 
 void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_player_update(entity_t * e);
@@ -108,7 +109,7 @@ void entity_player_update(entity_t * e) {
         e->_can_shoot_at = game_time + weapon->_reload;
 
         if (weapon->_needs_ammo && weapon->_ammo == 0) {
-            // todo, audio_play(sfx_no_ammo);
+            audio_play(sfx_no_ammo);
         }
         else {
             weapon->_shoot(weapon, e->p, e->_yaw, e->_pitch);
@@ -169,8 +170,7 @@ void entity_player_update(entity_t * e) {
 }
 
 void entity_player_receive_damage(entity_t * e, entity_t * from, int32_t amount) {
-    // todo
-    // audio_play(sfx_hurt);
+    audio_play(sfx_hurt);
     // invoke regular damage thing
     entity_receive_damage(e, from, amount);
 }

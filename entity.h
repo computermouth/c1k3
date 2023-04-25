@@ -2,6 +2,7 @@
 #ifndef _ENTITY_
 #define _ENTITY_
 
+#include <SDL2/SDL_mixer.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -141,7 +142,7 @@ typedef struct {
     void (*_set_state)(void * e, uint32_t state);
     void * (*_spawn_projectile)(void * e, void (*func)(void *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset);
     void (*_receive_damage)(void * e, void * from, int32_t amount);
-    void (*_play_sound)(void * e, void * sound);
+    void (*_play_sound)(void * e, Mix_Chunk * sound);
     void (*_kill)(void * e);
     void (*_pickup)(void * e);
     void (*_attack)(void * e);
@@ -172,7 +173,7 @@ void entity_did_collide_with_entity(entity_t * e, entity_t * other);
 void entity_draw_model(entity_t * e);
 void entity_spawn_particles(entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime);
 void entity_receive_damage(entity_t * e, entity_t * from, int32_t amount);
-void entity_play_sound(entity_t * e, void * sound);
+void entity_play_sound(entity_t * e, Mix_Chunk * sound);
 void entity_kill(entity_t * e);
 void entity_pickup(entity_t * e);
 void entity_set_state(entity_t * e, uint32_t state);

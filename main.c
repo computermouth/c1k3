@@ -1,33 +1,18 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_mixer.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
 
+#include "audio.h"
 #include "data.h"
 #include "input.h"
 #include "render.h"
 #include "map.h"
 #include "model.h"
 #include "game.h"
-
-// Sounds
-void * sfx_enemy_hit = NULL;
-void * sfx_enemy_gib = NULL;
-void * sfx_enemy_hound_attack = NULL;
-void * sfx_no_ammo = NULL;
-void * sfx_hurt = NULL;
-void * sfx_pickup = NULL;
-void * sfx_plasma_shoot = NULL;
-void * sfx_shotgun_shoot = NULL;
-void * sfx_shotgun_reload = NULL;
-void * sfx_nailgun_shoot = NULL;
-void * sfx_nailgun_hit = NULL;
-void * sfx_grenade_shoot = NULL;
-void * sfx_grenade_bounce = NULL;
-void * sfx_grenade_explode = NULL;
 
 void game_load() {
     r_init();
@@ -136,43 +121,8 @@ void game_load() {
     }
 
     r_submit_buffer();
-    /*
-
-    f.onclick = () => g.requestFullscreen();
-    g.onclick = () => {
-    	g.onclick = () => c.requestPointerLock();
-    	g.onclick();
-
-    	audio_init();
-
-    	// Generate sounds
-    	sfx_enemy_hit = audio_create_sound(135, [8,0,0,1,148,1,3,5,0,0,139,1,0,2653,0,2193,255,2,639,119,2,23,0,0,0,0,0,0,0]);
-    	sfx_enemy_gib = audio_create_sound(140, [7,0,0,1,148,1,7,5,0,1,139,1,0,4611,789,15986,195,2,849,119,3,60,0,0,0,1,10,176,1]);
-    	sfx_enemy_hound_attack = audio_create_sound(132, [8,0,0,1,192,1,8,0,0,1,120,1,0,5614,0,20400,192,1,329,252,1,55,0,0,1,1,8,192,3]);
-
-    	sfx_no_ammo = audio_create_sound(120, [8,0,0,0,96,1,8,0,0,0,0,0,255,0,0,1075,232,1,2132,255,0,0,0,0,0,0,0,0,0]);
-    	sfx_hurt = audio_create_sound(135, [7,3,140,1,232,3,8,0,9,1,139,3,0,4611,1403,34215,256,4,1316,255,0,0,0,1,0,1,7,255,0]);
-    	sfx_pickup = audio_create_sound(140, [7,0,0,1,187,3,8,0,0,1,204,3,0,4298,927,1403,255,0,0,0,3,35,0,0,0,0,0,0,0]);
-
-    	sfx_plasma_shoot = audio_create_sound(135, [8,0,0,1,147,1,6,0,0,1,159,1,0,197,1234,21759,232,2,2902,255,2,53,0,0,0,0,0,0,0]);
-
-    	sfx_shotgun_shoot = audio_create_sound(135, [7,3,0,1,255,1,6,0,0,1,255,1,112,548,1979,11601,255,2,2902,176,2,77,0,0,1,0,10,255,1]);
-    	sfx_shotgun_reload = audio_create_sound(125, [9,0,0,1,131,1,0,0,0,0,0,3,255,137,22,1776,255,2,4498,176,2,36,2,84,0,0,3,96,0]);
-
-    	sfx_nailgun_shoot = audio_create_sound(130, [7,0,0,1,132,1,8,4,0,1,132,2,162,0,0,8339,232,2,2844,195,2,40,0,0,0,0,0,0,0]);
-    	sfx_nailgun_hit = audio_create_sound(135, [8,0,0,1,148,1,0,0,0,0,0,1,255,0,0,2193,128,2,6982,119,2,23,0,0,0,0,0,0,0]);
-
-    	sfx_grenade_shoot = audio_create_sound(127, [8,0,0,1,171,1,9,3,0,1,84,3,96,2653,0,13163,159,2,3206,255,2,64,0,0,0,1,9,226,0]);
-    	sfx_grenade_bounce = audio_create_sound(168, [7,0,124,0,128,0,8,5,127,0,128,0,125,88,0,2193,125,1,1238,240,1,91,3,47,0,0,0,0,0]);
-    	sfx_grenade_explode = audio_create_sound(135, [8,0,0,1,195,1,6,0,0,1,127,1,255,197,1234,21759,232,2,1052,255,4,73,3,25,1,0,10,227,1]);
-
-
-    	audio_play(audio_create_song(...music_data), 1, 1);
-    	game_init(0);
-        // set state to render menu
-    	run_frame = game_run;
-
-    */
+    
+    audio_init();
 };
 
 void menu_run(float time_now) {
@@ -210,6 +160,7 @@ void menu_run(float time_now) {
 
 void quit() {
     game_free_entities();
+    audio_free();
     if (r_draw_calls)
         free(r_draw_calls);
     if (r_textures)
@@ -254,8 +205,14 @@ int main() {
     time_t t;
     srand((unsigned) time(&t));
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
         printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
+    }
+    // if (Mix_Init(MIX_INIT_OGG) != MIX_INIT_OGG) {
+    //     printf( "SDL_mixer could not initialize! SDL_Error: %s\n", SDL_GetError() );
+    // }
+    if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 512 ) != 0){
+        printf( "SDL_mixer could not initialize! SDL_Error: %s\n", Mix_GetError() );
     }
     // Requires at least OpenGL ES 2.0
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -300,6 +257,7 @@ int main() {
 
         if(game_state == MENU_STATE && keys[KEY_ACTION] ) {
             game_state = GAME_STATE;
+            Mix_PlayMusic(song, -1);
             game_init(0);
             mouse_x = 0.0f;
             mouse_y = 0.0f;
@@ -327,6 +285,12 @@ int main() {
     const char * serror = SDL_GetError();
     while ( strcmp(serror, "") ) {
         printf("sdlerror: %s\n", serror);
+        serror = SDL_GetError();
+    }
+
+    const char * merror = Mix_GetError();
+    while ( strcmp(merror, "") ) {
+        printf("mixerror: %s\n", merror);
         serror = SDL_GetError();
     }
 

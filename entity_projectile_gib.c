@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "game.h"
 #include "math.h"
+#include "audio.h"
 
 void entity_projectile_gib_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_projectile_gib_update(entity_t * e);
@@ -42,7 +43,7 @@ void entity_projectile_gib_update(entity_t * e) {
 
 void entity_projectile_gib_did_collide(entity_t * e, int axis) {
     if (axis == 1 && e->v.y < -128) {
-        // todo, e->_play_sound(sfx_enemy_hit);
+        e->_play_sound(e, sfx_enemy_hit);
     }
 }
 

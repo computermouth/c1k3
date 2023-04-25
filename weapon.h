@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "math.h"
 #include "model.h"
@@ -19,7 +20,7 @@ typedef struct {
     bool _needs_ammo;
     vec3_t _projectile_offset;
     uint32_t _ammo;
-    void * _sound;
+    Mix_Chunk * _sound;
     // todo, rename to projectile_constructor or something
     void (*_projectile_type)(void *, vec3_t, uint8_t, uint8_t);
     float _projectile_speed;

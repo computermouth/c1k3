@@ -3,6 +3,7 @@
 #include "entity_projectile_shell.h"
 #include "entity_light.h"
 #include "game.h"
+#include "audio.h"
 
 void entity_enemy_grunt_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_enemy_grunt_attack(entity_t * e);
@@ -21,7 +22,7 @@ void entity_enemy_grunt_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
 }
 
 void entity_enemy_grunt_attack(entity_t * e) {
-    // todo, e->_play_sound(sfx_shotgun_shoot);
+    e->_play_sound(e, sfx_shotgun_shoot);
     entity_t * tmplight = game_spawn(entity_light_constructor, vec3_add(e->p, vec3(0,30,0)), 10, 0xff);
     tmplight->_expires = true;
     tmplight->_die_at = game_time + 0.1;

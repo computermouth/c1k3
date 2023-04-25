@@ -8,6 +8,7 @@
 #include "math.h"
 #include "model.h"
 #include "map.h"
+#include "audio.h"
 
 // todo, all this state stuff is pretty bad
 // I don't think it'll hold up well with the fake OOP
@@ -245,7 +246,7 @@ entity_t * entity_enemy_spawn_projectile(entity_t * e, void (*func)(entity_t *, 
 
 void entity_enemy_receive_damage(entity_t * e, entity_t * from, int32_t amount) {
     entity_receive_damage(e, from, amount);
-    // todo, this._play_sound(sfx_enemy_hit);
+    e->_play_sound(e, sfx_enemy_hit);
 
     // Wake up if we're idle or patrolling
     if (e->_state == ENEMY_STATE_IDLE || e->_state == ENEMY_STATE_PATROL) {
@@ -261,7 +262,7 @@ void entity_enemy_kill(entity_t * e) {
     for (uint32_t i = 0; i < model_gib_pieces.len; i++) {
         e->_spawn_particles(e, 2, 300, &(model_gib_pieces.models[i]), 18, 1);
     }
-    // todo, this._play_sound(sfx_enemy_gib);
+    e->_play_sound(e, sfx_enemy_gib);
     game_entities_enemies_pop(e);
 }
 

@@ -2,6 +2,8 @@
 #include "entity_enemy.h"
 #include "entity_projectile_plasma.h"
 
+#include "audio.h"
+
 animation_t hound_animations[] = {
     {   // 0: Idle
         .time = 1,
@@ -85,7 +87,7 @@ void entity_enemy_hound_did_collide_with_entity(entity_t * e, entity_t * other) 
 }
 
 void entity_enemy_hound_attack(entity_t * e) {
-    // todo, e->_play_sound(sfx_enemy_hound_attack);
+    e->_play_sound(e, sfx_enemy_hound_attack);
     e->v = vec3_rotate_y(vec3(0, 250, 600), e->_target_yaw);
     e->_on_ground = 0;
     e->_did_hit = 0;

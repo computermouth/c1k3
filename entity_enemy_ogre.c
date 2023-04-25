@@ -1,6 +1,7 @@
 
 #include "entity_enemy.h"
 #include "entity_projectile_grenade.h"
+#include "audio.h"
 
 animation_t ogre_animations[] = {
     {   // 0: Idle
@@ -55,7 +56,7 @@ void entity_enemy_ogre_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
 }
 
 void entity_enemy_ogre_attack(entity_t * e) {
-    // todo, e->_play_sound(sfx_grenade_shoot);
+    e->_play_sound(e, sfx_grenade_shoot);
     entity_t * t = e->_spawn_projectile(e, (void (*)(void *, vec3_t, uint8_t, uint8_t))entity_projectile_grenade_constructor, 600, 0, -0.4);
     t->_damage = 40;
 }

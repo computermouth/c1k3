@@ -3,6 +3,7 @@
 #include "entity_pickup.h"
 #include "game.h"
 #include "weapon.h"
+#include "audio.h"
 
 void entity_pickup_grenadelauncher_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_pickup_grenadelauncher_update(entity_t * e);
@@ -27,7 +28,7 @@ void entity_pickup_grenadelauncher_update(entity_t * e) {
 }
 
 void entity_pickup_grenadelauncher_pickup(entity_t * e) {
-    // todo, audio_play(sfx_pickup);
+    audio_play(sfx_pickup);
     // todo, hate this
     // don't run these if we've already got all the weapons
     if (game_entity_player->_weapon_length < WEAPON_END) {
