@@ -259,7 +259,7 @@ int main() {
     }
     // Requires at least OpenGL ES 2.0
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     // SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");
     SDL_Window* window = SDL_CreateWindow("c1k3",
