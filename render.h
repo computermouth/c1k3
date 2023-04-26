@@ -6,6 +6,11 @@
 #include "math.h"
 #include "data.h"
 
+#define INTERNAL_W 320
+#define INTERNAL_H 180
+#define D_WINDOW_W 640
+#define D_WINDOW_H 360
+
 // todo, verify these all need to be exposed
 
 // We collect all draw calls in an array and draw them all at once at the end
@@ -35,6 +40,11 @@ extern int r_num_verts;
 extern vec3_t r_camera;
 extern GLfloat r_camera_pitch;
 extern GLfloat r_camera_yaw;
+
+extern int32_t r_padx;
+extern int32_t r_pady;
+extern int32_t r_current_window_width;
+extern int32_t r_current_window_height;
 
 GLuint r_compile_shader(GLenum type, char* source);
 GLint r_vertex_attrib(GLuint shader_program, const GLchar *attrib_name, int count, int vertex_size, long int offset);

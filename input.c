@@ -7,6 +7,7 @@
 
 #include "input.h"
 #include "game.h"
+#include "render.h"
 
 float mouse_x = 0.0f;
 float mouse_y = 0.0f;
@@ -123,6 +124,24 @@ void input_consume() {
         if(e.type == SDL_WINDOWEVENT) {
             if(e.window.event == SDL_WINDOWEVENT_FOCUS_LOST && SDL_GetRelativeMouseMode() == true) {
                 SDL_SetRelativeMouseMode(false);
+            }
+            if(e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+                r_current_window_width = e.window.data1;
+                r_current_window_height = e.window.data2;
+                float fw = r_current_window_width;
+                float fh = r_current_window_height;
+                float dw = INTERNAL_W;
+                float dh = INTERNAL_H;
+                float ratio;
+                r_pady = 0;
+                r_padx = 0;
+                if (fw / dw >= fh / dh) {
+                    ratio = fh / dh;
+                    r_padx = (fw - (dw * ratio)) / 2.0f;
+                } else {
+                    ratio = fw / dw;
+                    r_pady = (fh - (dh * ratio)) / 2.0f;
+                }
             }
         }
     }

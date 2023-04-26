@@ -121,7 +121,7 @@ void game_load() {
     }
 
     r_submit_buffer();
-    
+
     audio_init();
 };
 
@@ -211,7 +211,7 @@ int main() {
     // if (Mix_Init(MIX_INIT_OGG) != MIX_INIT_OGG) {
     //     printf( "SDL_mixer could not initialize! SDL_Error: %s\n", SDL_GetError() );
     // }
-    if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 512 ) != 0){
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512 ) != 0) {
         printf( "SDL_mixer could not initialize! SDL_Error: %s\n", Mix_GetError() );
     }
     // Requires at least OpenGL ES 2.0
@@ -221,8 +221,7 @@ int main() {
     // SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");
     SDL_Window* window = SDL_CreateWindow("c1k3",
                                           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                          // 320, 180,
-                                          960, 540,
+                                          D_WINDOW_W, D_WINDOW_H,
                                           SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     SDL_GL_CreateContext(window);
     // SDL_GL_SetSwapInterval(0);
@@ -280,6 +279,7 @@ int main() {
         // SDL_SetRenderTarget(renderer, target);
 
         SDL_GL_SwapWindow(window);
+
     }
 
     const char * serror = SDL_GetError();

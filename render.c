@@ -1,4 +1,4 @@
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -66,6 +66,18 @@ GLfloat r_camera_yaw = 0;
 draw_call_t * r_draw_calls = NULL;
 uint32_t r_num_draw_calls = 0;
 
+// we render to an offscreen buffer, so we can blit
+// and retain internal resolution and aspect ratio
+GLint default_fbo;
+GLuint offscreen_fbo;
+GLuint offscreen_color_tex;
+GLuint offscreen_depth_tex;
+
+int32_t r_padx = 0;
+int32_t r_pady = 0;
+int32_t r_current_window_width = D_WINDOW_W;
+int32_t r_current_window_height = D_WINDOW_H;
+
 GLuint r_compile_shader(GLenum type, char* source) {
 
     GLuint shader = glCreateShader(type);
@@ -115,12 +127,39 @@ void r_init() {
     r_va_n2 = r_vertex_attrib(shader_program, "n2", 3, 8, 5);
 
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
     glEnable(GL_BLEND);
     glEnable(GL_CULL_FACE);
-    // todo, window dimensions??
-    // glViewport(0, 0, 320, 180);
-    glViewport(0, 0, 960, 540);
 
+    glViewport(0, 0, INTERNAL_W, INTERNAL_H);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    // save default fbo
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &default_fbo);
+
+    // initialize offscreen fbo
+    glGenFramebuffers(1, &offscreen_fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, offscreen_fbo);
+
+    // initialize backing texture for offscreen fbo
+    glGenTextures(1, &offscreen_color_tex);
+    glBindTexture(GL_TEXTURE_2D, offscreen_color_tex);
+    // todo, window dimensions??
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, INTERNAL_W, INTERNAL_H, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, offscreen_color_tex, 0);
+
+    // initialize depth texture for offscreen fbo
+    glGenTextures(1, &offscreen_depth_tex);
+    glBindTexture(GL_TEXTURE_2D, offscreen_depth_tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, INTERNAL_W, INTERNAL_H, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // todo, not sure
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, offscreen_depth_tex, 0);
 }
 
 void r_create_texture(png_bin_t p) {
@@ -165,6 +204,10 @@ void r_prepare_frame(float r, float g, float b) {
 }
 
 void r_end_frame() {
+
+    glBindFramebuffer(GL_FRAMEBUFFER, offscreen_fbo);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     glUniform4f(r_u_camera, r_camera.x, r_camera.y, r_camera.z, 16.0f/9.0f);
     glUniform2f(r_u_mouse, r_camera_yaw, r_camera_pitch);
     glUniform3fv(r_u_lights, r_num_lights * 6, r_light_buffer);
@@ -190,6 +233,19 @@ void r_end_frame() {
             glVertexAttribPointer(r_va_n2, 3, GL_FLOAT, GL_FALSE, 8 * 4, (void *)((vo*8+5)*4));
         }
         glDrawArrays(GL_TRIANGLES, c.f1, c.num_verts);
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, default_fbo);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, offscreen_fbo);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, default_fbo);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // glBlitFramebuffer(0, 0, WINDOW_W, WINDOW_H, padx, pady, w - padx, h - pady, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    glBlitFramebuffer(0, 0, INTERNAL_W, INTERNAL_H, r_padx, r_pady, r_current_window_width - r_padx, r_current_window_height - r_pady, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    glBlitFramebuffer(0, 0, INTERNAL_W, INTERNAL_H, r_padx, r_pady, r_current_window_width - r_padx, r_current_window_height - r_pady, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    GLenum gerror = glGetError();
+    while (gerror != GL_NO_ERROR) {
+        printf("glerror: %x\n", gerror);
+        gerror = glGetError();
     }
 
     // memset(r_draw_calls, 0, sizeof(draw_call_t) * r_num_draw_calls);

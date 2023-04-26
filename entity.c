@@ -274,7 +274,7 @@ void entity_receive_damage(entity_t * e, entity_t * from, int32_t amount) {
         e->_kill(e);
 }
 
-void entity_play_sound(entity_t * e, Mix_Chunk * sound) {    
+void entity_play_sound(entity_t * e, Mix_Chunk * sound) {
     float volume = clamp(scale(vec3_dist(e->p, r_camera), 64, 1200, 1, 0),0,1);
     float pan = sinf(vec3_2d_angle(e->p, r_camera)-r_camera_yaw)*-1;
     audio_play_opt(sound, volume, 0, pan);
