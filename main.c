@@ -206,13 +206,14 @@ int main(int argc, char* argv[]) {
     srand((unsigned) time(&t));
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
-        printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
+        fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
     }
     if (Mix_Init(MIX_INIT_OGG) != MIX_INIT_OGG) {
-        printf( "SDL_mixer could not initialize! SDL_Error: %s\n", SDL_GetError() );
+        fprintf(stderr, "SDL_mixer could not Mix_Init! SDL_Error: %s\n", SDL_GetError() );
     }
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512 ) != 0) {
-        printf( "SDL_mixer could not initialize! SDL_Error: %s\n", Mix_GetError() );
+    if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048 ) != 0) {
+        fprintf(stderr, "SDL_mixer could not Mix_OpenAudio! SDL_Error: %s\n", Mix_GetError() );
+        fprintf(stderr, "  -- this could just mean that no audio output exists" );
     }
     // Requires at least OpenGL ES 2.0
     SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
@@ -272,22 +273,16 @@ int main(int argc, char* argv[]) {
 
         SDL_GL_SwapWindow(window);
 
-        const char * serror = SDL_GetError();
-        while ( strcmp(serror, "") ) {
-            printf("sdlerror: %s\n", serror);
-            serror = SDL_GetError();
+        char * serror = NULL;
+        while ( strcmp((serror = SDL_GetError()), "") ) {
+            fprintf(stderr, "sdlerror: %s\n", serror);
+            SDL_ClearError();
+            serror = Mix_GetError();
         }
-    
-        const char * merror = Mix_GetError();
-        while ( strcmp(merror, "") ) {
-            printf("mixerror: %s\n", merror);
-            serror = SDL_GetError();
-        }
-    
-        GLenum gerror = glGetError();
-        while (gerror != GL_NO_ERROR) {
-            printf("glerror: %x\n", gerror);
-            gerror = glGetError();
+
+        GLenum gerror = GL_NO_ERROR;
+        while ((gerror = glGetError()) != GL_NO_ERROR) {
+            fprintf(stderr, "glerror: %x\n", gerror);
         }
 
     }
