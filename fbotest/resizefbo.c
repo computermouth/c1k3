@@ -128,12 +128,13 @@ void Draw()
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
     }
     // Requires at least OpenGL ES 2.0
+    SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -177,7 +178,7 @@ int main() {
     // for(int i = 0; i < WINDOW_W * WINDOW_H * 4; i++) {
     //     printf("0x%x ", pixbuf[i]);
     // }
-    
+
     while (1) {
 
         SDL_Event e;
@@ -202,14 +203,14 @@ int main() {
         int padx = 0;
         int pady = 0;
         float ratio;
-        if (fw / dw >= fh / dh){
+        if (fw / dw >= fh / dh) {
             ratio = fh / dh;
             padx = (fw - (dw * ratio)) / 2.0f;
         } else {
             ratio = fw / dw;
             pady = (fh - (dh * ratio)) / 2.0f;
         }
-        
+
         glBindFramebuffer(GL_FRAMEBUFFER, default_fbo);
         glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, default_fbo);
@@ -217,13 +218,13 @@ int main() {
         glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         glBlitFramebuffer(0, 0, WINDOW_W, WINDOW_H, padx, pady, w - padx, h - pady, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-    
+
         GLenum gerror = glGetError();
         while (gerror != GL_NO_ERROR) {
             printf("glerror: %x\n", gerror);
             gerror = glGetError();
         }
-    
+
         SDL_GL_SwapWindow(window);
         const char * serror = SDL_GetError();
         while ( strcmp(serror, "") ) {

@@ -108,7 +108,7 @@ GLuint Init()
 //
 void Draw(GLuint program)
 {
-    
+
     GLfloat vVertices[] = {0.0f, 0.5f, 0.0f,
                            -0.5f, -0.5f, 0.0f,
                            0.5f, -0.5f, 0.0f
@@ -127,12 +127,13 @@ void Draw(GLuint program)
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
     }
     // Requires at least OpenGL ES 2.0
+    SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -142,9 +143,9 @@ int main() {
                                           SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     SDL_GL_CreateContext(window);
     GLuint program = Init();
-    
+
     while (1) {
-        
+
         SDL_Event e;
         while(SDL_PollEvent(&e))
         {
@@ -160,7 +161,7 @@ int main() {
             printf("sdlerror: %s\n", serror);
             serror = SDL_GetError();
         }
-    
+
         GLenum gerror = glGetError();
         while (gerror != GL_NO_ERROR) {
             printf("glerror: %x\n", gerror);
