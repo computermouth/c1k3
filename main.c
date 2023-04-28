@@ -199,7 +199,7 @@ void quit() {
     if (model_nail.frames)                   free(model_nail.frames);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 
     // todo, more randy
     time_t t;
@@ -215,6 +215,7 @@ int main() {
         printf( "SDL_mixer could not initialize! SDL_Error: %s\n", Mix_GetError() );
     }
     // Requires at least OpenGL ES 2.0
+    SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -303,4 +304,6 @@ int main() {
 jump:
 
     quit();
+
+    return 0;
 }

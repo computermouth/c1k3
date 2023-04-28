@@ -6,16 +6,17 @@ INT_H   = audio.h data.h entity_barrel.h entity.h entity_door.h entity_enemy.h e
 TST_SRC = tests/test.c
 SAN_FLAGS = -fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize=null -fno-sanitize=alignment
 SAN_OPT = ASAN_OPTIONS=abort_on_error=1:fast_unwind_on_malloc=0:detect_leaks=0 UBSAN_OPTIONS=print_stacktrace=1
+L_FLAGS = $(shell sdl2-config --libs)
 
 all:
-	$(CC) -Wall -g $(SAN_FLAGS) $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 -lSDL2 -lSDL2_mixer
+	$(CC) -Wall -g $(SAN_FLAGS) $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 $(L_FLAGS) -lSDL2_mixer
 
 release:
-	$(CC) -Os -flto -Wall $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 -lSDL2 -lSDL2_mixer
+	$(CC) -Os -flto -Wall $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 $(L_FLAGS) -lSDL2_mixer
 	strip main
 
 valbuild:
-	$(CC) -Wall -g $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 -lSDL2 -lSDL2_mixer
+	$(CC) -Wall -g $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 $(L_FLAGS) -lSDL2_mixer
 
 memtest: valbuild
 	valgrind --track-origins=yes --leak-check=yes --gen-suppressions=all --suppressions=extra/suppressions.valg ./main
