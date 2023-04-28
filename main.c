@@ -208,9 +208,9 @@ int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
         printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
     }
-    // if (Mix_Init(MIX_INIT_OGG) != MIX_INIT_OGG) {
-    //     printf( "SDL_mixer could not initialize! SDL_Error: %s\n", SDL_GetError() );
-    // }
+    if (Mix_Init(MIX_INIT_OGG) != MIX_INIT_OGG) {
+        printf( "SDL_mixer could not initialize! SDL_Error: %s\n", SDL_GetError() );
+    }
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512 ) != 0) {
         printf( "SDL_mixer could not initialize! SDL_Error: %s\n", Mix_GetError() );
     }
@@ -227,11 +227,6 @@ int main(int argc, char* argv[]) {
     SDL_GL_CreateContext(window);
     // SDL_GL_SetSwapInterval(0);
     // todo, vsync?
-    //   SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-    //   SDL_Texture * target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
-    // SDL_TEXTUREACCESS_TARGET, 320, 180);
-    //   SDL_RenderClear(renderer);
-    //   SDL_SetRenderTarget(renderer, target);
 
     game_load();
 
@@ -245,7 +240,7 @@ int main(int argc, char* argv[]) {
         time(&t);
         newtime = t;
         if (newtime - oldtime >=2) {
-            printf("fps: %f\n", (float)frames / 2.0f);
+            fprintf(stderr, "fps: %f\n", (float)frames / 2.0f);
             oldtime = newtime;
             frames = 0;
         }
@@ -253,7 +248,7 @@ int main(int argc, char* argv[]) {
         input_consume();
 
         if (input_quit)
-            goto jump;
+            goto end;
 
         if(game_state == MENU_STATE && keys[KEY_ACTION] ) {
             game_state = GAME_STATE;
@@ -274,34 +269,30 @@ int main(int argc, char* argv[]) {
             game_run(SDL_GetTicks()); // time in ms since page load?
         else
             menu_run(SDL_GetTicks());
-        // SDL_SetRenderTarget(renderer, NULL);
-        // SDL_RenderCopy(renderer, target, NULL, NULL);
-        // SDL_RenderPresent(renderer);
-        // SDL_SetRenderTarget(renderer, target);
 
         SDL_GL_SwapWindow(window);
 
+        const char * serror = SDL_GetError();
+        while ( strcmp(serror, "") ) {
+            printf("sdlerror: %s\n", serror);
+            serror = SDL_GetError();
+        }
+    
+        const char * merror = Mix_GetError();
+        while ( strcmp(merror, "") ) {
+            printf("mixerror: %s\n", merror);
+            serror = SDL_GetError();
+        }
+    
+        GLenum gerror = glGetError();
+        while (gerror != GL_NO_ERROR) {
+            printf("glerror: %x\n", gerror);
+            gerror = glGetError();
+        }
+
     }
 
-    const char * serror = SDL_GetError();
-    while ( strcmp(serror, "") ) {
-        printf("sdlerror: %s\n", serror);
-        serror = SDL_GetError();
-    }
-
-    const char * merror = Mix_GetError();
-    while ( strcmp(merror, "") ) {
-        printf("mixerror: %s\n", merror);
-        serror = SDL_GetError();
-    }
-
-    GLenum gerror = glGetError();
-    while (gerror != GL_NO_ERROR) {
-        printf("glerror: %x\n", gerror);
-        gerror = glGetError();
-    }
-
-jump:
+end:
 
     quit();
 

@@ -242,11 +242,6 @@ void r_end_frame() {
     // glBlitFramebuffer(0, 0, WINDOW_W, WINDOW_H, padx, pady, w - padx, h - pady, GL_COLOR_BUFFER_BIT, GL_NEAREST);
     glBlitFramebuffer(0, 0, INTERNAL_W, INTERNAL_H, r_padx, r_pady, r_current_window_width - r_padx, r_current_window_height - r_pady, GL_COLOR_BUFFER_BIT, GL_NEAREST);
     glBlitFramebuffer(0, 0, INTERNAL_W, INTERNAL_H, r_padx, r_pady, r_current_window_width - r_padx, r_current_window_height - r_pady, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-    GLenum gerror = glGetError();
-    while (gerror != GL_NO_ERROR) {
-        printf("glerror: %x\n", gerror);
-        gerror = glGetError();
-    }
 
     // memset(r_draw_calls, 0, sizeof(draw_call_t) * r_num_draw_calls);
     free(r_draw_calls);
