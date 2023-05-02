@@ -68,6 +68,7 @@ const uint8_t * data_song = song_ogg;
 const uint32_t data_song_len = song_ogg_len;
 
 #include "assets/maps.h"
+// #include "assets/testmap/testmap.h"
 
 const uint8_t * data_maps = __maps;
 const uint32_t data_maps_len = __maps_len;
