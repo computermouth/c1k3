@@ -1,13 +1,28 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_surface.h>
+#include <SDL2/SDL_ttf.h>
 #include <GLES3/gl3.h>
 
+TTF_Font * font = NULL;
+
 SDL_Surface* create_checkerboard_surface(int width, int height) {
-    SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    font = TTF_OpenFont("RobotoMono-Thin.ttf", 72);
+	if ( !font ) {
+		printf("Error loading font: %s", TTF_GetError());
+	}
+    SDL_Color c = {.r = 255, .g = 255, .b = 255, .a = 255};
+    SDL_Surface* burf = TTF_RenderText_Solid(font, "ok", c);    
+    
+    SDL_Surface* surface = SDL_CreateRGBSurface(0, burf->w, burf->h, 32, 0, 0, 0, 0);
+    
+    SDL_BlitSurface(burf, NULL, surface, NULL);
 
     if (!surface) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create SDL surface: %s", SDL_GetError());
         return NULL;
     }
+    return surface;
 
     const int check_size = 16;
     Uint32* pixels = (Uint32*)surface->pixels;
@@ -89,6 +104,7 @@ int main(int argc, char* argv[]) {
     SDL_Window* window;
     SDL_GLContext context;
     SDL_Init(SDL_INIT_VIDEO);
+    TTF_Init();
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -176,7 +192,7 @@ int main(int argc, char* argv[]) {
         glUniform1i(texture_location, 0);
 
         // Set the clear color and clear the screen
-        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        glClearColor(1.0f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw the triangle
