@@ -1,41 +1,58 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_ttf.h>
 #include <GLES3/gl3.h>
 
 TTF_Font * font = NULL;
 
-SDL_Surface* create_checkerboard_surface(int width, int height) {
-    font = TTF_OpenFont("RobotoMono-Thin.ttf", 72);
+SDL_Surface* create_surface() {
+    // font = TTF_OpenFont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 42);
+    font = TTF_OpenFont("/home/computermouth/Downloads/TerminessNerdFontMono-Bold.ttf", 32);
 	if ( !font ) {
 		printf("Error loading font: %s", TTF_GetError());
 	}
-    SDL_Color c = {.r = 255, .g = 255, .b = 255, .a = 255};
-    SDL_Surface* burf = TTF_RenderText_Solid(font, "ok", c);    
+    SDL_Color c = {.r = 0, .g = 0, .b = 0, .a = 255};
+    SDL_Surface* ammo = TTF_RenderUTF8_Solid(font, "ammo: ∞", c);
+    SDL_Surface* health = TTF_RenderUTF8_Solid(font, "♥: 50", c);
+    SDL_Surface* c1k3 = TTF_RenderUTF8_Solid(font, "C1K3", c);
     
-    SDL_Surface* surface = SDL_CreateRGBSurface(0, burf->w, burf->h, 32, 0, 0, 0, 0);
+    int width = 640;
+    int height = 480;
     
-    SDL_BlitSurface(burf, NULL, surface, NULL);
+    // todo, endianness
+    SDL_Surface* surface =SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_ABGR8888);
+    SDL_FillRect(surface, 0, 0x00000000);
+    
+    SDL_BlitSurface(ammo, NULL, surface, &(SDL_Rect){
+        .x = (width / 4) - ammo->w / 2,
+        .y = height - ammo->h - 20,
+    });
+    
+    SDL_BlitSurface(health, NULL, surface, &(SDL_Rect){
+        .x = (width / 4 * 3) - health->w / 2,
+        .y = height - health->h - 20,
+    });
+    
+    // cant scale-blit 8-bit surface to 32-bit surface, so we upgrade first
+    SDL_Surface* doink =SDL_CreateRGBSurfaceWithFormat(0, c1k3->w, c1k3->h, 32, SDL_PIXELFORMAT_ABGR8888);
+    SDL_FillRect(doink, 0, 0x00000000);
+    SDL_BlitSurface(c1k3, NULL, doink, &(SDL_Rect){
+        .x = 0,
+        .y = 0,
+    });
+    // then scale blit
+    int scale = 4;
+    SDL_BlitScaled(doink, NULL, surface, &(SDL_Rect){
+        .x = (surface->w / 2) - doink->w * scale / 2,
+        .y = 20,
+        .w = doink->w * scale,
+        .h = doink->h * scale
+    });
 
     if (!surface) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create SDL surface: %s", SDL_GetError());
         return NULL;
     }
-    return surface;
-
-    const int check_size = 16;
-    Uint32* pixels = (Uint32*)surface->pixels;
-
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            int tile_x = x / check_size;
-            int tile_y = y / check_size;
-            Uint32 color = (tile_x + tile_y) % 2 == 0 ? 0xFFFFFFFF : 0xFF000000;
-            pixels[x + y * width] = color;
-        }
-    }
-
     return surface;
 }
 
@@ -112,15 +129,18 @@ int main(int argc, char* argv[]) {
     context = SDL_GL_CreateContext(window);
 
     // Create a checkerboard surface
-    SDL_Surface* surface = create_checkerboard_surface(256, 256);
-
+    SDL_Surface* surface = create_surface();
+    // super crucial
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
     // Create a GL texture from the surface
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // Create a shader program and get the attribute and uniform locations
     GLuint vertex_shader = create_shader_from_source("#version 300 es\n"
@@ -192,7 +212,7 @@ int main(int argc, char* argv[]) {
         glUniform1i(texture_location, 0);
 
         // Set the clear color and clear the screen
-        glClearColor(1.0f, 0.2f, 0.2f, 1.0f);
+        glClearColor(1.0f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw the triangle
