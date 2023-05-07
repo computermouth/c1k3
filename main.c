@@ -215,6 +215,8 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "SDL_mixer could not Mix_OpenAudio! SDL_Error: %s\n", Mix_GetError() );
         fprintf(stderr, "  -- this could just mean that no audio output exists" );
     }
+    // todo, tune?
+    Mix_AllocateChannels(32);
     // Requires at least OpenGL ES 2.0
     SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
