@@ -32,6 +32,7 @@ release: assets $(INT_OBJ) $(EXT_OBJ)
 	$(CC) $(OPT_FLAGS) -o main $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
 	strip main
 
+.NOTPARALLEL:
 assets:
 	make -C c1k3-assets
 
