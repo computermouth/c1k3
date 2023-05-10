@@ -1,0 +1,3 @@
+[submodule "c1k3-assets"]
+	path = c1k3-assets
+	url = git@github.com:computermouth/c1k3-assets

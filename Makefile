@@ -1,28 +1,51 @@
 
-EXT_SRC = lodepng.c
-MAIN_C  = main.c
-INT_SRC = audio.c data.c entity_barrel.c entity.c entity_door.c entity_enemy.c entity_enemy_enforcer.c entity_enemy_grunt.c entity_enemy_ogre.c entity_enemy_zombie.c entity_enemy_hound.c entity_light.c entity_particle.c entity_pickup.c entity_pickup_grenadelauncher.c entity_pickup_grenades.c entity_pickup_health.c entity_pickup_key.c entity_pickup_nailgun.c entity_pickup_nails.c entity_player.c entity_projectile_gib.c entity_projectile_grenade.c entity_projectile_nail.c entity_projectile_plasma.c entity_projectile_shell.c entity_torch.c entity_trigger_level.c game.c input.c map.c math.c model.c text.c render.c weapon.c
-INT_H   = audio.h data.h entity_barrel.h entity.h entity_door.h entity_enemy.h entity_enemy_enforcer.h entity_enemy_grunt.h entity_enemy_ogre.h entity_enemy_zombie.h entity_enemy_hound.h entity_light.h entity_particle.h entity_pickup.h entity_pickup_grenadelauncher.h entity_pickup_grenades.h entity_pickup_health.h entity_pickup_key.h entity_pickup_nailgun.h entity_pickup_nails.h entity_player.h entity_projectile_gib.h entity_projectile_grenade.h entity_projectile_nail.h entity_projectile_plasma.h entity_projectile_shell.h entity_torch.h entity_trigger_level.h game.h input.h map.h math.h model.h text.h render.h weapon.h
+EXT_SRC = $(wildcard external/*.c)
+EXT_OBJ = $(EXT_SRC:.c=.o)
+
+INT_SRC = $(wildcard *.c)
+INT_OBJ = $(INT_SRC:.c=.o)
+
+# just for lint
+INT_H   = $(wildcard *.h)
+# maybe someday
 TST_SRC = tests/test.c
+
+# todo generate
+IFLAGS = -I ./c1k3-assets -I ./c1k3-assets/img -I ./c1k3-assets/audio -I ./external
+
+CFLAGS = -Wall $(IFLAGS) $(shell pkg-config --cflags sdl2 SDL2_mixer SDL2_ttf glesv2)
+LFLAGS = -lm $(shell pkg-config --libs sdl2 SDL2_mixer SDL2_ttf glesv2)
+
+# debug junk
 SAN_FLAGS = -fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize=null -fno-sanitize=alignment
 SAN_OPT = ASAN_OPTIONS=abort_on_error=1:fast_unwind_on_malloc=0:detect_leaks=0 UBSAN_OPTIONS=print_stacktrace=1
-L_FLAGS = $(shell pkg-config --libs sdl2 SDL2_mixer SDL2_ttf)
 
-all:
-	$(CC) -Wall -g $(SAN_FLAGS) $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 $(L_FLAGS)
+DEBUG_CFLAGS = $(CFLAGS) $(SAN_FLAGS) -g
+RELEA_CFLAGS = $(CFLAGS) -Os -flto
 
-release:
-	$(CC) -Os -flto -Wall $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 $(L_FLAGS)
+all: OPT_FLAGS = $(DEBUG_CFLAGS)
+all: assets $(INT_OBJ) $(EXT_OBJ)
+	$(CC) $(OPT_FLAGS) -o main $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
+
+release: OPT_FLAGS = $(RELEA_CFLAGS)
+release: assets $(INT_OBJ) $(EXT_OBJ)
+	$(CC) $(OPT_FLAGS) -o main $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
 	strip main
 
+assets:
+	make -C c1k3-assets
+
+%.o: %.c
+	$(CC) $(OPT_FLAGS) -c $< -o $@
+
 valbuild:
-	$(CC) -Wall -g $(MAIN_C) $(INT_SRC) $(EXT_SRC) -o main -lm -lGLESv2 $(L_FLAGS)
+	$(CC) -Wall -g $(INT_SRC) $(EXT_SRC) -o main $(L_FLAGS)
 
 memtest: valbuild
 	valgrind --track-origins=yes --leak-check=yes --gen-suppressions=all --suppressions=extra/suppressions.valg ./main
 
 lint:
-	astyle -n $(MAIN_C) $(INT_SRC) $(INT_H) $(TST_SRC)
+	astyle -n $(INT_SRC) $(INT_H)
 
 test:
 	## super overkill with the linking and building in all objects

@@ -3,3 +3,5 @@
 /tester
 /main.exe
 /experiments/a.out
+/*.o
+/*/*.o
