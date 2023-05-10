@@ -27,53 +27,67 @@ typedef struct {
 */
 
 SDL_Surface * overlay_surface = NULL;
-TTF_Font * font = NULL;
+TTF_Font * font_sm = NULL;
+TTF_Font * font_md = NULL;
+TTF_Font * font_lg = NULL;
 
 bool was_updated = 0;
 
 SDL_Surface* create_surface() {
     SDL_Color c = {.r = 255, .g = 255, .b = 255, .a = 255};
-    SDL_Surface* ammo = TTF_RenderUTF8_Solid(font, "ammo: ∞", c);
-    SDL_Surface* health = TTF_RenderUTF8_Solid(font, "♥: 50", c);
-    SDL_Surface* c1k3 = TTF_RenderUTF8_Solid(font, "C1K3", c);
+    SDL_Surface* ammo = TTF_RenderUTF8_Solid(font_md, "ammo: ∞", c);
+    SDL_Surface* health = TTF_RenderUTF8_Solid(font_md, "♥: 50", c);
+    SDL_Surface* c1k3 = TTF_RenderUTF8_Solid(font_lg, "C1K3", c);
+    SDL_Surface* dq = TTF_RenderUTF8_Solid(font_sm, "-- dequake fps --", c);
 
-    int width = D_WINDOW_W;
-    int height = D_WINDOW_H;
+    int width = INTERNAL_W;
+    int height = INTERNAL_H;
 
     // todo, endianness
     SDL_Surface* surface =SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_ABGR8888);
     SDL_FillRect(surface, 0, 0x00000000);
 
     SDL_BlitSurface(ammo, NULL, surface, &(SDL_Rect) {
-        .x = (width / 4) - ammo->w / 2,
-        .y = height - ammo->h - 20,
+        .x = (width / 6) - ammo->w / 2,
+        .y = height - ammo->h - 10,
     });
     SDL_FreeSurface(ammo);
 
     SDL_BlitSurface(health, NULL, surface, &(SDL_Rect) {
-        .x = (width / 4 * 3) - health->w / 2,
-        .y = height - health->h - 20,
+        .x = (width / 6 * 5) - health->w / 2,
+        .y = height - health->h - 10,
     });
     SDL_FreeSurface(health);
 
-    // cant scale-blit 8-bit surface to 32-bit surface, so we upgrade first
-    SDL_Surface* tmp_c1k3 =SDL_CreateRGBSurfaceWithFormat(0, c1k3->w, c1k3->h, 32, SDL_PIXELFORMAT_ABGR8888);
-    SDL_FillRect(tmp_c1k3, 0, 0x00000000);
-    SDL_BlitSurface(c1k3, NULL, tmp_c1k3, &(SDL_Rect) {
-        .x = 0,
-        .y = 0,
-    });
-    // then scale blit
-    int scale = 4;
-    SDL_BlitScaled(tmp_c1k3, NULL, surface, &(SDL_Rect) {
-        .x = (surface->w / 2) - tmp_c1k3->w * scale / 2,
-        .y = 20,
-        .w = tmp_c1k3->w * scale,
-        .h = tmp_c1k3->h * scale
+    SDL_BlitSurface(c1k3, NULL, surface, &(SDL_Rect) {
+        .x = (width / 2) - c1k3->w / 2,
+        .y = (height / 2) - c1k3->h / 2,
     });
 
+    SDL_BlitSurface(dq, NULL, surface, &(SDL_Rect) {
+        .x = (width / 2) - dq->w / 2,
+        .y = (height / 2) + dq->h,
+    });
+    SDL_FreeSurface(dq);
     SDL_FreeSurface(c1k3);
-    SDL_FreeSurface(tmp_c1k3);
+
+    // // cant scale-blit 8-bit surface to 32-bit surface, so we upgrade first
+    // SDL_Surface* tmp_c1k3 =SDL_CreateRGBSurfaceWithFormat(0, c1k3->w, c1k3->h, 32, SDL_PIXELFORMAT_ABGR8888);
+    // SDL_FillRect(tmp_c1k3, 0, 0x00000000);
+    // SDL_BlitSurface(c1k3, NULL, tmp_c1k3, &(SDL_Rect) {
+    //     .x = 0,
+    //     .y = 0,
+    // });
+    // // then scale blit
+    // int scale = 4;
+    // SDL_BlitScaled(tmp_c1k3, NULL, surface, &(SDL_Rect) {
+    //     .x = (surface->w / 2) - tmp_c1k3->w * scale / 2,
+    //     .y = 0,
+    //     .w = tmp_c1k3->w * scale,
+    //     .h = tmp_c1k3->h * scale
+    // });
+    // SDL_FreeSurface(c1k3);
+    // SDL_FreeSurface(tmp_c1k3);
 
     if (!surface) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create SDL surface: %s", SDL_GetError());
@@ -93,10 +107,9 @@ void text_init() {
     TTF_Init();
 
     // todo, embed font
-    font = TTF_OpenFont("/home/computermouth/Downloads/TerminessNerdFontMono-Bold.ttf", 32);
-    if ( !font ) {
-        fprintf(stderr, "Error loading font: %s", TTF_GetError());
-    }
+    font_sm = TTF_OpenFont("/home/computermouth/Downloads/TerminessNerdFontMono-Bold.ttf", 12);
+    font_md = TTF_OpenFont("/home/computermouth/Downloads/TerminessNerdFontMono-Bold.ttf", 16);
+    font_lg = TTF_OpenFont("/home/computermouth/Downloads/TerminessNerdFontMono-Bold.ttf", 32);
 
     // Create a shader program and get the attribute and uniform locations
     GLuint vertex_shader = r_compile_shader(

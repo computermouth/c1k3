@@ -191,7 +191,6 @@ void r_init() {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, offscreen_depth_tex, 0);
 
     text_init();
-    glBindFramebuffer(GL_FRAMEBUFFER, offscreen_fbo);
 
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
     r_vertex_attrib(shader_program, "p", 3, 8, 0);
@@ -283,12 +282,14 @@ void r_end_frame() {
         glDrawArrays(GL_TRIANGLES, c.f1, c.num_verts);
     }
 
+    // todo works here, but eeeeggghhhh
+    // would rather put it after the blit
+    text_render_overlay();
+
     glBindFramebuffer(GL_READ_FRAMEBUFFER, offscreen_fbo);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, default_fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBlitFramebuffer(0, 0, INTERNAL_W, INTERNAL_H, r_padx, r_pady, r_current_window_width - r_padx, r_current_window_height - r_pady, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-    text_render_overlay();
 
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
     r_vertex_attrib(shader_program, "p", 3, 8, 0);
