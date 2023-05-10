@@ -1,3 +1,4 @@
+#include <GLES2/gl2.h>
 #include <GLES3/gl3.h>
 #include <SDL2/SDL.h>
 #include <stdio.h>
@@ -10,6 +11,7 @@
 #include "data.h"
 #include "render.h"
 #include "lodepng.h"
+#include "text.h"
 
 typedef struct {
     int antialias;
@@ -92,6 +94,37 @@ GLuint r_compile_shader(GLenum type, char* source) {
     return shader;
 }
 
+GLuint r_create_program(GLuint vertex_shader, GLuint fragment_shader) {
+    GLuint program = glCreateProgram();
+
+    if (!program) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create GL program");
+        return 0;
+    }
+
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
+
+    GLint linked;
+    glGetProgramiv(program, GL_LINK_STATUS, &linked);
+
+    if (!linked) {
+        GLint log_length;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_length);
+
+        char* log = malloc(log_length);
+        glGetProgramInfoLog(program, log_length, &log_length, log);
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to link program: %s", log);
+        free(log);
+
+        glDeleteProgram(program);
+        return 0;
+    }
+
+    return program;
+}
+
 GLint r_vertex_attrib(GLuint shader_program, const GLchar *attrib_name, int count, int vertex_size, long int offset) {
     GLint location = glGetAttribLocation(shader_program, attrib_name);
     glEnableVertexAttribArray(location);
@@ -101,14 +134,14 @@ GLint r_vertex_attrib(GLuint shader_program, const GLchar *attrib_name, int coun
 
 
 GLuint vertex_buffer;
+GLuint shader_program;
 void r_init() {
 
-    GLuint shader_program = glCreateProgram();
-    glAttachShader(shader_program, r_compile_shader(GL_VERTEX_SHADER, SHADER_VERT));
-    glAttachShader(shader_program, r_compile_shader(GL_FRAGMENT_SHADER, SHADER_FRAG));
-    glLinkProgram(shader_program);
+    shader_program = r_create_program(
+                         r_compile_shader(GL_VERTEX_SHADER, SHADER_VERT),
+                         r_compile_shader(GL_FRAGMENT_SHADER, SHADER_FRAG)
+                     );
     glUseProgram(shader_program);
-
     r_u_camera = glGetUniformLocation(shader_program, "c");
     r_u_lights = glGetUniformLocation(shader_program, "l");
     r_u_mouse = glGetUniformLocation(shader_program, "m");
@@ -122,13 +155,13 @@ void r_init() {
     r_vertex_attrib(shader_program, "p", 3, 8, 0);
     r_vertex_attrib(shader_program, "t", 2, 8, 3);
     r_vertex_attrib(shader_program, "n", 3, 8, 5);
-
     r_va_p2 = r_vertex_attrib(shader_program, "p2", 3, 8, 0);
     r_va_n2 = r_vertex_attrib(shader_program, "n2", 3, 8, 5);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_CULL_FACE);
 
     glViewport(0, 0, INTERNAL_W, INTERNAL_H);
@@ -144,7 +177,6 @@ void r_init() {
     // initialize backing texture for offscreen fbo
     glGenTextures(1, &offscreen_color_tex);
     glBindTexture(GL_TEXTURE_2D, offscreen_color_tex);
-    // todo, window dimensions??
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, INTERNAL_W, INTERNAL_H, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -156,10 +188,18 @@ void r_init() {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, INTERNAL_W, INTERNAL_H, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    // todo, not sure
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, offscreen_depth_tex, 0);
+
+    text_init();
+    glBindFramebuffer(GL_FRAMEBUFFER, offscreen_fbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    r_vertex_attrib(shader_program, "p", 3, 8, 0);
+    r_vertex_attrib(shader_program, "t", 2, 8, 3);
+    r_vertex_attrib(shader_program, "n", 3, 8, 5);
+    r_va_p2 = r_vertex_attrib(shader_program, "p2", 3, 8, 0);
+    r_va_n2 = r_vertex_attrib(shader_program, "n2", 3, 8, 5);
+
 }
 
 void r_create_texture(png_bin_t p) {
@@ -205,8 +245,16 @@ void r_prepare_frame(float r, float g, float b) {
 
 void r_end_frame() {
 
+    glUseProgram(shader_program);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
     glBindFramebuffer(GL_FRAMEBUFFER, offscreen_fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    r_vertex_attrib(shader_program, "p", 3, 8, 0);
+    r_vertex_attrib(shader_program, "t", 2, 8, 3);
+    r_vertex_attrib(shader_program, "n", 3, 8, 5);
+    r_va_p2 = r_vertex_attrib(shader_program, "p2", 3, 8, 0);
+    r_va_n2 = r_vertex_attrib(shader_program, "n2", 3, 8, 5);
 
     glUniform4f(r_u_camera, r_camera.x, r_camera.y, r_camera.z, 16.0f/9.0f);
     glUniform2f(r_u_mouse, r_camera_yaw, r_camera_pitch);
@@ -239,6 +287,15 @@ void r_end_frame() {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, default_fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBlitFramebuffer(0, 0, INTERNAL_W, INTERNAL_H, r_padx, r_pady, r_current_window_width - r_padx, r_current_window_height - r_pady, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+    text_render_overlay();
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    r_vertex_attrib(shader_program, "p", 3, 8, 0);
+    r_vertex_attrib(shader_program, "t", 2, 8, 3);
+    r_vertex_attrib(shader_program, "n", 3, 8, 5);
+    r_va_p2 = r_vertex_attrib(shader_program, "p2", 3, 8, 0);
+    r_va_n2 = r_vertex_attrib(shader_program, "n2", 3, 8, 5);
 
     // memset(r_draw_calls, 0, sizeof(draw_call_t) * r_num_draw_calls);
     free(r_draw_calls);

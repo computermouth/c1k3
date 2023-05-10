@@ -1,3 +1,4 @@
+#include <GLES2/gl2.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <stdint.h>
@@ -13,8 +14,12 @@
 #include "map.h"
 #include "model.h"
 #include "game.h"
+#include "text.h"
 
 void game_load() {
+    // text has to come before render init
+    // not sure why, todo
+    text_init();
     r_init();
 
     for(int i = 0; i < data_textures_len; i++)
@@ -161,6 +166,7 @@ void menu_run(float time_now) {
 void quit() {
     game_free_entities();
     audio_free();
+    text_free();
     if (r_draw_calls)
         free(r_draw_calls);
     if (r_textures)
@@ -273,13 +279,14 @@ int main(int argc, char* argv[]) {
         else
             menu_run(SDL_GetTicks());
 
+        // todo, move to render?
         SDL_GL_SwapWindow(window);
 
-        char * serror = NULL;
+        const char * serror = NULL;
         while ( strcmp((serror = SDL_GetError()), "") ) {
             fprintf(stderr, "sdlerror: %s\n", serror);
             SDL_ClearError();
-            serror = Mix_GetError();
+            serror = SDL_GetError();
         }
 
         GLenum gerror = GL_NO_ERROR;

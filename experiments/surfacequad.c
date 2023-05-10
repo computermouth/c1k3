@@ -1,5 +1,4 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_ttf.h>
 #include <GLES3/gl3.h>
 
@@ -56,7 +55,7 @@ SDL_Surface* create_surface() {
     return surface;
 }
 
-GLuint create_shader_from_source(char* source, GLenum type) {
+GLuint create_shader_from_source(const char* source, GLenum type) {
     GLuint shader = glCreateShader(type);
 
     if (!shader) {

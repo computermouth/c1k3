@@ -47,6 +47,7 @@ extern int32_t r_current_window_width;
 extern int32_t r_current_window_height;
 
 GLuint r_compile_shader(GLenum type, char* source);
+GLuint r_create_program(GLuint vertex_shader, GLuint fragment_shader);
 GLint r_vertex_attrib(GLuint shader_program, const GLchar *attrib_name, int count, int vertex_size, long int offset);
 void r_init();
 void r_create_texture(png_bin_t p);
