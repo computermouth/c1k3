@@ -1,6 +1,7 @@
 #include <GLES2/gl2.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -203,6 +204,10 @@ void quit() {
     if (model_door.frames)                   free(model_door.frames);
     if (model_grenade.frames)                free(model_grenade.frames);
     if (model_nail.frames)                   free(model_nail.frames);
+
+    Mix_Quit();
+    TTF_Quit();
+    SDL_Quit();
 }
 
 int main(int argc, char* argv[]) {

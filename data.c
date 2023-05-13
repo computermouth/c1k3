@@ -15,9 +15,11 @@
 #include "sfx_plasma_shoot.h"
 #include "sfx_shotgun_reload.h"
 #include "sfx_shotgun_shoot.h"
-// #include "assets/audio.wav/song.h"
 #include "song.h"
-// #include "assets/audio.h/example.h"
+#include "TerminessNerdFontMono-Bold.h"
+
+const uint8_t * data_terminess_font = ttf_TerminessNerdFontMono_Bold_ttf;
+const uint32_t data_terminess_font_len = ttf_TerminessNerdFontMono_Bold_ttf_len;
 
 const uint8_t * data_sfx_enemy_gib = audio_sfx_enemy_gib_ogg;
 const uint32_t data_sfx_enemy_gib_len = audio_sfx_enemy_gib_ogg_len;

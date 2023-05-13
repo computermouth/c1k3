@@ -11,7 +11,7 @@ INT_H   = $(wildcard *.h)
 TST_SRC = tests/test.c
 
 # todo generate
-IFLAGS = -I ./c1k3-assets -I ./c1k3-assets/img -I ./c1k3-assets/audio -I ./external
+IFLAGS = -I ./c1k3-assets -I ./c1k3-assets/img -I ./c1k3-assets/audio -I ./c1k3-assets/ttf -I ./external
 
 CFLAGS = -Wall $(IFLAGS) $(shell pkg-config --cflags sdl2 SDL2_mixer SDL2_ttf glesv2)
 LFLAGS = -lm $(shell pkg-config --libs sdl2 SDL2_mixer SDL2_ttf glesv2)
@@ -20,17 +20,24 @@ LFLAGS = -lm $(shell pkg-config --libs sdl2 SDL2_mixer SDL2_ttf glesv2)
 SAN_FLAGS = -fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize=null -fno-sanitize=alignment
 SAN_OPT = ASAN_OPTIONS=abort_on_error=1:fast_unwind_on_malloc=0:detect_leaks=0 UBSAN_OPTIONS=print_stacktrace=1
 
-DEBUG_CFLAGS = $(CFLAGS) $(SAN_FLAGS) -g
+DEBUG_CFLAGS = $(CFLAGS) -g
+DBGSN_CFLAGS = $(DEBUG_CFLAGS) $(SAN_FLAGS)
 RELEA_CFLAGS = $(CFLAGS) -Os -flto
 
-all: OPT_FLAGS = $(DEBUG_CFLAGS)
+all: OPT_FLAGS = $(DBGSN_CFLAGS)
 all: assets $(INT_OBJ) $(EXT_OBJ)
 	$(CC) $(OPT_FLAGS) -o main $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
 
 release: OPT_FLAGS = $(RELEA_CFLAGS)
 release: assets $(INT_OBJ) $(EXT_OBJ)
 	$(CC) $(OPT_FLAGS) -o main $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
-	strip main
+
+valbuild: OPT_FLAGS = $(DEBUG_CFLAGS)
+valbuild: assets $(INT_OBJ) $(EXT_OBJ)
+	$(CC) $(OPT_FLAGS) -o main $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
+
+memtest: valbuild
+	valgrind --track-origins=yes --leak-check=yes --gen-suppressions=all --suppressions=debug/suppressions.valg ./main
 
 .NOTPARALLEL:
 assets:
@@ -38,12 +45,6 @@ assets:
 
 %.o: %.c
 	$(CC) $(OPT_FLAGS) -c $< -o $@
-
-valbuild:
-	$(CC) -Wall -g $(INT_SRC) $(EXT_SRC) -o main $(L_FLAGS)
-
-memtest: valbuild
-	valgrind --track-origins=yes --leak-check=yes --gen-suppressions=all --suppressions=extra/suppressions.valg ./main
 
 lint:
 	astyle -n $(INT_SRC) $(INT_H)

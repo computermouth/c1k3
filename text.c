@@ -1,5 +1,6 @@
 
 #include <GLES2/gl2.h>
+#include <SDL2/SDL_rwops.h>
 #include <stdbool.h>
 
 #include <SDL2/SDL.h>
@@ -9,6 +10,7 @@
 
 #include "text.h"
 #include "render.h"
+#include "data.h"
 
 /*
 typedef struct {
@@ -106,10 +108,15 @@ void text_init() {
 
     TTF_Init();
 
-    // todo, embed font
-    font_sm = TTF_OpenFont("/home/computermouth/Downloads/TerminessNerdFontMono-Bold.ttf", 12);
-    font_md = TTF_OpenFont("/home/computermouth/Downloads/TerminessNerdFontMono-Bold.ttf", 16);
-    font_lg = TTF_OpenFont("/home/computermouth/Downloads/TerminessNerdFontMono-Bold.ttf", 32);
+    // this is kinda goofy, but alright
+    SDL_RWops * font_rw = NULL;
+    font_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
+    font_sm = TTF_OpenFontRW(font_rw, 1, 12);
+    font_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
+    font_md = TTF_OpenFontRW(font_rw, 1, 18);
+    font_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
+    font_lg = TTF_OpenFontRW(font_rw, 1, 32);
+    SDL_FreeRW(font_rw);
 
     // Create a shader program and get the attribute and uniform locations
     GLuint vertex_shader = r_compile_shader(
@@ -199,4 +206,9 @@ void text_pop_all();
 void text_free() {
     // todo
     SDL_FreeSurface(overlay_surface);
+    // apparently this fails to free, as it's
+    // data block memory
+    // TTF_CloseFont(font_sm);
+    // TTF_CloseFont(font_md);
+    // TTF_CloseFont(font_lg);
 }

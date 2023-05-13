@@ -17,6 +17,11 @@ extern const uint32_t data_maps_len;
 extern const uint8_t * data_models;
 extern const uint32_t data_models_len;
 
+// == FONTS =====
+
+extern const uint8_t * data_terminess_font;
+extern const uint32_t data_terminess_font_len;
+
 // == AUDIO =====
 
 extern const uint8_t * data_sfx_enemy_gib;
