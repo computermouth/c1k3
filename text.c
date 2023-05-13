@@ -111,11 +111,13 @@ void text_init() {
     // this is kinda goofy, but alright
     SDL_RWops * font_rw = NULL;
     font_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
-    font_sm = TTF_OpenFontRW(font_rw, 1, 12);
+    font_sm = TTF_OpenFontRW(font_rw, 0, 12);
+    SDL_FreeRW(font_rw);
     font_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
-    font_md = TTF_OpenFontRW(font_rw, 1, 18);
+    font_md = TTF_OpenFontRW(font_rw, 0, 18);
+    SDL_FreeRW(font_rw);
     font_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
-    font_lg = TTF_OpenFontRW(font_rw, 1, 32);
+    font_lg = TTF_OpenFontRW(font_rw, 0, 32);
     SDL_FreeRW(font_rw);
 
     // Create a shader program and get the attribute and uniform locations
