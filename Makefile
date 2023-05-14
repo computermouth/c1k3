@@ -37,7 +37,7 @@ valbuild: assets $(INT_OBJ) $(EXT_OBJ)
 	$(CC) $(OPT_FLAGS) -o main $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
 
 memtest: valbuild
-	valgrind --track-origins=yes --leak-check=yes --gen-suppressions=all --suppressions=debug/suppressions.valg ./main
+	valgrind --track-origins=yes --leak-check=yes --gen-suppressions=all --suppressions=valgrind.supp ./main
 
 .NOTPARALLEL:
 assets:
