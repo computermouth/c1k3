@@ -29,6 +29,9 @@ typedef struct {
 */
 
 SDL_Surface * overlay_surface = NULL;
+SDL_RWops * font_sm_rw = NULL;
+SDL_RWops * font_md_rw = NULL;
+SDL_RWops * font_lg_rw = NULL;
 TTF_Font * font_sm = NULL;
 TTF_Font * font_md = NULL;
 TTF_Font * font_lg = NULL;
@@ -109,16 +112,12 @@ void text_init() {
     TTF_Init();
 
     // this is kinda goofy, but alright
-    SDL_RWops * font_rw = NULL;
-    font_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
-    font_sm = TTF_OpenFontRW(font_rw, 0, 12);
-    SDL_FreeRW(font_rw);
-    font_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
-    font_md = TTF_OpenFontRW(font_rw, 0, 18);
-    SDL_FreeRW(font_rw);
-    font_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
-    font_lg = TTF_OpenFontRW(font_rw, 0, 32);
-    SDL_FreeRW(font_rw);
+    font_sm_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
+    font_sm = TTF_OpenFontRW(font_sm_rw, 0, 12);
+    font_md_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
+    font_md = TTF_OpenFontRW(font_md_rw, 0, 18);
+    font_lg_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
+    font_lg = TTF_OpenFontRW(font_lg_rw, 0, 32);
 
     // Create a shader program and get the attribute and uniform locations
     GLuint vertex_shader = r_compile_shader(
@@ -210,7 +209,10 @@ void text_free() {
     SDL_FreeSurface(overlay_surface);
     // apparently this fails to free, as it's
     // data block memory
-    // TTF_CloseFont(font_sm);
-    // TTF_CloseFont(font_md);
-    // TTF_CloseFont(font_lg);
+    TTF_CloseFont(font_sm);
+    TTF_CloseFont(font_md);
+    TTF_CloseFont(font_lg);
+    SDL_FreeRW(font_sm_rw);
+    SDL_FreeRW(font_md_rw);
+    SDL_FreeRW(font_lg_rw);
 }

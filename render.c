@@ -66,6 +66,12 @@ GLfloat r_camera_yaw = 0;
 // the frame. This way the lights buffer will be completely filled and we
 // only need to set it once for all geometry
 draw_call_t * r_draw_calls = NULL;
+// TODO, this should be changed to a sort of lazy-alloc buffer,
+// which defaults to 512 capacity, and upon reaching capacity, does
+//   > if (r_num_draw_calls == r_draw_calls_capacity){
+//   >   r_draw_calls_capacity *= 2;
+//   >   r_draw_calls = realloc(r_draw_calls, sizeof(draw_call_t) * r_draw_calls_capacity);
+//   > }
 uint32_t r_num_draw_calls = 0;
 
 // we render to an offscreen buffer, so we can blit
