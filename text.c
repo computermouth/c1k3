@@ -216,7 +216,7 @@ void text_prepare_frame() {
     SDL_FillRect(overlay_surface, 0, 0x00000000);
 }
 
-void text_push_banner(text_surface_t * ts) {
+void text_push_surface(text_surface_t * ts) {
     SDL_BlitSurface(ts->data, NULL, overlay_surface, &(SDL_Rect) {
         .x = ts->x,
         .y = ts->y,

@@ -35,11 +35,11 @@ typedef struct {
 } text_surface_t;
 
 void text_init();
-void text_end_frame();
 text_surface_t * text_create_surface(font_input_t input);
-void text_prepare_frame();
-void text_push_banner(text_surface_t * ts);
+void text_push_surface(text_surface_t * ts);
 void text_free_surface(text_surface_t * ts);
+void text_prepare_frame();
+void text_end_frame();
 void text_quit();
 
 #endif

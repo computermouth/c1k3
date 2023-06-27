@@ -144,7 +144,7 @@ void menu_run(float time_now) {
         });
         c1k3->x = INTERNAL_W / 2 - c1k3->w / 2;
         c1k3->y = INTERNAL_H / 2 - c1k3->h / 2;
-        
+
         dq = text_create_surface((font_input_t) {
             .text = "-- dequake fps --",
             .color = { .r = 200, .g = 200, .b = 200, .a = 200 },
@@ -181,8 +181,8 @@ void menu_run(float time_now) {
         10, 196,128,255
     );
 
-    text_push_banner(c1k3);
-    text_push_banner(dq);
+    text_push_surface(c1k3);
+    text_push_surface(dq);
 
     r_end_frame();
 
