@@ -246,6 +246,7 @@ void r_prepare_frame(float r, float g, float b) {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     r_num_lights = 0;
     memset(r_light_buffer, 0.0f, R_MAX_LIGHT_V3*3 * sizeof(float));
+    text_prepare_frame();
 }
 
 void r_end_frame() {
@@ -290,7 +291,7 @@ void r_end_frame() {
 
     // todo works here, but eeeeggghhhh
     // would rather put it after the blit
-    text_render_overlay();
+    text_end_frame();
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, offscreen_fbo);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, default_fbo);

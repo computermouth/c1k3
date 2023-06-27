@@ -131,7 +131,28 @@ void game_load() {
     audio_init();
 };
 
+text_surface_t * c1k3 = NULL;
+text_surface_t * dq = NULL;
+
 void menu_run(float time_now) {
+
+    if (!c1k3) {
+        c1k3 = text_create_surface((font_input_t) {
+            .text = "C1K3",
+            .color = { .r = 255, .g = 255, .b = 255, .a = 255 },
+            .size = FONT_LG
+        });
+        c1k3->x = INTERNAL_W / 2 - c1k3->w / 2;
+        c1k3->y = INTERNAL_H / 2 - c1k3->h / 2;
+        
+        dq = text_create_surface((font_input_t) {
+            .text = "-- dequake fps --",
+            .color = { .r = 200, .g = 200, .b = 200, .a = 200 },
+            .size = FONT_SM
+        });
+        dq->x = INTERNAL_W / 2 - dq->w / 2;
+        dq->y = INTERNAL_H / 2 + dq->h;
+    }
 
     r_prepare_frame(0.0f, 0.0f, 0.0f);
 
@@ -160,6 +181,9 @@ void menu_run(float time_now) {
         10, 196,128,255
     );
 
+    text_push_banner(c1k3);
+    text_push_banner(dq);
+
     r_end_frame();
 
 };
@@ -167,7 +191,7 @@ void menu_run(float time_now) {
 void quit() {
     game_free_entities();
     audio_free();
-    text_free();
+    text_quit();
     if (r_draw_calls)
         free(r_draw_calls);
     if (r_textures)
@@ -274,6 +298,8 @@ int main(int argc, char* argv[]) {
             keys[KEY_PREV] = 0;
             // don't shoot on first frame
             keys[KEY_ACTION] = 0;
+            text_free_surface(c1k3);
+            text_free_surface(dq);
         }
 
         // perform based on state

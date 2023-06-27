@@ -18,27 +18,28 @@ typedef enum {
 } font_size_t;
 
 typedef struct {
-    char * input;
-    font_color_t fg;
-    font_color_t bg;
+    char * text;
+    font_color_t color;
     font_size_t size;
-} font_banner_t;
+} font_input_t;
 
 typedef struct {
-    int x;
-    int y;
-    int w;
-    int h;
-} font_info_t;
+    // might want to draw off screen
+    // otherwise, minimum size to hold INTERNAL_{W,H}
+    // would be fine
+    int32_t x;
+    int32_t y;
+    int32_t w;
+    int32_t h;
+    void * data;
+} text_surface_t;
 
 void text_init();
-void text_raster_banner(uint32_t i);
-void * text_push_banner(font_banner_t banner);
-int text_update_banner(void * banner_ptr, font_banner_t banner);
-int text_pop_banner(void * banner_ptr);
-int text_get_banner_info(void * banner_ptr);
-void text_render_overlay();
-void text_pop_all();
-void text_free();
+void text_end_frame();
+text_surface_t * text_create_surface(font_input_t input);
+void text_prepare_frame();
+void text_push_banner(text_surface_t * ts);
+void text_free_surface(text_surface_t * ts);
+void text_quit();
 
 #endif

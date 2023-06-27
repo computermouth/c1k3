@@ -7,6 +7,7 @@
 #include <SDL2/SDL_surface.h>
 #include <GLES3/gl3.h>
 #include <SDL2/SDL_ttf.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,51 +16,6 @@
 #include "render.h"
 #include "data.h"
 
-/*
-typedef struct {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-    uint8_t a;
-} font_color_t;
-
-typedef enum {
-    FONT_SM,
-    FONT_MD,
-    FONT_LG
-} font_size_t;
-
-typedef struct {
-    char * input;
-    font_color_t fg;
-    font_color_t bg;
-    font_size_t size;
-    int x;
-    int y;
-} font_banner_t;
-*/
-
-typedef struct {
-    font_banner_t banner;
-    SDL_Surface * surface;
-    int x;
-    int y;
-} _internal_font_banner_t;
-
-typedef struct {
-    _internal_font_banner_t ** internal_banners;
-    bool updated;
-    uint32_t capacity;
-    uint32_t len;
-} _internal_banner_vector;
-
-_internal_banner_vector ibv = {
-    .internal_banners = NULL,
-    .updated = false,
-    .capacity = 0,
-    .len = 0,
-};
-
 SDL_Surface * overlay_surface = NULL;
 SDL_RWops * font_sm_rw = NULL;
 SDL_RWops * font_md_rw = NULL;
@@ -67,19 +23,6 @@ SDL_RWops * font_lg_rw = NULL;
 TTF_Font * font_sm = NULL;
 TTF_Font * font_md = NULL;
 TTF_Font * font_lg = NULL;
-
-void update_surface() {
-
-    if (!ibv.updated)
-        return;
-
-    for(int i = 0; i < ibv.len; i++) {
-
-
-        // blit to overlay
-    }
-
-}
 
 /*
 SDL_Surface* create_surface() {
@@ -137,10 +80,6 @@ GLuint overlay_texture;
 void text_init() {
 
     TTF_Init();
-
-    // initialize banner vector
-    ibv.capacity = 8;
-    ibv.internal_banners = calloc(ibv.capacity, sizeof(_internal_font_banner_t *));
 
     // this is kinda goofy, but alright
     font_sm_rw = SDL_RWFromMem((void *)data_terminess_font, data_terminess_font_len);
@@ -210,8 +149,12 @@ void text_init() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
-void text_render_overlay() {
-    update_surface();
+void text_end_frame() {
+
+    glBindTexture(GL_TEXTURE_2D, overlay_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, overlay_surface->w, overlay_surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, overlay_surface->pixels);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     glDisable(GL_CULL_FACE);
     glUseProgram(overlay_program);
@@ -229,17 +172,10 @@ void text_render_overlay() {
     glEnable(GL_CULL_FACE);
 }
 
-void text_raster_banner(uint32_t i) {
-
-    if (i >= ibv.len) {
-        fprintf(stderr, "E: invalid banner specified\n");
-        return;
-    }
-    _internal_font_banner_t * ib = ibv.internal_banners[i];
-    font_banner_t banner = ib->banner;
+text_surface_t * text_create_surface(font_input_t input) {
 
     TTF_Font * font = NULL;
-    switch (banner.size) {
+    switch (input.size) {
     case FONT_SM:
         font = font_sm;
         break;
@@ -251,119 +187,50 @@ void text_raster_banner(uint32_t i) {
         break;
     default:
         fprintf(stderr, "E: unexpected font size, skipping..\n");
-        return;
-    }
-
-    SDL_Color fg = {.r = banner.fg.r, .g = banner.fg.g, .b = banner.fg.b, .a = banner.fg.a};
-    SDL_Surface * tmp_fg = TTF_RenderUTF8_Solid(font, banner.input, fg);
-
-    SDL_Color bg = {.r = banner.bg.r, .g = banner.bg.g, .b = banner.bg.b, .a = banner.bg.a};
-    SDL_Surface * tmp_bg = SDL_CreateRGBSurfaceWithFormat(0, tmp_fg->w, tmp_fg->h, 32, SDL_PIXELFORMAT_ABGR8888);
-    SDL_FillRect(tmp_bg, 0, bg.r << 24 | bg.g << 16 | bg.b << 8 | bg.a );
-
-    SDL_BlitSurface(tmp_fg, 0, tmp_bg, 0);
-    SDL_FreeSurface(tmp_fg);
-
-    if (ib->surface != NULL)
-        SDL_FreeSurface(ib->surface);
-
-    ib->surface = tmp_bg;
-}
-
-void * text_push_banner(font_banner_t banner) {
-    if (banner.input == NULL) {
-        fprintf(stderr, "E: banner.input cannot be null");
         return NULL;
     }
 
-    ibv.len++;
-    if (ibv.len == ibv.capacity) {
-        ibv.capacity *= 2;
-        ibv.internal_banners = realloc(ibv.internal_banners, sizeof(_internal_font_banner_t *) * ibv.capacity);
-        memset(&(ibv.internal_banners[ibv.capacity/2]), 0, sizeof(_internal_font_banner_t *) * ibv.capacity/2);
-    }
+    SDL_Color fg = {.r = input.color.r, .g = input.color.g, .b = input.color.b, .a = input.color.a};
+    SDL_Surface * tmp_fg = TTF_RenderUTF8_Solid(font, input.text, fg);
 
-    uint32_t index = ibv.len - 1;
-    ibv.internal_banners[index] = calloc(1, sizeof(_internal_font_banner_t));
-    font_banner_t * ib = &(ibv.internal_banners[index]->banner);
-    *ib = (font_banner_t) {
-        .input = NULL,
-        .bg = banner.bg,
-        .fg = banner.fg,
-        .size = banner.size,
-        .x = banner.x,
-        .y = banner.y,
-    };
+    // // todo maybe later
+    //
+    // SDL_Color bg = {.r = banner.bg.r, .g = banner.bg.g, .b = banner.bg.b, .a = banner.bg.a};
+    // SDL_Surface * tmp_bg = SDL_CreateRGBSurfaceWithFormat(0, tmp_fg->w, tmp_fg->h, 32, SDL_PIXELFORMAT_ABGR8888);
+    // SDL_FillRect(tmp_bg, 0, bg.r << 24 | bg.g << 16 | bg.b << 8 | bg.a );
 
-    uint32_t input_len = strlen(banner.input) + 1;
-    ib->input = calloc(input_len, sizeof(char));
-    strncpy(ib->input, banner.input, input_len);
+    // SDL_BlitSurface(tmp_fg, 0, tmp_bg, 0);
+    // SDL_FreeSurface(tmp_fg);
 
-    text_raster_banner(index);
+    text_surface_t * ts = malloc(sizeof(text_surface_t));
+    ts->w = tmp_fg->w;
+    ts->h = tmp_fg->h;
+    ts->x = 0;
+    ts->y = 0;
+    ts->data = tmp_fg;
 
-    return ib;
+    return ts;
 }
 
-int text_update_banner(void * banner_ptr, font_banner_t banner) {
-
-    for(uint32_t i = 0; i < ibv.len; i++) {
-        if (ibv.internal_banners[i] == banner_ptr) {
-            free(ibv.internal_banners[i]->banner.input);
-
-            ibv.internal_banners[i]->banner = banner;
-
-            uint32_t input_len = strlen(banner.input) + 1;
-            ibv.internal_banners[i]->banner.input = calloc(input_len, sizeof(char));
-            strncpy(ibv.internal_banners[i]->banner.input, banner.input, input_len);
-
-            text_raster_banner(i);
-            return 0;
-        }
-    }
-
-    fprintf(stderr, "E: unable to update banner -- not found");
-    return 1;
+void text_prepare_frame() {
+    SDL_FillRect(overlay_surface, 0, 0x00000000);
 }
 
-int text_pop_banner(void * banner_ptr) {
-    for(uint32_t i = 0; i < ibv.len; i++) {
-        if (ibv.internal_banners[i] == banner_ptr) {
-            free(ibv.internal_banners[i]->banner.input);
-            free(ibv.internal_banners[i]);
-            free(ibv.internal_banners[i]->surface);
-            free(ibv.internal_banners[i]);
-            ibv.internal_banners[i] = NULL;
-
-            if(i == ibv.len - 1) {
-                fprintf(stderr, "removed last item\n");
-                return 0;
-            }
-
-            memmove(&(ibv.internal_banners[i]), &(ibv.internal_banners[i + 1]), i - (ibv.len - 1) );
-            ibv.len--;
-            return 0;
-        }
-    }
-
-    fprintf(stderr, "E: unable to pop banner -- not found");
-    return 1;
+void text_push_banner(text_surface_t * ts) {
+    SDL_BlitSurface(ts->data, NULL, overlay_surface, &(SDL_Rect) {
+        .x = ts->x,
+        .y = ts->y,
+    });
 }
 
-void text_pop_all() {
-    for(uint32_t i = 0; i < ibv.len; i++) {
-        free(ibv.internal_banners[i]->banner.input);
-        free(ibv.internal_banners[i]);
-        free(ibv.internal_banners[i]->surface);
-        free(ibv.internal_banners[i]);
-        ibv.internal_banners[i] = NULL;
-    }
-
-    ibv.len = 0;
+void text_free_surface(text_surface_t * ts) {
+    if(ts->data)
+        SDL_FreeSurface(ts->data);
+    if(ts)
+        free(ts);
 }
 
-void text_free() {
-
-    text_pop_all();
+void text_quit() {
     // todo
     SDL_FreeSurface(overlay_surface);
     // apparently this fails to free, as it's
