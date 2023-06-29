@@ -1,5 +1,6 @@
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -11,6 +12,7 @@
 #include "input.h"
 #include "render.h"
 #include "game.h"
+#include "text.h"
 #include "weapon.h"
 #include "input.h"
 #include "audio.h"
@@ -33,6 +35,52 @@ void entity_player_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) 
     // todo, kinda goofy paradigm to set the callback, immediately invoke
     // then never call again. could just combine constructor and init I think
     e->_init(e, p1, p2);
+}
+
+typedef struct {
+    int32_t health;
+    int32_t ammo;
+    char hlth_text[20];
+    char ammo_text[20];
+    text_surface_t * hlth_surface;
+    text_surface_t * ammo_surface;
+} hud_t;
+
+hud_t hud = { 0 };
+
+void entity_player_hud_update_health(int32_t new_health) {
+    hud.health = new_health;
+    snprintf(hud.hlth_text, 20, "♥: %d", new_health);
+
+    if (hud.hlth_surface)
+        text_free_surface(hud.hlth_surface);
+
+    hud.hlth_surface = text_create_surface((font_input_t) {
+        .text = hud.hlth_text,
+        .color = { .r = 255, .g = 255, .b = 255, .a = 255 },
+        .size = FONT_MD
+    });
+    hud.hlth_surface->x = (INTERNAL_W / 6) - hud.hlth_surface->w / 2;
+    hud.hlth_surface->y = INTERNAL_H  - (hud.hlth_surface->h * 2);
+}
+
+void entity_player_hud_update_ammo(int32_t new_ammo) {
+    hud.ammo = new_ammo;
+    if (new_ammo == -1)
+        snprintf(hud.ammo_text, 20, "ammo:  ∞ ");
+    else
+        snprintf(hud.ammo_text, 20, "ammo: %3d", new_ammo);
+
+    if (hud.ammo_surface)
+        text_free_surface(hud.ammo_surface);
+
+    hud.ammo_surface = text_create_surface((font_input_t) {
+        .text = hud.ammo_text,
+        .color = { .r = 255, .g = 255, .b = 255, .a = 255 },
+        .size = FONT_MD
+    });
+    hud.ammo_surface->x = (INTERNAL_W / 6 * 4);
+    hud.ammo_surface->y = INTERNAL_H  - (hud.ammo_surface->h * 2);
 }
 
 void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2) {
@@ -64,6 +112,13 @@ void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_bob = 0;
 
     game_entity_player = e;
+
+    // setup hud
+    hud.health = e->_health;
+    hud.ammo = -1;
+
+    entity_player_hud_update_health(hud.health);
+    entity_player_hud_update_ammo(hud.ammo);
 }
 
 void entity_player_update(entity_t * e) {
@@ -159,6 +214,19 @@ void entity_player_update(entity_t * e) {
 
     r_draw(d);
 
+    int32_t tmp_health = e->_health;
+    int32_t tmp_ammo = weapon->_ammo;
+    if (! weapon->_needs_ammo)
+        weapon->_ammo = -1;
+
+    if (hud.health != tmp_health)
+        entity_player_hud_update_health(tmp_health);
+
+    if (hud.ammo != tmp_ammo)
+        entity_player_hud_update_ammo(tmp_ammo);
+
+    text_push_surface(hud.hlth_surface);
+    text_push_surface(hud.ammo_surface);
     /*
     		// todo, text
     		h.textContent = this._health|0;
@@ -180,6 +248,15 @@ void entity_player_kill(entity_t * e) {
     // todo
     // h.textContent = this._health|0;
     title_show_message("YOU DIED", "");
+
+    if (hud.hlth_surface)
+        text_free_surface(hud.hlth_surface);
+    if (hud.ammo_surface)
+        text_free_surface(hud.ammo_surface);
+
+    hud = (hud_t) {
+        0
+    };
     // game_entities_friendly_pop(e);
     // game_entity_player = NULL;
     // todo
