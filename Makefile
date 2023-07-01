@@ -1,5 +1,5 @@
 
-EXT_SRC = $(wildcard external/*.c)
+EXT_SRC = $(wildcard external/*/*.c)
 EXT_OBJ = $(EXT_SRC:.c=.o)
 
 INT_SRC = $(wildcard *.c)
@@ -11,7 +11,7 @@ INT_H   = $(wildcard *.h)
 TST_SRC = tests/test.c
 
 # todo generate
-IFLAGS = -I ./c1k3-assets -I ./c1k3-assets/img -I ./c1k3-assets/audio -I ./c1k3-assets/ttf -I ./external
+IFLAGS = -I ./c1k3-assets -I ./c1k3-assets/img -I ./c1k3-assets/audio -I ./c1k3-assets/ttf -I ./external/lodepng -I ./external/libdsa
 
 CFLAGS = -Wall $(IFLAGS) $(shell pkg-config --cflags sdl2 SDL2_mixer SDL2_ttf glesv2)
 LFLAGS = -lm $(shell pkg-config --libs sdl2 SDL2_mixer SDL2_ttf glesv2)
