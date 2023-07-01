@@ -62,17 +62,7 @@ vec3_t r_camera = { .x = 0, .y = 0, .z = -50};
 GLfloat r_camera_pitch = 0.2;
 GLfloat r_camera_yaw = 0;
 
-// We collect all draw calls in an array and draw them all at once at the end
-// the frame. This way the lights buffer will be completely filled and we
-// only need to set it once for all geometry
-draw_call_t * r_draw_calls = NULL;
-// TODO, this should be changed to a sort of lazy-alloc buffer,
-// which defaults to 512 capacity, and upon reaching capacity, does
-//   > if (r_num_draw_calls == r_draw_calls_capacity){
-//   >   r_draw_calls_capacity *= 2;
-//   >   r_draw_calls = realloc(r_draw_calls, sizeof(draw_call_t) * r_draw_calls_capacity);
-//   > }
-uint32_t r_num_draw_calls = 0;
+vector * r_draw_calls = NULL;
 
 // we render to an offscreen buffer, so we can blit
 // and retain internal resolution and aspect ratio
@@ -142,6 +132,8 @@ GLint r_vertex_attrib(GLuint shader_program, const GLchar *attrib_name, int coun
 GLuint vertex_buffer;
 GLuint shader_program;
 void r_init() {
+    
+    r_draw_calls = vector_init(sizeof(draw_call_t));
 
     shader_program = r_create_program(
                          r_compile_shader(GL_VERTEX_SHADER, SHADER_VERT),
@@ -269,24 +261,24 @@ void r_end_frame() {
     long int vo = 0;
     int last_texture = -1;
 
-    for(uint32_t i = 0; i < r_num_draw_calls; i++) {
-        draw_call_t c = r_draw_calls[i];
+    for(uint32_t i = 0; i < vector_size(r_draw_calls); i++) {
+        draw_call_t * c = vector_at(r_draw_calls, i);
 
-        if (last_texture != c.texture) {
-            last_texture = c.texture;
+        if (last_texture != c->texture) {
+            last_texture = c->texture;
             glBindTexture(GL_TEXTURE_2D, r_textures[last_texture].texture);
         }
 
-        glUniform3f(r_u_pos, c.pos.x, c.pos.y, c.pos.z);
-        glUniform2f(r_u_rotation, c.yaw, c.pitch);
-        glUniform1f(r_u_frame_mix, c.mix);
+        glUniform3f(r_u_pos, c->pos.x, c->pos.y, c->pos.z);
+        glUniform2f(r_u_rotation, c->yaw, c->pitch);
+        glUniform1f(r_u_frame_mix, c->mix);
 
-        if (vo != (c.f2 - c.f1)) {
-            vo = (c.f2 - c.f1);
+        if (vo != (c->f2 - c->f1)) {
+            vo = (c->f2 - c->f1);
             glVertexAttribPointer(r_va_p2, 3, GL_FLOAT, GL_FALSE, 8 * 4, (void *)(vo*8*4));
             glVertexAttribPointer(r_va_n2, 3, GL_FLOAT, GL_FALSE, 8 * 4, (void *)((vo*8+5)*4));
         }
-        glDrawArrays(GL_TRIANGLES, c.f1, c.num_verts);
+        glDrawArrays(GL_TRIANGLES, c->f1, c->num_verts);
     }
 
     // todo works here, but eeeeggghhhh
@@ -306,15 +298,11 @@ void r_end_frame() {
     r_va_n2 = r_vertex_attrib(shader_program, "n2", 3, 8, 5);
 
     // memset(r_draw_calls, 0, sizeof(draw_call_t) * r_num_draw_calls);
-    free(r_draw_calls);
-    r_draw_calls = NULL;
-    r_num_draw_calls = 0;
+    vector_clear(r_draw_calls);
 }
 
 void r_draw(draw_call_t call) {
-    r_num_draw_calls++;
-    r_draw_calls = realloc(r_draw_calls, sizeof(draw_call_t) * r_num_draw_calls);
-    r_draw_calls[r_num_draw_calls - 1] = call;
+    vector_push(r_draw_calls, &call);
 }
 
 void r_submit_buffer() {
@@ -399,3 +387,7 @@ void r_push_light(vec3_t pos, float intensity, float r, float g, float b) {
         r_num_lights++;
     }
 };
+
+void r_free(){
+    vector_free(r_draw_calls);
+}

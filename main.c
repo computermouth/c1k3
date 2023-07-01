@@ -192,8 +192,7 @@ void quit() {
     game_free_entities();
     audio_free();
     text_quit();
-    if (r_draw_calls)
-        free(r_draw_calls);
+    r_free();
     if (r_textures)
         free(r_textures);
     if (map_data.maps) {
@@ -298,8 +297,10 @@ int main(int argc, char* argv[]) {
             keys[KEY_PREV] = 0;
             // don't shoot on first frame
             keys[KEY_ACTION] = 0;
-            text_free_surface(c1k3);
-            text_free_surface(dq);
+            if (c1k3)
+                text_free_surface(c1k3);
+            if (dq)
+                text_free_surface(dq);
         }
 
         // perform based on state

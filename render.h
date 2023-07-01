@@ -5,6 +5,7 @@
 #include <SDL2/SDL_opengles2.h>
 #include "math.h"
 #include "data.h"
+#include "vector.h"
 
 #define INTERNAL_W 320
 #define INTERNAL_H 180
@@ -34,7 +35,7 @@ typedef struct {
 } meta_tex_t;
 
 // to free on quit
-extern draw_call_t * r_draw_calls;
+extern vector * r_draw_calls;
 extern meta_tex_t * r_textures;
 extern int r_num_verts;
 extern vec3_t r_camera;
@@ -59,5 +60,6 @@ void r_push_vert(vec3_t pos, vec3_t normal, float u, float v);
 void r_push_quad(vec3_t v0, vec3_t v1, vec3_t v2, vec3_t v3, float u, float v);
 int r_push_block(float x, float y, float z, float sx, float sy, float sz, int texture);
 void r_push_light(vec3_t pos, float intensity, float r, float g, float b);
+void r_free();
 
 #endif
