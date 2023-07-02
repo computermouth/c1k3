@@ -50,7 +50,7 @@ extern model_t model_door;
 extern model_t model_grenade;
 extern model_t model_nail; // aka. nail
 
-model_collection_t model_load_container();
-model_t model_init(uint8_t * data, vec3_t scale);
+model_collection_t model_parse();
+model_t model_load(uint8_t * data, vec3_t scale);
 
 #endif

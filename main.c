@@ -27,8 +27,8 @@ void game_load() {
         r_create_texture(data_textures[i]);
 
     // Load map & model containers
-    map_data = map_load_container();
-    model_data = model_load_container();
+    map_data = map_parse();
+    model_data = model_parse();
 
     // Create models. Many models share the same geometry just with different
     // sizes and textures.
@@ -41,84 +41,84 @@ void game_load() {
     // 6: nailgun
     // 7: torch
 
-    model_q = model_init(model_data.models[3].data, (vec3_t) {
+    model_q = model_load(model_data.models[3].data, (vec3_t) {
         1.0f,1.0f,1.0f
     });
-    model_explosion = model_init(model_data.models[0].data, (vec3_t) {
+    model_explosion = model_load(model_data.models[0].data, (vec3_t) {
         0.1,0.1,0.1
     });
-    model_blood = model_init(model_data.models[0].data, (vec3_t) {
+    model_blood = model_load(model_data.models[0].data, (vec3_t) {
         0.1,0.2,0.1
     });
-    model_gib = model_init(model_data.models[0].data, (vec3_t) {
+    model_gib = model_load(model_data.models[0].data, (vec3_t) {
         0.3,0.6,0.3
     });
 
-    model_grunt = model_init(model_data.models[1].data, (vec3_t) {
+    model_grunt = model_load(model_data.models[1].data, (vec3_t) {
         2.5,2.2,2.5
     });
-    model_enforcer = model_init(model_data.models[1].data, (vec3_t) {
+    model_enforcer = model_load(model_data.models[1].data, (vec3_t) {
         3,2.7,3
     });
-    model_zombie = model_init(model_data.models[1].data, (vec3_t) {
+    model_zombie = model_load(model_data.models[1].data, (vec3_t) {
         1.5,2,1.5
     });
-    model_ogre = model_init(model_data.models[1].data, (vec3_t) {
+    model_ogre = model_load(model_data.models[1].data, (vec3_t) {
         4,3,4
     });
-    model_hound = model_init(model_data.models[4].data, (vec3_t) {
+    model_hound = model_load(model_data.models[4].data, (vec3_t) {
         2.5,2.5,2.5
     });
 
-    model_barrel = model_init(model_data.models[2].data, (vec3_t) {
+    model_barrel = model_load(model_data.models[2].data, (vec3_t) {
         2, 2, 2
     });
-    model_torch = model_init(model_data.models[7].data, (vec3_t) {
+    model_torch = model_load(model_data.models[7].data, (vec3_t) {
         0.6,1,0.6
     });
 
-    model_pickup_nailgun = model_init(model_data.models[6].data, (vec3_t) {
+    model_pickup_nailgun = model_load(model_data.models[6].data, (vec3_t) {
         1, 1, 1
     });
-    model_pickup_grenadelauncher = model_init(model_data.models[2].data, (vec3_t) {
+    model_pickup_grenadelauncher = model_load(model_data.models[2].data, (vec3_t) {
         1, 0.5, 0.5
     });
-    model_pickup_box = model_init(model_data.models[5].data, (vec3_t) {
+    model_pickup_box = model_load(model_data.models[5].data, (vec3_t) {
         0.7, 0.7, 0.7
     });
-    model_pickup_grenades = model_init(model_data.models[5].data, (vec3_t) {
+    model_pickup_grenades = model_load(model_data.models[5].data, (vec3_t) {
         0.5, 1, 0.5
     });
-    model_pickup_key = model_init(model_data.models[5].data, (vec3_t) {
+    model_pickup_key = model_load(model_data.models[5].data, (vec3_t) {
         0.1, 0.7, 0.1
     });
 
-    model_door = model_init(model_data.models[5].data, (vec3_t) {
+    model_door = model_load(model_data.models[5].data, (vec3_t) {
         5, 5, 0.5
     });
 
-    model_shotgun = model_init(model_data.models[2].data, (vec3_t) {
+    model_shotgun = model_load(model_data.models[2].data, (vec3_t) {
         1,0.2,0.2
     });
-    model_grenadelauncher = model_init(model_data.models[2].data, (vec3_t) {
+    model_grenadelauncher = model_load(model_data.models[2].data, (vec3_t) {
         0.7,0.4,0.4
     });
-    model_nailgun = model_init(model_data.models[6].data, (vec3_t) {
+    model_nailgun = model_load(model_data.models[6].data, (vec3_t) {
         0.7,0.7,0.7
     });
 
-    model_grenade = model_init(model_data.models[2].data, (vec3_t) {
+    model_grenade = model_load(model_data.models[2].data, (vec3_t) {
         0.3,0.3,0.3
     });
 
-    model_nail = model_init(model_data.models[2].data, (vec3_t) {
+    model_nail = model_load(model_data.models[2].data, (vec3_t) {
         0.5,0.1,0.1
     });
 
     // Take some parts from the grunt model and build individual giblet models
     // from it. Arms and legs and stuff...
     for (uint32_t i = 0; i < 204; i+=34) {
-        model_t m = model_init(model_data.models[1].data, vec3(2,1,2));
+        model_t m = model_load(model_data.models[1].data, vec3(2,1,2));
         m.frames[0] += i;
         m.nv = 34;
         model_gib_pieces.len++;

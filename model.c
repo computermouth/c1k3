@@ -41,7 +41,7 @@ model_t model_door = {0};
 model_t model_grenade = {0};
 model_t model_nail = {0}; // aka. nail
 
-model_collection_t model_load_container() {
+model_collection_t model_parse() {
 
     const uint8_t * data = data_models;
     model_collection_t m = {0};
@@ -63,7 +63,7 @@ model_collection_t model_load_container() {
 }
 
 // todo, return different type, like entity_model/parsed_model
-model_t model_init(uint8_t * data, vec3_t scale) {
+model_t model_load(uint8_t * data, vec3_t scale) {
     uint32_t j = 0;
     uint8_t num_frames = data[j++];
     uint8_t num_vertices = data[j++];

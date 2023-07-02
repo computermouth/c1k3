@@ -28,8 +28,8 @@ typedef struct {
 
 extern map_collection_t map_data;
 
-map_collection_t map_load_container();
-void map_init (map_t * m);
+map_collection_t map_parse();
+void map_load (map_t * m);
 uint8_t map_block_at(int32_t x, int32_t y, int32_t z);
 int map_block_at_box(vec3_t box_start, vec3_t box_end);
 void map_draw();

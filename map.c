@@ -31,7 +31,7 @@
 map_t * map;
 map_collection_t map_data = { 0 };
 
-map_collection_t map_load_container() {
+map_collection_t map_parse() {
 
     const uint8_t * data = data_maps;
     map_t * tmp_maps = NULL;
@@ -117,7 +117,7 @@ map_collection_t map_load_container() {
     };
 }
 
-void map_init (map_t * m) {
+void map_load (map_t * m) {
     // todo, should this just be an index into a global map_collection_t?
     map = m;
 
