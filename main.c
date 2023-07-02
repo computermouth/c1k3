@@ -192,9 +192,7 @@ void quit() {
     game_free_entities();
     audio_free();
     text_quit();
-    r_free();
-    if (r_textures)
-        free(r_textures);
+    render_quit();
 
     map_quit();
 

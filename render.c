@@ -54,8 +54,7 @@ GLint r_va_p2;
 GLint r_va_n2;
 
 // Texture handles
-meta_tex_t * r_textures = NULL;
-uint32_t num_textures = 0;
+vector * r_textures = NULL;
 
 // Camera position
 vec3_t r_camera = { .x = 0, .y = 0, .z = -50};
@@ -134,6 +133,7 @@ GLuint shader_program;
 void r_init() {
 
     r_draw_calls = vector_init(sizeof(draw_call_t));
+    r_textures = vector_init(sizeof(meta_tex_t));
 
     shader_program = r_create_program(
                          r_compile_shader(GL_VERTEX_SHADER, SHADER_VERT),
@@ -220,14 +220,11 @@ void r_create_texture(png_bin_t p) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    // todo, vectorize?
-    num_textures++;
-    r_textures = realloc(r_textures, sizeof(meta_tex_t) * num_textures);
-    r_textures[num_textures - 1] = (meta_tex_t) {
+    vector_push(r_textures, &(meta_tex_t) {
         .texture = texture,
         .width = width,
         .height = height
-    };
+    });
 
     free(img);
 
@@ -261,12 +258,14 @@ void r_end_frame() {
     long int vo = 0;
     int last_texture = -1;
 
-    for(uint32_t i = 0; i < vector_size(r_draw_calls); i++) {
+    uint32_t len = vector_size(r_draw_calls);
+    for(uint32_t i = 0; i < len; i++) {
         draw_call_t * c = vector_at(r_draw_calls, i);
 
         if (last_texture != c->texture) {
             last_texture = c->texture;
-            glBindTexture(GL_TEXTURE_2D, r_textures[last_texture].texture);
+            meta_tex_t * tx = vector_at(r_textures, last_texture);
+            glBindTexture(GL_TEXTURE_2D, tx->texture);
         }
 
         glUniform3f(r_u_pos, c->pos.x, c->pos.y, c->pos.z);
@@ -335,8 +334,9 @@ void r_push_quad(vec3_t v0, vec3_t v1, vec3_t v2, vec3_t v3, float u, float v) {
 
 int r_push_block(float x, float y, float z, float sx, float sy, float sz, int texture) {
 
-    uint32_t tex_w = r_textures[texture].width;
-    uint32_t tex_h = r_textures[texture].height;
+    meta_tex_t * tex = vector_at(r_textures, texture);
+    uint32_t tex_w = tex->width;
+    uint32_t tex_h = tex->height;
     int index = r_num_verts;
 
     float tx = sx/tex_w;
@@ -388,6 +388,7 @@ void r_push_light(vec3_t pos, float intensity, float r, float g, float b) {
     }
 };
 
-void r_free() {
+void render_quit() {
     vector_free(r_draw_calls);
+    vector_free(r_textures);
 }

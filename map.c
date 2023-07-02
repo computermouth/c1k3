@@ -223,8 +223,8 @@ void map_draw() {
     // previously was passed as pos for draw_call
     // vec3_t p = {0.0f, 0.0f, 0.0f};
     vector * blocks = map->blocks;
-
-    for (uint32_t i = 0; i < vector_size(blocks); i++) {
+    uint32_t len = vector_size(blocks);
+    for (uint32_t i = 0; i < len; i++) {
 
         block_t * block = vector_at(blocks, i);
         draw_call_t call = {
