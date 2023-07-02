@@ -91,7 +91,8 @@ void game_init(int map_index) {
     game_free_entities();
 
     game_map_index = map_index;
-    map_load(&(map_data.maps[game_map_index]));
+    map_t * map = vector_at(map_data, game_map_index);
+    map_load(map);
 
     // make sure that first frame won't have
     // massive ticks, and also not divide by 0's

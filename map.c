@@ -29,16 +29,20 @@
 #include "entity_torch.h"
 
 map_t * map;
-map_collection_t map_data = { 0 };
+vector * map_data = NULL;
 
-map_collection_t map_parse() {
+void map_parse() {
+
+    map_data = vector_init(sizeof(map_t));
 
     const uint8_t * data = data_maps;
-    map_t * tmp_maps = NULL;
-    uint32_t tmp_maps_len = 0;
+
     for(uint32_t i = 0; i < data_maps_len;) {
-        tmp_maps_len++;
-        tmp_maps = realloc(tmp_maps, sizeof(map_t) * tmp_maps_len);
+
+        // push empty map, get pointer back
+        map_t * tmp_map = vector_push(map_data, &(map_t) {
+            0
+        });
 
         uint32_t blocks_size = data[i] | (data[i+1] << 8);
         i += 2;
@@ -101,20 +105,12 @@ map_collection_t map_parse() {
         i += e_size;
 
         // todo, gross
-        tmp_maps[tmp_maps_len - 1] = (map_t) {
-            0
-        };
-        memcpy(tmp_maps[tmp_maps_len - 1].cm, cm, ((map_size * map_size * map_size) >> 3) * sizeof(uint8_t));
-        tmp_maps[tmp_maps_len - 1].e = e;
-        tmp_maps[tmp_maps_len - 1].e_size = e_size;
-        tmp_maps[tmp_maps_len - 1].blocks = blocks;
-        // todo, should this be = r_size - 1??
-        // tmp_maps[tmp_maps_len - 1].r_size = r_size;
+        memcpy(tmp_map->cm, cm, ((map_size * map_size * map_size) >> 3) * sizeof(uint8_t));
+        tmp_map->e = e;
+        tmp_map->e_size = e_size;
+        tmp_map->blocks = blocks;
     }
-    return (map_collection_t) {
-        .maps = tmp_maps,
-        .len = tmp_maps_len
-    };
+
 }
 
 void map_load (map_t * m) {
@@ -247,10 +243,10 @@ void map_draw() {
 }
 
 void map_quit() {
-    if (map_data.maps) {
-        for(int i = 0; i < map_data.len; i++) {
-            vector_free(map_data.maps[i].blocks);
-        }
-        free(map_data.maps);
+    uint32_t len = vector_size(map_data);
+    for(uint32_t i = 0; i < len; i++) {
+        map_t * map = vector_at(map_data, i);
+        vector_free(map->blocks);
     }
+    vector_free(map_data);
 }

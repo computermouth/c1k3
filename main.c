@@ -27,7 +27,7 @@ void game_load() {
         r_create_texture(data_textures[i]);
 
     // Load map & model containers
-    map_data = map_parse();
+    map_parse();
     model_data = model_parse();
 
     // Create models. Many models share the same geometry just with different
