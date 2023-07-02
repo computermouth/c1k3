@@ -195,14 +195,9 @@ void quit() {
     r_free();
     if (r_textures)
         free(r_textures);
-    if (map_data.maps) {
-        for(int i = 0; i < map_data.len; i++) {
-            if (map_data.maps[i].r) {
-                free(map_data.maps[i].r);
-            }
-        }
-        free(map_data.maps);
-    }
+
+    map_quit();
+
     if (model_data.models)
         free(model_data.models);
     if (model_q.frames)                      free(model_q.frames);

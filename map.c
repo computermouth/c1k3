@@ -47,8 +47,9 @@ map_collection_t map_load_container() {
         i += blocks_size;
         uint8_t cm[((map_size * map_size * map_size) >> 3) * sizeof(uint8_t)] = {0};
         // todo, globalize and whatever;
-        block_t * r = NULL;
-        uint32_t r_size = 0;
+        // block_t * r_blocks = NULL;
+        vector * blocks = vector_init(sizeof(block_t));
+        // uint32_t r_size = 0;
         uint32_t t = 0;
 
         for(uint32_t j = 0; j < blocks_size;) {
@@ -64,12 +65,16 @@ map_collection_t map_load_container() {
             uint32_t sz = b[j++];
 
             // todo, globalize, and never free?
-            r_size++;
-            r = realloc(r, sizeof(block_t) * r_size);
-            r[r_size - 1] = (block_t) {
+            // r_size++;
+            // r_blocks = realloc(r_blocks, sizeof(block_t) * r_size);
+            vector_push(blocks, &(block_t) {
                 .t = t,
                 .b = r_push_block(x << 5, y << 4, z << 5, sx << 5, sy << 4, sz << 5, t),
-            };
+            });
+            // r_blocks[r_size - 1] = (block_t) {
+            //     .t = t,
+            //     .b = r_push_block(x << 5, y << 4, z << 5, sx << 5, sy << 4, sz << 5, t),
+            // };
 
             // The collision map is a bitmap; 8 x blocks per byte
             for (uint32_t cz = z; cz < z + sz; cz++) {
@@ -102,9 +107,9 @@ map_collection_t map_load_container() {
         memcpy(tmp_maps[tmp_maps_len - 1].cm, cm, ((map_size * map_size * map_size) >> 3) * sizeof(uint8_t));
         tmp_maps[tmp_maps_len - 1].e = e;
         tmp_maps[tmp_maps_len - 1].e_size = e_size;
-        tmp_maps[tmp_maps_len - 1].r = r;
+        tmp_maps[tmp_maps_len - 1].blocks = blocks;
         // todo, should this be = r_size - 1??
-        tmp_maps[tmp_maps_len - 1].r_size = r_size;
+        // tmp_maps[tmp_maps_len - 1].r_size = r_size;
     }
     return (map_collection_t) {
         .maps = tmp_maps,
@@ -221,19 +226,31 @@ void map_draw() {
     // todo, ??
     // previously was passed as pos for draw_call
     // vec3_t p = {0.0f, 0.0f, 0.0f};
-    for (uint32_t i = 0; i < map->r_size; i++) {
+    vector * blocks = map->blocks;
 
+    for (uint32_t i = 0; i < vector_size(blocks); i++) {
+
+        block_t * block = vector_at(blocks, i);
         draw_call_t call = {
             .pos = {0.0f, 0.0f, 0.0f},
             .yaw = 0.0f,
             .pitch = 0.0f,
-            .texture = map->r[i].t,
-            .f1 = map->r[i].b,
-            .f2 = map->r[i].b,
+            .texture = block->t,
+            .f1 = block->b,
+            .f2 = block->b,
             .mix = 0.0f,
             .num_verts = 36
         };
 
         r_draw(call);
+    }
+}
+
+void map_quit() {
+    if (map_data.maps) {
+        for(int i = 0; i < map_data.len; i++) {
+            vector_free(map_data.maps[i].blocks);
+        }
+        free(map_data.maps);
     }
 }

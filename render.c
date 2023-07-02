@@ -132,7 +132,7 @@ GLint r_vertex_attrib(GLuint shader_program, const GLchar *attrib_name, int coun
 GLuint vertex_buffer;
 GLuint shader_program;
 void r_init() {
-    
+
     r_draw_calls = vector_init(sizeof(draw_call_t));
 
     shader_program = r_create_program(
@@ -388,6 +388,6 @@ void r_push_light(vec3_t pos, float intensity, float r, float g, float b) {
     }
 };
 
-void r_free(){
+void r_free() {
     vector_free(r_draw_calls);
 }
