@@ -50,10 +50,8 @@ void map_parse() {
         uint8_t * b = (uint8_t *)&data[i];
         i += blocks_size;
         uint8_t cm[((map_size * map_size * map_size) >> 3) * sizeof(uint8_t)] = {0};
-        // todo, globalize and whatever;
-        // block_t * r_blocks = NULL;
+
         vector * blocks = vector_init(sizeof(block_t));
-        // uint32_t r_size = 0;
         uint32_t t = 0;
 
         for(uint32_t j = 0; j < blocks_size;) {
@@ -68,17 +66,10 @@ void map_parse() {
             uint32_t sy = b[j++];
             uint32_t sz = b[j++];
 
-            // todo, globalize, and never free?
-            // r_size++;
-            // r_blocks = realloc(r_blocks, sizeof(block_t) * r_size);
             vector_push(blocks, &(block_t) {
                 .t = t,
                 .b = r_push_block(x << 5, y << 4, z << 5, sx << 5, sy << 4, sz << 5, t),
             });
-            // r_blocks[r_size - 1] = (block_t) {
-            //     .t = t,
-            //     .b = r_push_block(x << 5, y << 4, z << 5, sx << 5, sy << 4, sz << 5, t),
-            // };
 
             // The collision map is a bitmap; 8 x blocks per byte
             for (uint32_t cz = z; cz < z + sz; cz++) {
