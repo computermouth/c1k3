@@ -16,6 +16,7 @@
 #include "model.h"
 #include "game.h"
 #include "text.h"
+#include "vector.h"
 
 void game_load() {
     // text has to come before render init
@@ -28,7 +29,7 @@ void game_load() {
 
     // Load map & model containers
     map_parse();
-    model_data = model_parse();
+    model_parse();
 
     // Create models. Many models share the same geometry just with different
     // sizes and textures.
@@ -41,89 +42,126 @@ void game_load() {
     // 6: nailgun
     // 7: torch
 
-    model_q = model_load(model_data.models[3].data, (vec3_t) {
+    model_t * tmp_mod = NULL;
+
+    tmp_mod = vector_at(model_data, 3);
+    model_q = model_load(tmp_mod->data, (vec3_t) {
         1.0f,1.0f,1.0f
     });
-    model_explosion = model_load(model_data.models[0].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 0);
+    model_explosion = model_load(tmp_mod->data, (vec3_t) {
         0.1,0.1,0.1
     });
-    model_blood = model_load(model_data.models[0].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 0);
+    model_blood = model_load(tmp_mod->data, (vec3_t) {
         0.1,0.2,0.1
     });
-    model_gib = model_load(model_data.models[0].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 0);
+    model_gib = model_load(tmp_mod->data, (vec3_t) {
         0.3,0.6,0.3
     });
 
-    model_grunt = model_load(model_data.models[1].data, (vec3_t) {
+    tmp_mod = vector_at(model_data, 1);
+    model_grunt = model_load(tmp_mod->data, (vec3_t) {
         2.5,2.2,2.5
     });
-    model_enforcer = model_load(model_data.models[1].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 1);
+    model_enforcer = model_load(tmp_mod->data, (vec3_t) {
         3,2.7,3
     });
-    model_zombie = model_load(model_data.models[1].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 1);
+    model_zombie = model_load(tmp_mod->data, (vec3_t) {
         1.5,2,1.5
     });
-    model_ogre = model_load(model_data.models[1].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 1);
+    model_ogre = model_load(tmp_mod->data, (vec3_t) {
         4,3,4
     });
-    model_hound = model_load(model_data.models[4].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 4);
+    model_hound = model_load(tmp_mod->data, (vec3_t) {
         2.5,2.5,2.5
     });
 
-    model_barrel = model_load(model_data.models[2].data, (vec3_t) {
+    tmp_mod = vector_at(model_data, 2);
+    model_barrel = model_load(tmp_mod->data, (vec3_t) {
         2, 2, 2
     });
-    model_torch = model_load(model_data.models[7].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 7);
+    model_torch = model_load(tmp_mod->data, (vec3_t) {
         0.6,1,0.6
     });
 
-    model_pickup_nailgun = model_load(model_data.models[6].data, (vec3_t) {
+    tmp_mod = vector_at(model_data, 6);
+    model_pickup_nailgun = model_load(tmp_mod->data, (vec3_t) {
         1, 1, 1
     });
-    model_pickup_grenadelauncher = model_load(model_data.models[2].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 2);
+    model_pickup_grenadelauncher = model_load(tmp_mod->data, (vec3_t) {
         1, 0.5, 0.5
     });
-    model_pickup_box = model_load(model_data.models[5].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 5);
+    model_pickup_box = model_load(tmp_mod->data, (vec3_t) {
         0.7, 0.7, 0.7
     });
-    model_pickup_grenades = model_load(model_data.models[5].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 5);
+    model_pickup_grenades = model_load(tmp_mod->data, (vec3_t) {
         0.5, 1, 0.5
     });
-    model_pickup_key = model_load(model_data.models[5].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 5);
+    model_pickup_key = model_load(tmp_mod->data, (vec3_t) {
         0.1, 0.7, 0.1
     });
 
-    model_door = model_load(model_data.models[5].data, (vec3_t) {
+    tmp_mod = vector_at(model_data, 5);
+    model_door = model_load(tmp_mod->data, (vec3_t) {
         5, 5, 0.5
     });
 
-    model_shotgun = model_load(model_data.models[2].data, (vec3_t) {
+    tmp_mod = vector_at(model_data, 2);
+    model_shotgun = model_load(tmp_mod->data, (vec3_t) {
         1,0.2,0.2
     });
-    model_grenadelauncher = model_load(model_data.models[2].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 2);
+    model_grenadelauncher = model_load(tmp_mod->data, (vec3_t) {
         0.7,0.4,0.4
     });
-    model_nailgun = model_load(model_data.models[6].data, (vec3_t) {
+
+    tmp_mod = vector_at(model_data, 6);
+    model_nailgun = model_load(tmp_mod->data, (vec3_t) {
         0.7,0.7,0.7
     });
 
-    model_grenade = model_load(model_data.models[2].data, (vec3_t) {
+    tmp_mod = vector_at(model_data, 2);
+    model_grenade = model_load(tmp_mod->data, (vec3_t) {
         0.3,0.3,0.3
     });
 
-    model_nail = model_load(model_data.models[2].data, (vec3_t) {
+    tmp_mod = vector_at(model_data, 2);
+    model_nail = model_load(tmp_mod->data, (vec3_t) {
         0.5,0.1,0.1
     });
 
     // Take some parts from the grunt model and build individual giblet models
     // from it. Arms and legs and stuff...
+    tmp_mod = vector_at(model_data, 1);
     for (uint32_t i = 0; i < 204; i+=34) {
-        model_t m = model_load(model_data.models[1].data, vec3(2,1,2));
+        model_t m = model_load(tmp_mod->data, vec3(2,1,2));
         m.frames[0] += i;
         m.nv = 34;
-        model_gib_pieces.len++;
-        model_gib_pieces.models = realloc(model_gib_pieces.models, sizeof(model_t) * model_gib_pieces.len);
-        model_gib_pieces.models[model_gib_pieces.len - 1] = m;
+        vector_push(model_gib_pieces, &m);
     }
 
     r_submit_buffer();
@@ -193,33 +231,8 @@ void quit() {
     audio_free();
     text_quit();
     render_quit();
-
+    model_quit();
     map_quit();
-
-    if (model_data.models)
-        free(model_data.models);
-    if (model_q.frames)                      free(model_q.frames);
-    if (model_explosion.frames)              free(model_explosion.frames);
-    if (model_blood.frames)                  free(model_blood.frames);
-    if (model_gib.frames)                    free(model_gib.frames);
-    if (model_grunt.frames)                  free(model_grunt.frames);
-    if (model_enforcer.frames)               free(model_enforcer.frames);
-    if (model_zombie.frames)                 free(model_zombie.frames);
-    if (model_ogre.frames)                   free(model_ogre.frames);
-    if (model_hound.frames)                  free(model_hound.frames);
-    if (model_barrel.frames)                 free(model_barrel.frames);
-    if (model_torch.frames)                  free(model_torch.frames);
-    if (model_shotgun.frames)                free(model_shotgun.frames);
-    if (model_nailgun.frames)                free(model_nailgun.frames);
-    if (model_grenadelauncher.frames)        free(model_grenadelauncher.frames);
-    if (model_pickup_nailgun.frames)         free(model_pickup_nailgun.frames);
-    if (model_pickup_grenadelauncher.frames) free(model_pickup_grenadelauncher.frames);
-    if (model_pickup_box.frames)             free(model_pickup_box.frames);
-    if (model_pickup_grenades.frames)        free(model_pickup_grenades.frames);
-    if (model_pickup_key.frames)             free(model_pickup_key.frames);
-    if (model_door.frames)                   free(model_door.frames);
-    if (model_grenade.frames)                free(model_grenade.frames);
-    if (model_nail.frames)                   free(model_nail.frames);
 
     Mix_Quit();
     TTF_Quit();

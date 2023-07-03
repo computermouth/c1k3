@@ -42,8 +42,10 @@ void entity_barrel_kill(entity_t * e) {
 
     entity_kill(e);
     e->_play_sound(e, sfx_grenade_explode);
-    for (uint32_t i = 0; i < model_gib_pieces.len; i++) {
-        model_t * m = &(model_gib_pieces.models[i]);
+
+    uint32_t len = vector_size(model_gib_pieces);
+    for (uint32_t i = 0; i < len; i++) {
+        model_t * m = vector_at(model_gib_pieces, i);
         e->_spawn_particles(e, 2, 600, m, 21, 1);
     }
     entity_t * tmp_light = game_spawn(entity_light_constructor, vec3_add(e->p, vec3(0,16,0)), 250, 0x08f);

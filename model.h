@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "math.h"
+#include "vector.h"
 
 typedef struct {
     uint8_t * data;
@@ -14,18 +15,13 @@ typedef struct {
     uint32_t nv;
 } model_t;
 
-typedef struct {
-    model_t * models;
-    uint32_t len;
-} model_collection_t;
-
-extern model_collection_t model_data;
+extern vector * model_data;
 extern model_t model_q;
 // Particles
 extern model_t model_explosion;
 extern model_t model_blood;
 extern model_t model_gib;
-extern model_collection_t model_gib_pieces;
+extern vector * model_gib_pieces;
 // Enemies
 extern model_t model_grunt;
 extern model_t model_enforcer;
@@ -50,7 +46,8 @@ extern model_t model_door;
 extern model_t model_grenade;
 extern model_t model_nail; // aka. nail
 
-model_collection_t model_parse();
+void model_parse();
 model_t model_load(uint8_t * data, vec3_t scale);
+void model_quit();
 
 #endif
