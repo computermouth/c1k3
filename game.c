@@ -17,78 +17,82 @@ float game_tick = 0.0f;
 float game_time = 0.016f;
 float game_message_timeout = 0;
 
-entity_ref_collection_t game_entities = {0};
-entity_ref_collection_t game_entities_friendly = {0};
-entity_ref_collection_t game_entities_enemies = {0};
+// entity_t
+vector * game_entities = NULL;
+
+// entity_t *
+vector * game_entities_list_all = NULL;
+vector * game_entities_list_friendly = NULL;
+vector * game_entities_list_enemies = NULL;
+
 entity_t * game_entity_player = NULL;
 int game_map_index = 0;
 bool game_jump_to_next_level = false;
 
-void game_entities_push(entity_ref_collection_t * c, entity_t * e) {
-    c->length++;
-    c->entities = realloc(c->entities, sizeof(entity_t *) * c->length);
-    c->entities[c->length - 1] = e;
+void game_entities_push(vector * v, entity_t ** e) {
+    vector_push(v, e);
 }
 
-void game_entities_pop(entity_ref_collection_t * c, entity_t * e) {
-    for(uint32_t i = 0; i < c->length; i++) {
-        if (c->entities[i] == e) {
-            c->length--;
-            // check if it's empty
-            if (c->length == 0) {
-                free(c->entities);
-                c->entities = NULL;
-            } else { // otherwise remove
-                entity_t * end = c->entities[c->length];
-                c->entities[i] = end;
-                c->entities = realloc(c->entities, sizeof(entity_t *) * c->length);
-            }
+void game_entities_pop(vector * v, entity_t ** e) {
+    uint32_t len = vector_size(v);
+    for(uint32_t i = 0; i < len; i++) {
+        if (vector_at(v, i) == e) {
+            vector_erase(v, i);
         }
     }
 }
 
-void game_entities_enemies_push(entity_t * e) {
-    game_entities_push(&game_entities_enemies, e);
+void game_entities_all_push(entity_t ** e) {
+    game_entities_push(game_entities_list_all, e);
 }
 
-void game_entities_enemies_pop(entity_t * e) {
-    game_entities_pop(&game_entities_enemies, e);
+void game_entities_all_pop(entity_t ** e) {
+    game_entities_pop(game_entities_list_all, e);
 }
 
-void game_entities_friendly_push(entity_t * e) {
-    game_entities_push(&game_entities_friendly, e);
+void game_entities_enemies_push(entity_t ** e) {
+    game_entities_push(game_entities_list_enemies, e);
 }
 
-void game_entities_friendly_pop(entity_t * e) {
-    game_entities_pop(&game_entities_friendly, e);
+void game_entities_enemies_pop(entity_t ** e) {
+    game_entities_pop(game_entities_list_enemies, e);
+}
+
+void game_entities_friendly_push(entity_t ** e) {
+    game_entities_push(game_entities_list_friendly, e);
+}
+
+void game_entities_friendly_pop(entity_t ** e) {
+    game_entities_pop(game_entities_list_friendly, e);
 }
 
 void game_free_entities() {
-    if (game_entities.entities) {
-        for(int i = 0; i < game_entities.length; i++) {
-            if (game_entities.entities[i]) {
-                free(game_entities.entities[i]);
-            }
-        }
-        free(game_entities.entities);
-    }
-    if (game_entities_friendly.entities)     free(game_entities_friendly.entities);
-    if (game_entities_enemies.entities)      free(game_entities_enemies.entities);
-    game_entities = (entity_ref_collection_t) {
-        0
-    };
-    game_entities_friendly = (entity_ref_collection_t) {
-        0
-    };
-    game_entities_enemies = (entity_ref_collection_t) {
-        0
-    };
+
+    vector_free(game_entities);
+    game_entities = NULL;
+
+    vector_free(game_entities_list_all);
+    vector_free(game_entities_list_friendly);
+    vector_free(game_entities_list_enemies);
+
+    game_entities_list_all = NULL;
+    game_entities_list_friendly = NULL;
+    game_entities_list_enemies = NULL;
+
 }
 
 void game_init(int map_index) {
 
     // cleanup
     game_free_entities();
+
+    // entity_t
+    game_entities = vector_init(sizeof(entity_t));
+
+    // entity_t *
+    game_entities_list_all = vector_init(sizeof(entity_t *));
+    game_entities_list_friendly = vector_init(sizeof(entity_t *));
+    game_entities_list_enemies = vector_init(sizeof(entity_t *));
 
     game_map_index = map_index;
     map_t * map = vector_at(map_data, game_map_index);
@@ -111,13 +115,13 @@ void game_next_level() {
 // it is, the pointer that gets returned here is potentially destroyed after update
 // functions are ran and game_entities is completely replaced with new values in new
 // memory from the new alive_entities collection
-entity_t * game_spawn (void (*func)(entity_t *, vec3_t, uint8_t, uint8_t), vec3_t pos, uint8_t p1, uint8_t p2) {
-    game_entities.length++;
-    game_entities.entities = realloc(game_entities.entities, sizeof(entity_t*) * game_entities.length);
-    entity_t * e = calloc(1, sizeof(entity_t));
-    game_entities.entities[game_entities.length - 1] = e;
+entity_t * game_spawn (void (*init)(entity_t *, vec3_t, uint8_t, uint8_t), vec3_t pos, uint8_t p1, uint8_t p2) {
 
-    func(e, pos, p1, p2);
+    entity_t * e = vector_push(game_entities, &(entity_t) {
+        0
+    });
+    init(e, pos, p1, p2);
+
     return e;
 }
 
@@ -142,18 +146,9 @@ void game_run(float time_now) {
 
     r_prepare_frame(0.1, 0.2, 0.5);
 
-    if (game_entities_friendly.entities != NULL) {
-        free(game_entities_friendly.entities);
-        game_entities_friendly = (entity_ref_collection_t) {
-            0
-        };
-    }
-    if (game_entities_enemies.entities != NULL) {
-        free(game_entities_enemies.entities);
-        game_entities_enemies = (entity_ref_collection_t) {
-            0
-        };
-    }
+    vector_clear(game_entities_list_all);
+    vector_clear(game_entities_list_enemies);
+    vector_clear(game_entities_list_friendly);
 
     // todo, should be some kind of timed callback on death
     // dead, restart level -- also maybe remove null check
@@ -163,40 +158,37 @@ void game_run(float time_now) {
         game_init(game_map_index);
     }
 
-    entity_ref_collection_t alive_entities = {0};
-    for (uint32_t i = 0; i < game_entities.length; i++) {
-        entity_t * e = game_entities.entities[i];
+    // clean up _dead entities
+    uint32_t len = vector_size(game_entities);
+    for (uint32_t i = 0; i < len; i++) {
+        entity_t * e = vector_at(game_entities, i);
         if (e->_dead) {
-            game_entities_friendly_pop(e);
-            game_entities_enemies_pop(e);
-            free(e);
-            e = NULL;
+            vector_erase(game_entities, i);
+            i--;
+            len--;
         } else {
-            alive_entities.length++;
-            alive_entities.entities = realloc(alive_entities.entities, alive_entities.length * sizeof(entity_t) );
-            alive_entities.entities[alive_entities.length - 1] = e;
             switch (e->_group) {
             case ENTITY_GROUP_ENEMY:
-                game_entities_enemies_push(e);
+                game_entities_enemies_push(&e);
                 break;
             case ENTITY_GROUP_PLAYER:
-                game_entities_friendly_push(e);
+                game_entities_friendly_push(&e);
                 break;
             case ENTITY_GROUP_ALL:
-                game_entities_enemies_push(e);
-                game_entities_friendly_push(e);
+                game_entities_all_push(&e);
+                game_entities_enemies_push(&e);
+                game_entities_friendly_push(&e);
                 break;
             default:
                 break;
             }
         }
     }
-    if (game_entities.entities != NULL)
-        free(game_entities.entities);
-    game_entities = alive_entities;
 
-    for (uint32_t i = 0; i < game_entities.length; i++) {
-        entity_t * e = game_entities.entities[i];
+    // run updates after _dead entities have been removed
+    len = vector_size(game_entities);
+    for (uint32_t i = 0; i < len; i++) {
+        entity_t * e = vector_at(game_entities, i);
         e->_update(e);
     }
 

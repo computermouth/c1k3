@@ -32,8 +32,10 @@ void entity_barrel_init(entity_t * e, uint8_t p1, uint8_t p2) {
 
 void entity_barrel_kill(entity_t * e) {
     // Deal some damage to nearby entities
-    for (uint32_t i = 0; i < game_entities_enemies.length; i++) {
-        entity_t * entity = game_entities_enemies.entities[i];
+    uint32_t len = vector_size(game_entities_list_enemies);
+    for (uint32_t i = 0; i < len; i++) {
+        entity_t ** entity_p = vector_at(game_entities_list_enemies, i);
+        entity_t * entity = *entity_p;
         float dist = vec3_dist(e->p, entity->p);
         if (entity != e && dist < 256) {
             entity->_receive_damage(entity, e, scale(dist, 0, 256, 60, 0));
@@ -43,7 +45,7 @@ void entity_barrel_kill(entity_t * e) {
     entity_kill(e);
     e->_play_sound(e, sfx_grenade_explode);
 
-    uint32_t len = vector_size(model_gib_pieces);
+    len = vector_size(model_gib_pieces);
     for (uint32_t i = 0; i < len; i++) {
         model_t * m = vector_at(model_gib_pieces, i);
         e->_spawn_particles(e, 2, 600, m, 21, 1);
@@ -52,5 +54,5 @@ void entity_barrel_kill(entity_t * e) {
     tmp_light->_expires = true;
     tmp_light->_die_at = game_time + 0.2;
 
-    game_entities_enemies_pop(e);
+    game_entities_enemies_pop(&e);
 }

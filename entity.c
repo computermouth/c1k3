@@ -104,17 +104,17 @@ void entity_update_physics(entity_t * e) {
     // _check_entities.push(ptr_to_enemies)
     // _check_entities.push(ptr_to_friendlies)
     // todo, also move to _init or something, why is this here???
-    // actually needs to happen currently, because the addresses
-    // here change on each loop
+    // actually needs to happen currently, because these flags aren't
+    // set before the generic init()
     switch(e->_check_against) {
     case ENTITY_GROUP_NONE:
         e->_check_entities = NULL;
         break;
     case ENTITY_GROUP_PLAYER:
-        e->_check_entities = &game_entities_friendly;
+        e->_check_entities = game_entities_list_friendly;
         break;
     case ENTITY_GROUP_ENEMY:
-        e->_check_entities = &game_entities_enemies;
+        e->_check_entities = game_entities_list_enemies;
         break;
     }
 
@@ -191,9 +191,14 @@ bool entity_collides(entity_t * e, vec3_t p) {
     if (e->_dead)
         return false;
 
-    entity_ref_collection_t * check = e->_check_entities;
-    for (uint32_t i = 0; check !=NULL && i < check->length; i++) {
-        entity_t * chk_e = check->entities[i];
+    vector * check = e->_check_entities;
+    uint32_t len = 0;
+    // skips loop if check is null
+    if (check != NULL)
+        len = vector_size(check);
+    for (uint32_t i = 0; i < len; i++) {
+        entity_t ** chk_p = vector_at(check, i);
+        entity_t *  chk_e = *chk_p;
         if (vec3_dist(p, chk_e->p) < e->s.y + chk_e->s.y) {
             // If we collide with an entity set the step height to 0,
             // so we don't climb up on its shoulders :/

@@ -266,7 +266,7 @@ void entity_enemy_kill(entity_t * e) {
         e->_spawn_particles(e, 2, 300, m, 18, 1);
     }
     e->_play_sound(e, sfx_enemy_gib);
-    game_entities_enemies_pop(e);
+    game_entities_enemies_pop(&e);
 }
 
 void entity_enemy_did_collide(entity_t * e, int axis) {

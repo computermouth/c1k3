@@ -41,6 +41,7 @@ void entity_projectile_grenade_init(entity_t * e, uint8_t p1, uint8_t p2) {
 
 void entity_projectile_grenade_update(entity_t * e) {
     entity_update_physics(e);
+
     e->_draw_model(e);
     r_push_light(vec3_add(e->p, vec3(0,16,0)), (sinf(game_time*10)+2)*0.5, 255, 32, 0);
     e->f = e->_on_ground ? 5 : 0.5;
@@ -59,9 +60,11 @@ void entity_projectile_grenade_did_collide_with_entity(entity_t * e, entity_t * 
 
 void entity_projectile_grenade_kill(entity_t * e) {
     // Deal some damage to nearby entities
-    entity_ref_collection_t * to_check = e->_check_entities;
-    for (uint32_t i = 0; i < to_check->length; i++) {
-        entity_t * other = to_check->entities[i];
+    vector * to_check = e->_check_entities;
+    uint32_t len = vector_size(to_check);
+    for (uint32_t i = 0; i < len; i++) {
+        entity_t ** other_p = vector_at(to_check, i);
+        entity_t * other = *other_p;
         float dist = vec3_dist(e->p, other->p);
         if (dist < 196)
             other->_receive_damage(other, e, scale(dist, 0, 196, e->_damage, 0));

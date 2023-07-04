@@ -29,9 +29,12 @@ void entity_pickup_key_update(entity_t * e) {
 void entity_pickup_key_pickup(entity_t * e) {
     audio_play(sfx_pickup);
     game_show_message("YOU GOT THE KEY!");
-    for (uint32_t i = 0; i < game_entities.length; i++) {
-        if (game_entities.entities[i]->_needs_key) {
-            game_entities.entities[i]->_needs_key = 0;
+    uint32_t len = vector_size(game_entities_list_all);
+    for (uint32_t i = 0; i < len; i++) {
+        entity_t ** door_p = vector_at(game_entities_list_all, i);
+        entity_t * door = *door_p;
+        if (door->_needs_key) {
+            door->_needs_key = 0;
             break;
         }
     }

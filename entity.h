@@ -10,6 +10,7 @@
 #include "math.h"
 #include "model.h"
 #include "weapon.h"
+#include "vector.h"
 
 typedef enum {
     ENEMY_STATE_IDLE,
@@ -127,7 +128,7 @@ typedef struct {
 
     int32_t _group;
     int32_t _check_against;
-    void * _check_entities;
+    vector * _check_entities;
     float _stepped_up_at;
 
     // first param is actually entity_t *
@@ -148,18 +149,6 @@ typedef struct {
     void (*_attack)(void * e);
 
 } entity_t;
-
-typedef struct {
-    entity_t * entities;
-    uint32_t length;
-} entity_collection_t;
-
-// todo, fuck, get rid of this entirely?
-// loop over entire entity collection and check ENTITY_GROUP?
-typedef struct {
-    entity_t ** entities;
-    uint32_t length;
-} entity_ref_collection_t;
 
 // todo, jesus christ, I think p1 and p2 are typeless and subject to usage
 // might have to pass floats just to cover weirder cases

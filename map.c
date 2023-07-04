@@ -95,7 +95,7 @@ void map_parse() {
         uint32_t e_size = num_entities * 6;
         i += e_size;
 
-        // todo, gross
+        // set map
         memcpy(tmp_map->cm, cm, ((map_size * map_size * map_size) >> 3) * sizeof(uint8_t));
         tmp_map->e = e;
         tmp_map->e_size = e_size;
