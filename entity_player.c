@@ -247,7 +247,24 @@ void entity_player_kill(entity_t * e) {
     entity_kill(e);
     // todo
     // h.textContent = this._health|0;
-    title_show_message("YOU DIED", "");
+
+    // timed_surfaces free at the end of their timer
+    text_surface_t * died_text = text_create_surface(
+    (font_input_t) {
+        .text = "YOU DIED",
+        .color = { .r = 200, .g = 50, .b = 50, .a = 200 },
+        .size = FONT_LG
+    });
+
+    died_text->x = INTERNAL_W / 2 - died_text->w / 2;
+    died_text->y = died_text->h;
+
+    text_push_timed_surface((timed_surface_t) {
+        .ts = died_text,
+        .ms = 2000,
+    });
+
+    text_push_surface(died_text);
 
     if (hud.hlth_surface)
         text_free_surface(hud.hlth_surface);

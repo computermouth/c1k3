@@ -34,8 +34,14 @@ typedef struct {
     void * data;
 } text_surface_t;
 
+typedef struct {
+    text_surface_t * ts;
+    uint32_t ms;
+} timed_surface_t;
+
 void text_init();
 text_surface_t * text_create_surface(font_input_t input);
+void text_push_timed_surface(timed_surface_t time_surf);
 void text_push_surface(text_surface_t * ts);
 void text_free_surface(text_surface_t * ts);
 void text_prepare_frame();

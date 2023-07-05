@@ -12,9 +12,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "game.h"
 #include "text.h"
 #include "render.h"
 #include "data.h"
+#include "vector.h"
+
+typedef struct {
+    text_surface_t * ts;
+    float end_time;
+} _internal_timed_surface_t;
 
 SDL_Surface * overlay_surface = NULL;
 SDL_RWops * font_sm_rw = NULL;
@@ -23,6 +30,8 @@ SDL_RWops * font_lg_rw = NULL;
 TTF_Font * font_sm = NULL;
 TTF_Font * font_md = NULL;
 TTF_Font * font_lg = NULL;
+
+vector * timed_surfaces = NULL;
 
 /*
 SDL_Surface* create_surface() {
@@ -78,6 +87,8 @@ GLuint overlay_tex;
 GLuint overlay_vbo;
 GLuint overlay_texture;
 void text_init() {
+
+    timed_surfaces = vector_init(sizeof(_internal_timed_surface_t));
 
     TTF_Init();
 
@@ -151,6 +162,20 @@ void text_init() {
 
 void text_end_frame() {
 
+    uint32_t len = vector_size(timed_surfaces);
+    for(uint32_t i = 0; i < len; i++) {
+        _internal_timed_surface_t * timed_surf = vector_at(timed_surfaces, i);
+        if (timed_surf->end_time < game_time) {
+            text_free_surface(timed_surf->ts);
+            vector_erase(timed_surfaces, i);
+            i--;
+            len--;
+        } else {
+            text_surface_t * ts = timed_surf->ts;
+            text_push_surface(ts);
+        }
+    }
+
     glBindTexture(GL_TEXTURE_2D, overlay_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, overlay_surface->w, overlay_surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, overlay_surface->pixels);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -216,6 +241,11 @@ void text_prepare_frame() {
     SDL_FillRect(overlay_surface, 0, 0x00000000);
 }
 
+void text_push_timed_surface(timed_surface_t time_surf) {
+    _internal_timed_surface_t its = {.ts = time_surf.ts, .end_time = game_time + ((float)time_surf.ms / 1000)};
+    vector_push(timed_surfaces, &its);
+}
+
 void text_push_surface(text_surface_t * ts) {
     SDL_BlitSurface(ts->data, NULL, overlay_surface, &(SDL_Rect) {
         .x = ts->x,
@@ -231,6 +261,14 @@ void text_free_surface(text_surface_t * ts) {
 }
 
 void text_quit() {
+
+    uint32_t len = vector_size(timed_surfaces);
+    for(uint32_t i = 0; i < len; i++) {
+        _internal_timed_surface_t * timed_surf = vector_at(timed_surfaces, i);
+        text_free_surface(timed_surf->ts);
+    }
+    vector_free(timed_surfaces);
+
     // todo
     SDL_FreeSurface(overlay_surface);
     // apparently this fails to free, as it's

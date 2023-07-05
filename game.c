@@ -10,7 +10,7 @@
 #include "math.h"
 #include "render.h"
 #include "input.h"
-
+#include "text.h"
 
 state_t game_state = MENU_STATE;
 float game_tick = 0.0f;
@@ -125,23 +125,12 @@ entity_t * game_spawn (void (*init)(entity_t *, vec3_t, uint8_t, uint8_t), vec3_
     return e;
 }
 
-void game_show_message(char *txt) {
-    // todo, show message for period of time
-    // clearTimeout(game_message_timeout);
-    // game_message_timeout = setTimeout(()=>msg.style.display = 'none', 2000);
-    fprintf(stderr, "%s\n", txt);
-}
-
-void title_show_message(char *txt, char *sub) {
-    // todo, probably change game_show_message to accept size params
-    fprintf(stderr, "%s\n", txt);
-    fprintf(stderr, "  -- %s\n", sub);
-}
-
 void game_run(float time_now) {
 
     time_now *= 0.001f;
     game_tick = (time_now - game_time);
+    if (game_tick <= 0.001f)
+        game_tick = 0.001f;
     game_time = time_now;
 
     r_prepare_frame(0.1, 0.2, 0.5);
@@ -205,7 +194,36 @@ void game_run(float time_now) {
         game_jump_to_next_level = 0;
         game_map_index++;
         if (game_map_index == 2) {
-            title_show_message("THE END", "THANKS FOR PLAYING ❤");
+
+            // timed_surfaces free at the end of their timer
+            text_surface_t * end_text = text_create_surface(
+            (font_input_t) {
+                .text = "THE END",
+                .color = { .r = 255, .g = 255, .b = 255, .a = 255 },
+                .size = FONT_LG
+            });
+            end_text->x = INTERNAL_W / 2 - end_text->w / 2;
+            end_text->y = end_text->h;
+
+            text_surface_t * thx_text = text_create_surface(
+            (font_input_t) {
+                .text = "-- thanks for playing <3 --",
+                .color = { .r = 200, .g = 200, .b = 200, .a = 200 },
+                .size = FONT_LG
+            });
+            thx_text->x = INTERNAL_W / 2 - thx_text->w / 2;
+            thx_text->y = end_text->y + end_text->h + thx_text->h;
+
+            text_push_timed_surface((timed_surface_t) {
+                .ts = end_text,
+                .ms = 2000,
+            });
+
+            text_push_timed_surface((timed_surface_t) {
+                .ts = thx_text,
+                .ms = 2000,
+            });
+
             game_entity_player->_dead = 1;
 
             // Set camera position for end screen
