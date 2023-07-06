@@ -37,12 +37,16 @@ void entity_door_init(entity_t * e, uint8_t texture, uint8_t dir) {
     e->_needs_key = (game_map_index == 1);
 }
 
+float door_text_time = 0.0f;
+
 void entity_door_update(entity_t * e) {
     e->_draw_model(e);
 
     // check to make sure player is alive and game isn't over
-    if (game_entity_player != NULL && vec3_dist(e->p, game_entity_player->p) < 128) {
+    if ( game_entity_player != NULL && vec3_dist(e->p, game_entity_player->p) < 128 && door_text_time < game_time) {
         if (e->_needs_key) {
+            // door text debounce
+            door_text_time = game_time + 2.0f;
             // timed_surfaces free at the end of their timer
             text_surface_t * need_key = text_create_surface((font_input_t) {
                 .text = "-- door is locked --",
@@ -58,7 +62,6 @@ void entity_door_update(entity_t * e) {
             });
             return;
         }
-        e->_reset_state_at = game_time + 3;
     }
 
     if (e->_reset_state_at < game_time)
