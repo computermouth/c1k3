@@ -27,6 +27,7 @@ vector * game_entities_list_enemies = NULL;
 
 entity_t * game_entity_player = NULL;
 int game_map_index = 0;
+int game_reset_level = 0;
 bool game_jump_to_next_level = false;
 
 void game_entities_push(vector * v, entity_t ** e) {
@@ -111,6 +112,12 @@ void game_next_level() {
     game_jump_to_next_level = true;
 }
 
+uint32_t game_finish(uint32_t interval, void *param) {
+    game_map_index = 0;
+    game_reset_level = 1;
+    return 0;
+}
+
 // todo, is this fuckin goofy?
 // it is, the pointer that gets returned here is potentially destroyed after update
 // functions are ran and game_entities is completely replaced with new values in new
@@ -141,9 +148,8 @@ void game_run(float time_now) {
 
     // todo, should be some kind of timed callback on death
     // dead, restart level -- also maybe remove null check
-    if (game_entity_player == NULL || game_entity_player->_dead == 1) {
-        if (game_map_index == 2)
-            game_map_index = 0;
+    if (game_reset_level) {
+        game_reset_level = 0;
         game_init(game_map_index);
     }
 
@@ -152,6 +158,8 @@ void game_run(float time_now) {
     for (uint32_t i = 0; i < len; i++) {
         entity_t * e = vector_at(game_entities, i);
         if (e->_dead) {
+            if (e == game_entity_player)
+                game_entity_player = NULL;
             vector_erase(game_entities, i);
             i--;
             len--;
@@ -209,19 +217,19 @@ void game_run(float time_now) {
             (font_input_t) {
                 .text = "-- thanks for playing <3 --",
                 .color = { .r = 200, .g = 200, .b = 200, .a = 200 },
-                .size = FONT_LG
+                .size = FONT_SM
             });
             thx_text->x = INTERNAL_W / 2 - thx_text->w / 2;
             thx_text->y = end_text->y + end_text->h + thx_text->h;
 
             text_push_timed_surface((timed_surface_t) {
                 .ts = end_text,
-                .ms = 2000,
+                .ms = 5000,
             });
 
             text_push_timed_surface((timed_surface_t) {
                 .ts = thx_text,
-                .ms = 2000,
+                .ms = 5000,
             });
 
             game_entity_player->_dead = 1;
@@ -230,6 +238,8 @@ void game_run(float time_now) {
             r_camera = vec3(1856,784,2272);
             r_camera_yaw = 0;
             r_camera_pitch = 0.5;
+
+            SDL_AddTimer(5000, game_finish, NULL);
         } else {
             game_init(game_map_index);
         }

@@ -18,6 +18,7 @@ extern vector * game_entities_list_friendly;
 extern vector * game_entities_list_enemies;
 extern entity_t * game_entity_player;
 extern int game_map_index;
+extern int game_reset_level;
 
 void game_free_entities();
 void game_entities_enemies_push(entity_t ** e);

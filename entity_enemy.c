@@ -192,6 +192,7 @@ void entity_enemy_update(entity_t * e) {
         if (e->_state == ENEMY_STATE_PATROL || e->_state == ENEMY_STATE_IDLE) {
             if (
                 distance_to_player < 700 &&
+                game_entity_player &&
                 !map_trace(e->p, game_entity_player->p)
             ) {
                 e->_set_state(e, ENEMY_STATE_ATTACK_AIM);
@@ -204,7 +205,7 @@ void entity_enemy_update(entity_t * e) {
             e->_target_yaw = angle_to_player;
 
             // No line of sight? Randomly shuffle around :/
-            if (map_trace(e->p, game_entity_player->p)) {
+            if (game_entity_player && map_trace(e->p, game_entity_player->p)) {
                 e->_set_state(e, ENEMY_STATE_EVADE);
             }
         }
@@ -233,13 +234,15 @@ entity_t * entity_enemy_spawn_projectile(entity_t * e, void (*func)(entity_t *, 
     projectile->_check_against = ENTITY_GROUP_PLAYER;
     projectile->_yaw = e->_yaw + PI/2.0f;
 
+    // shitty hack for dead player
+    float pitch = atan2f(e->p.y, e->p.x) + pitch_offset;
+    if (game_entity_player)
+        pitch = atan2f(e->p.y - game_entity_player->p.y, vec3_dist(e->p, game_entity_player->p)) + pitch_offset;
+
     projectile->v = vec3_rotate_yaw_pitch(
                         vec3(0, 0, speed),
                         e->_yaw + yaw_offset,
-                        atan2f(
-                            e->p.y - game_entity_player->p.y,
-                            vec3_dist(e->p, game_entity_player->p)
-                        ) + pitch_offset
+                        pitch
                     );
     return projectile;
 }

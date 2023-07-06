@@ -15,7 +15,7 @@ void entity_trigger_level_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint
 // todo, weird???
 // why not check collision with player entity
 void entity_trigger_level_update(entity_t * e) {
-    if (!e->_dead && vec3_dist(e->p, game_entity_player->p) < 64) {
+    if (game_entity_player && !e->_dead && vec3_dist(e->p, game_entity_player->p) < 64) {
         game_next_level();
         e->_dead = 1;
     }

@@ -1,4 +1,6 @@
 
+#include <SDL2/SDL_timer.h>
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -243,6 +245,11 @@ void entity_player_receive_damage(entity_t * e, entity_t * from, int32_t amount)
     entity_receive_damage(e, from, amount);
 }
 
+uint32_t entity_player_reset_level(uint32_t interval, void *param) {
+    game_reset_level = 1;
+    return 0;
+}
+
 void entity_player_kill(entity_t * e) {
     entity_kill(e);
     // todo
@@ -274,8 +281,6 @@ void entity_player_kill(entity_t * e) {
     hud = (hud_t) {
         0
     };
-    // game_entities_friendly_pop(e);
-    // game_entity_player = NULL;
-    // todo
-    // setTimeout(() => game_init(game_map_index), 2000);
+
+    SDL_AddTimer(2000, entity_player_reset_level, e);
 }
