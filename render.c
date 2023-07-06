@@ -188,8 +188,6 @@ void r_init() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, offscreen_depth_tex, 0);
 
-    text_init();
-
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
     r_vertex_attrib(shader_program, "p", 3, 8, 0);
     r_vertex_attrib(shader_program, "t", 2, 8, 3);

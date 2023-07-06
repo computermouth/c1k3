@@ -62,6 +62,7 @@ void entity_door_update(entity_t * e) {
             });
             return;
         }
+        e->_reset_state_at = game_time + 3;
     }
 
     if (e->_reset_state_at < game_time)
