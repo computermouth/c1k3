@@ -1,9 +1,5 @@
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL_mouse.h>
-#include <SDL2/SDL_video.h>
 
 #include "input.h"
 #include "game.h"
@@ -17,7 +13,10 @@ bool mouse_invert = false;
 bool keys[_KEY_END] = {0};
 bool input_quit = false;
 
-void input_consume() {
+void input_consume(SDL_Window * window) {
+
+    static uint8_t fs = 0;
+    const uint8_t * currentstates = SDL_GetKeyboardState(NULL);
 
     SDL_Event e;
     while(SDL_PollEvent(&e))
@@ -82,6 +81,15 @@ void input_consume() {
                 break;
             case SDLK_SPACE:
                 keys[KEY_JUMP] = 0;
+                break;
+            case SDLK_RETURN:
+                if (currentstates[SDL_SCANCODE_RALT] || currentstates[SDL_SCANCODE_LALT]) {
+                    uint32_t flag = SDL_WINDOW_FULLSCREEN_DESKTOP;
+                    if (fs)
+                        flag = 0;
+                    fs = (fs + 1) % 2;
+                    SDL_SetWindowFullscreen(window, flag);
+                }
                 break;
             }
         }

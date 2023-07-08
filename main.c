@@ -289,7 +289,7 @@ int main(int argc, char* argv[]) {
             frames = 0;
         }
 
-        input_consume();
+        input_consume(window);
 
         if (input_quit)
             goto end;
