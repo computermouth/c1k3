@@ -1,12 +1,8 @@
 
-#include <GLES2/gl2.h>
-#include <SDL2/SDL_rwops.h>
-#include <stdbool.h>
-
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_surface.h>
-#include <GLES3/gl3.h>
 #include <SDL2/SDL_ttf.h>
+
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -215,8 +211,12 @@ text_surface_t * text_create_surface(font_input_t input) {
         return NULL;
     }
 
+    char * t = "\U000023FB";
+    char out[50];
+    sprintf(out, "%s%s", t, t);
+
     SDL_Color fg = {.r = input.color.r, .g = input.color.g, .b = input.color.b, .a = input.color.a};
-    SDL_Surface * tmp_fg = TTF_RenderUTF8_Solid(font, input.text, fg);
+    SDL_Surface * tmp_fg = TTF_RenderUTF8_Solid(font, out, fg);
 
     // // todo maybe later
     //

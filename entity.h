@@ -2,7 +2,6 @@
 #ifndef _ENTITY_
 #define _ENTITY_
 
-#include <SDL2/SDL_mixer.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
