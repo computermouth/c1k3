@@ -211,12 +211,8 @@ text_surface_t * text_create_surface(font_input_t input) {
         return NULL;
     }
 
-    char * t = "\U000023FB";
-    char out[50];
-    sprintf(out, "%s%s", t, t);
-
     SDL_Color fg = {.r = input.color.r, .g = input.color.g, .b = input.color.b, .a = input.color.a};
-    SDL_Surface * tmp_fg = TTF_RenderUTF8_Solid(font, out, fg);
+    SDL_Surface * tmp_fg = TTF_RenderUTF8_Solid(font, input.text, fg);
 
     // // todo maybe later
     //

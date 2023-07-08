@@ -52,7 +52,8 @@ hud_t hud = { 0 };
 
 void entity_player_hud_update_health(int32_t new_health) {
     hud.health = new_health;
-    snprintf(hud.hlth_text, 20, "♥: %d", new_health);
+    char * h = "\U0000F004";
+    snprintf(hud.hlth_text, 20, "%s: %3d", h, new_health);
 
     if (hud.hlth_surface)
         text_free_surface(hud.hlth_surface);
@@ -68,10 +69,11 @@ void entity_player_hud_update_health(int32_t new_health) {
 
 void entity_player_hud_update_ammo(int32_t new_ammo) {
     hud.ammo = new_ammo;
+    char * b = "\U000F0572";
     if (new_ammo == -1)
-        snprintf(hud.ammo_text, 20, "ammo:  ∞ ");
+        snprintf(hud.ammo_text, 20, "%s:  ∞ ", b);
     else
-        snprintf(hud.ammo_text, 20, "ammo: %3d", new_ammo);
+        snprintf(hud.ammo_text, 20, "%s: %3d", b, new_ammo);
 
     if (hud.ammo_surface)
         text_free_surface(hud.ammo_surface);
@@ -81,7 +83,7 @@ void entity_player_hud_update_ammo(int32_t new_ammo) {
         .color = { .r = 255, .g = 255, .b = 255, .a = 255 },
         .size = FONT_MD
     });
-    hud.ammo_surface->x = (INTERNAL_W / 6 * 4);
+    hud.ammo_surface->x = INTERNAL_W - hud.hlth_surface->x - hud.ammo_surface->w;
     hud.ammo_surface->y = INTERNAL_H  - (hud.ammo_surface->h * 2);
 }
 

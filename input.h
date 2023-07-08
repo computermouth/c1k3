@@ -25,6 +25,6 @@ extern bool mouse_invert;
 extern bool input_quit;
 extern bool keys[_KEY_END];
 
-void input_consume();
+void input_consume(SDL_Window * window);
 
 #endif
