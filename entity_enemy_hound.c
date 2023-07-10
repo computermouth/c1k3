@@ -35,7 +35,7 @@ animation_t hound_animations[] = {
 enemy_state_t hound_enemy_states[_ENEMY_STATE_NULL] = {
     {ENEMY_ANIMATION_IDLE,   0, 0.1, _ENEMY_STATE_NULL},
     {ENEMY_ANIMATION_WALK, 0.2, 0.5, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_IDLE,   0, 0.1, _ENEMY_STATE_NULL},
+    {ENEMY_ANIMATION_RUN,   1, 0.3, _ENEMY_STATE_NULL},
     {ENEMY_ANIMATION_IDLE,   0, 0.5, ENEMY_STATE_FOLLOW},
     {ENEMY_ANIMATION_ATTACK,   0,   1, ENEMY_STATE_ATTACK_RECOVER},
     {ENEMY_ANIMATION_ATTACK_PREPARE,   0, 0.0, ENEMY_STATE_ATTACK_EXEC},
@@ -77,6 +77,8 @@ void entity_enemy_hound_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
         .animations = hound_animations,
         .num_animations = sizeof(hound_animations)/sizeof(hound_animations[0]),
     };
+    
+    e->_set_state(e, ENEMY_STATE_IDLE);
 }
 
 void entity_enemy_hound_did_collide_with_entity(entity_t * e, entity_t * other) {
