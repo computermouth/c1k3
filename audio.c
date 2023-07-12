@@ -77,13 +77,15 @@ void audio_play_opt(Mix_Chunk * c, float volume, int32_t loops, float pan) {
     // todo, something better with volume
     // test if modification of this volume while playing fucks iwht other samples
     c->volume = volume * 128.0f;
-    // uint8_t left = pan * 255.0f;
-    // int Mix_SetPanning(int channel, left, 255 - left);
-    Mix_PlayChannel(-1, c, loops);
+    int channel = Mix_PlayChannel(-1, c, loops);
+    if (channel == -1 )
+        return;
+    uint8_t right = (pan + 1.0f) / 2 * 255.0f;
+    Mix_SetPanning(channel, 255 - right, right);
 }
 
 void audio_play(Mix_Chunk * c) {
-    audio_play_opt(c, 1.0, 0, 0.5);
+    audio_play_opt(c, 1.0, 0, 0.0f);
 }
 
 uint32_t audio_schedule(uint32_t interval, void *param) {
