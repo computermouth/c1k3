@@ -39,8 +39,7 @@ void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     // todo, maybe??? e->_anim
     e->_animation_collection = default_anim_collection;
     e->_anim = &(default_anim_collection.animations[0]);
-    // e->_anim_time = randf();
-    e->_anim_time = 0.696969;
+    e->_anim_time = randf();
 
     // todo, I hate this
     e->_STATE_IDLE = -1;
