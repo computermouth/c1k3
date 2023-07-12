@@ -29,12 +29,9 @@ void entity_pickup_grenadelauncher_update(entity_t * e) {
 
 void entity_pickup_grenadelauncher_pickup(entity_t * e) {
     audio_play(sfx_pickup);
-    // todo, hate this
-    // don't run these if we've already got all the weapons
-    if (game_entity_player->_weapon_length < WEAPON_END) {
-        game_entity_player->_weapon_length++;
-        game_entity_player->_weapons[game_entity_player->_weapon_length - 1] = weapon_grenadelauncher_constructor();
-        game_entity_player->_weapon_index = game_entity_player->_weapon_length - 1;
-    }
+
+    game_entity_player->_weapons[WEAPON_GRENADELAUNCHER] = weapon_grenadelauncher_constructor();
+    game_entity_player->_weapon_index = WEAPON_GRENADELAUNCHER;
+
     e->_kill(e);
 }

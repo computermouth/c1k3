@@ -109,7 +109,6 @@ void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2) {
         0
     };
     e->_weapon_index = 0;
-    e->_weapon_length = 1;
 
     // Map 1 needs some rotation of the starting look-at direction
     e->_yaw += game_map_index * PI;
@@ -155,10 +154,17 @@ void entity_player_update(entity_t * e) {
         e->_can_jump = 1;
     }
 
-    if (keys[KEY_NEXT])
-        e->_weapon_index = (e->_weapon_index + 1) % e->_weapon_length;
-    if (keys[KEY_PREV])
-        e->_weapon_index = (e->_weapon_length + e->_weapon_index - 1) % e->_weapon_length;
+    if (keys[KEY_NEXT]) {
+        do {
+            e->_weapon_index = (e->_weapon_index + 1) % WEAPON_END;
+        } while (e->_weapons[e->_weapon_index]._found == false);
+    }
+
+    if (keys[KEY_PREV]) {
+        do {
+            e->_weapon_index = (WEAPON_END + e->_weapon_index - 1) % WEAPON_END;
+        } while (e->_weapons[e->_weapon_index]._found == false);
+    }
 
     float shoot_wait = e->_can_shoot_at - game_time;
     weapon_t * weapon = &(e->_weapons[e->_weapon_index]);

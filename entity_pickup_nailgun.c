@@ -31,11 +31,9 @@ void entity_pickup_nailgun_update(entity_t * e) {
 
 void entity_pickup_nailgun_pickup(entity_t * e) {
     audio_play(sfx_pickup);
-    // todo, hate this
-    if (game_entity_player->_weapon_length < WEAPON_END) {
-        game_entity_player->_weapon_length++;
-        game_entity_player->_weapons[game_entity_player->_weapon_length - 1] = weapon_nailgun_constructor();
-        game_entity_player->_weapon_index = game_entity_player->_weapon_length - 1;
-    }
+
+    game_entity_player->_weapons[WEAPON_NAILGUN] = weapon_nailgun_constructor();
+    game_entity_player->_weapon_index = WEAPON_NAILGUN;
+
     e->_kill(e);
 }

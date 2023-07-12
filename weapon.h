@@ -17,6 +17,7 @@ typedef enum {
 } weapon_type_t;
 
 typedef struct {
+    bool _found;
     bool _needs_ammo;
     vec3_t _projectile_offset;
     uint32_t _ammo;

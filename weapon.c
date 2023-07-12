@@ -17,6 +17,7 @@ void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch);
 
 weapon_t weapon_constructor() {
     weapon_t w = {0};
+    w._found = true;
     w._needs_ammo = 1;
     w._projectile_offset = vec3(0, 0, 8);
     w._init = (void (*)(void * w))weapon_init;

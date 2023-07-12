@@ -77,7 +77,7 @@ void entity_enemy_hound_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
         .animations = hound_animations,
         .num_animations = sizeof(hound_animations)/sizeof(hound_animations[0]),
     };
-    
+
     e->_set_state(e, ENEMY_STATE_IDLE);
 }
 
