@@ -1,0 +1,77 @@
+
+name: main
+on: [push]
+jobs:
+  
+  Linux:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: install
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc make xxd pkg-config libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
+      - name: build
+        run: |
+          make package
+      - name: artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          if-no-files-found: error
+          name: c1k3-linux.tar.gz
+          path: c1k3-linux.tar.gz
+      - name: release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          generate_release_notes: true
+          files: |
+            c1k3-linux.tar.gz
+      
+  Windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: install
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ucrt64
+          install: >-
+            make
+            vim
+            zip
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-pkg-config
+            mingw-w64-ucrt-x86_64-SDL2
+            mingw-w64-ucrt-x86_64-SDL2_ttf
+            mingw-w64-ucrt-x86_64-SDL2_mixer
+            mingw-w64-ucrt-x86_64-angleproject
+      - name: build
+        shell: msys2 {0}
+        run: |
+          which pkg-config
+          pkg-config --libs SDL2_ttf
+          make package
+      - name: artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          if-no-files-found: error
+          name: c1k3-windows.zip
+          path: c1k3-windows.zip
+      - name: release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          generate_release_notes: true
+          files: |
+            c1k3-windows.zip

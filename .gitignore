@@ -4,3 +4,7 @@
 /main.exe
 /experiments/a.out
 *.o
+/c1k3
+/c1k3.exe
+*.dll
+/build

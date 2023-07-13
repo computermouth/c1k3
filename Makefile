@@ -10,11 +10,30 @@ INT_H   = $(wildcard *.h)
 # maybe someday
 TST_SRC = tests/test.c
 
+BIN_NAM = c1k3
+
 # todo generate
 IFLAGS = -I ./c1k3-assets -I ./c1k3-assets/img -I ./c1k3-assets/audio -I ./c1k3-assets/ttf -I ./external/lodepng -I ./external/libdsa
 
-CFLAGS = -Wall $(IFLAGS) $(shell pkg-config --cflags sdl2 SDL2_mixer SDL2_ttf glesv2)
-LFLAGS = -lm $(shell pkg-config --libs sdl2 SDL2_mixer SDL2_ttf glesv2)
+CFLAGS = -Wall $(IFLAGS) $(shell sdl2-config --cflags) $(shell pkg-config --cflags SDL2_mixer SDL2_ttf)
+LFLAGS = -lm $(shell sdl2-config --libs) $(shell pkg-config --libs SDL2_mixer SDL2_ttf)
+
+UNAME   := $(shell uname)
+WIN_STR := MINGW64_NT
+LIN_STR := Linux
+MAC_STR := mac
+OS := none
+
+ifeq ($(findstring $(LIN_STR), $(UNAME)), $(LIN_STR))
+	CFLAGS += $(shell pkg-config --cflags glesv2)
+	LFLAGS += $(shell pkg-config --libs glesv2)
+	OS := linux
+else ifeq ($(findstring $(WIN_STR), $(UNAME)), $(WIN_STR))
+	LFLAGS += -lGLESv2
+	OS := windows
+else ifeq ($(findstring $(MAC_STR), $(UNAME)), $(MAC_STR))
+	OS := mac
+endif
 
 # debug junk
 SAN_FLAGS = -fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize=null -fno-sanitize=alignment
@@ -22,22 +41,55 @@ SAN_OPT = ASAN_OPTIONS=abort_on_error=1:fast_unwind_on_malloc=0:detect_leaks=0 U
 
 DEBUG_CFLAGS = $(CFLAGS) -g
 DBGSN_CFLAGS = $(DEBUG_CFLAGS) $(SAN_FLAGS)
-RELEA_CFLAGS = $(CFLAGS) -Os -flto
+RELEA_CFLAGS = $(CFLAGS) -flto -Os
 
 all: OPT_FLAGS = $(DBGSN_CFLAGS)
 all: assets $(INT_OBJ) $(EXT_OBJ)
-	$(CC) $(OPT_FLAGS) -o main $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
+	$(CC) $(OPT_FLAGS) -o $(BIN_NAM) $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
 
 release: OPT_FLAGS = $(RELEA_CFLAGS)
 release: assets $(INT_OBJ) $(EXT_OBJ)
-	$(CC) $(OPT_FLAGS) -o main $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
+	$(CC) $(OPT_FLAGS) -o $(BIN_NAM) $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
+
+package: release
+	mkdir -p build/$(OS)
+	cp $(BIN_NAM) build/$(OS)/
+ifeq ($(OS),linux)
+	tar czf $(BIN_NAM)-$(OS).tar.gz -C build/$(OS)/ .
+else ifeq ($(OS),windows)
+	cp /ucrt64/bin/libbrotlicommon.dll build/$(OS)/
+	cp /ucrt64/bin/libbrotlidec.dll    build/$(OS)/
+	cp /ucrt64/bin/libbz2-1.dll        build/$(OS)/
+	cp /ucrt64/bin/libEGL.dll          build/$(OS)/
+	cp /ucrt64/bin/libfreetype-6.dll   build/$(OS)/
+	cp /ucrt64/bin/libgcc_s_seh-1.dll  build/$(OS)/
+	cp /ucrt64/bin/libGLESv2.dll       build/$(OS)/
+	cp /ucrt64/bin/libglib-2.0-0.dll   build/$(OS)/
+	cp /ucrt64/bin/libgraphite2.dll    build/$(OS)/
+	cp /ucrt64/bin/libharfbuzz-0.dll   build/$(OS)/
+	cp /ucrt64/bin/libiconv-2.dll      build/$(OS)/
+	cp /ucrt64/bin/libintl-8.dll       build/$(OS)/
+	cp /ucrt64/bin/libmpg123-0.dll     build/$(OS)/
+	cp /ucrt64/bin/libogg-0.dll        build/$(OS)/
+	cp /ucrt64/bin/libopus-0.dll       build/$(OS)/
+	cp /ucrt64/bin/libopusfile-0.dll   build/$(OS)/
+	cp /ucrt64/bin/libpcre2-8-0.dll    build/$(OS)/
+	cp /ucrt64/bin/libpng16-16.dll     build/$(OS)/
+	cp /ucrt64/bin/libstdc++-6.dll     build/$(OS)/
+	cp /ucrt64/bin/libwinpthread-1.dll build/$(OS)/
+	cp /ucrt64/bin/SDL2.dll            build/$(OS)/
+	cp /ucrt64/bin/SDL2_mixer.dll      build/$(OS)/
+	cp /ucrt64/bin/SDL2_ttf.dll        build/$(OS)/
+	cp /ucrt64/bin/zlib1.dll           build/$(OS)/
+	zip -j -r $(BIN_NAM)-$(OS).zip build/$(OS)
+endif
 
 valbuild: OPT_FLAGS = $(DEBUG_CFLAGS)
 valbuild: assets $(INT_OBJ) $(EXT_OBJ)
-	$(CC) $(OPT_FLAGS) -o main $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
+	$(CC) $(OPT_FLAGS) -o $(BIN_NAM) $(INT_OBJ) $(EXT_OBJ) $(LFLAGS)
 
 memtest: valbuild
-	valgrind --track-origins=yes --leak-check=yes --gen-suppressions=all --suppressions=valgrind.supp ./main
+	valgrind --track-origins=yes --leak-check=yes --gen-suppressions=all --suppressions=valgrind.supp ./$(BIN_NAM)
 
 .NOTPARALLEL:
 assets:
@@ -55,4 +107,4 @@ test:
 	./tester
 
 debug: all
-	$(SAN_OPT) lldb ./main
+	$(SAN_OPT) lldb ./$(BIN_NAM)

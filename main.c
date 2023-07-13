@@ -8,7 +8,6 @@
 #include <time.h>
 #include <math.h>
 
-#include "SDL_timer.h"
 #include "audio.h"
 #include "data.h"
 #include "input.h"
