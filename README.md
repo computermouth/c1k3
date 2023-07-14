@@ -33,7 +33,7 @@ $ pacman -Sy make vim mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-pkg-config
 ### mac dependencies (brew)
 
 ```
-todo
+$ brew install pkg-config sdl2 sdl2_ttf sdl2_mixer
 ```
 
 ## asset sources?

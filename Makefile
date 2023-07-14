@@ -21,7 +21,7 @@ LFLAGS = -lm $(shell sdl2-config --libs) $(shell pkg-config --libs SDL2_mixer SD
 UNAME   := $(shell uname)
 WIN_STR := MINGW64_NT
 LIN_STR := Linux
-MAC_STR := mac
+MAC_STR := Darwin
 OS := none
 
 ifeq ($(findstring $(LIN_STR), $(UNAME)), $(LIN_STR))
@@ -32,6 +32,7 @@ else ifeq ($(findstring $(WIN_STR), $(UNAME)), $(WIN_STR))
 	LFLAGS += -lGLESv2
 	OS := windows
 else ifeq ($(findstring $(MAC_STR), $(UNAME)), $(MAC_STR))
+	LFLAGS += -lGLESv2
 	OS := mac
 endif
 
