@@ -4,7 +4,7 @@ on: [push]
 jobs:
   
   Linux:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     permissions:
       contents: write
     steps:
@@ -63,8 +63,6 @@ jobs:
       - name: build
         shell: msys2 {0}
         run: |
-          which pkg-config
-          pkg-config --libs SDL2_ttf
           make package
       - name: artifacts
         uses: actions/upload-artifact@v3
