@@ -18,6 +18,10 @@ jobs:
           sudo apt-get install -y gcc make xxd pkg-config libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
       - name: build
         run: |
+          mkdir -p build/linux
+          md5sum c1k3-assets/audio/* > build/linux/before.md5
+          make assets
+          md5sum c1k3-assets/audio/* > build/linux/after.md5
           make package
       - name: artifacts
         uses: actions/upload-artifact@v3

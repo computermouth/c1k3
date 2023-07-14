@@ -8,3 +8,5 @@
 /c1k3.exe
 *.dll
 /build
+/*.tar.gz
+/*.zip
