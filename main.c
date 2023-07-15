@@ -167,7 +167,7 @@ void game_load() {
     r_submit_buffer();
 
     audio_init();
-};
+}
 
 text_surface_t * c1k3 = NULL;
 text_surface_t * dq = NULL;
@@ -224,7 +224,7 @@ void menu_run(float time_now) {
 
     r_end_frame();
 
-};
+}
 
 void quit() {
     game_free_entities();

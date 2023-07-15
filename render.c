@@ -384,7 +384,7 @@ void r_push_light(vec3_t pos, float intensity, float r, float g, float b) {
 
         r_num_lights++;
     }
-};
+}
 
 void render_quit() {
     vector_free(r_draw_calls);
