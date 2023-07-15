@@ -267,6 +267,11 @@ int main(int argc, char* argv[]) {
                                           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                           D_WINDOW_W, D_WINDOW_H,
                                           SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    if(!window) {
+        const char* errmsg = SDL_GetError();
+        fprintf(stderr, "SDL failed to create a window! SDL_Error: %s", errmsg);
+        return 1;
+    }
     SDL_GL_CreateContext(window);
     // SDL_GL_SetSwapInterval(0);
     // todo, vsync?

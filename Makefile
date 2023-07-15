@@ -1,4 +1,3 @@
-
 EXT_SRC = $(wildcard external/*/*.c)
 EXT_OBJ = $(EXT_SRC:.c=.o)
 
@@ -109,3 +108,7 @@ test:
 
 debug: all
 	$(SAN_OPT) lldb ./$(BIN_NAM)
+
+clean:
+	rm $(INT_OBJ)
+	rm $(EXT_OBJ)
