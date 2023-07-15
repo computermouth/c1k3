@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_ENEMY_GRUNT_
-#define _ENTITY_ENEMY_GRUNT_
+#ifndef ENTITY_ENEMY_GRUNT_H
+#define ENTITY_ENEMY_GRUNT_H
 
 #include "entity.h"
 

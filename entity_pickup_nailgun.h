@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_PICKUP_NAILGUN_
-#define _ENTITY_PICKUP_NAILGUN_
+#ifndef ENTITY_PICKUP_NAILGUN_H
+#define ENTITY_PICKUP_NAILGUN_H
 
 #include "entity.h"
 

@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_PROJECTILE_NAIL_
-#define _ENTITY_PROJECTILE_NAIL_
+#ifndef ENTITY_PROJECTILE_NAIL_H
+#define ENTITY_PROJECTILE_NAIL_H
 
 #include "entity.h"
 

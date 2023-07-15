@@ -1,6 +1,6 @@
 
-#ifndef _RENDER_
-#define _RENDER_
+#ifndef RENDER_H
+#define RENDER_H
 
 #include <SDL2/SDL_opengles2.h>
 #include "math.h"

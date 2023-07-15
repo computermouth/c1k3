@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_
-#define _ENTITY_
+#ifndef ENTITY_H
+#define ENTITY_H
 
 #include <stdint.h>
 #include <stdbool.h>

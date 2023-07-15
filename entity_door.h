@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_DOOR_
-#define _ENTITY_DOOR_
+#ifndef ENTITY_DOOR_H
+#define ENTITY_DOOR_H
 
 #include "entity.h"
 

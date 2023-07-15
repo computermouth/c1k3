@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_PICKUP_HEALTH_
-#define _ENTITY_PICKUP_HEALTH_
+#ifndef ENTITY_PICKUP_HEALTH_H
+#define ENTITY_PICKUP_HEALTH_H
 
 #include "entity.h"
 

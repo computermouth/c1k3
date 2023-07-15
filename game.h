@@ -1,6 +1,6 @@
 
-#ifndef _GAME_
-#define _GAME_
+#ifndef GAME_H
+#define GAME_H
 
 #include "entity.h"
 #include <stdint.h>

@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_PICKUP_KEY_
-#define _ENTITY_PICKUP_KEY_
+#ifndef ENTITY_PICKUP_KEY_H
+#define ENTITY_PICKUP_KEY_H
 
 #include "entity.h"
 

@@ -1,6 +1,6 @@
 
-#ifndef _WEAPON_
-#define _WEAPON_
+#ifndef WEAPON_H
+#define WEAPON_H
 
 #include <stdint.h>
 #include <stdbool.h>

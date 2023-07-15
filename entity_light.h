@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_LIGHT_
-#define _ENTITY_LIGHT_
+#ifndef ENTITY_LIGHT_H
+#define ENTITY_LIGHT_H
 
 #include "entity.h"
 

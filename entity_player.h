@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_PLAYER_
-#define _ENTITY_PLAYER_
+#ifndef ENTITY_PLAYER_H
+#define ENTITY_PLAYER_H
 
 #include "entity.h"
 

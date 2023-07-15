@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_TORCH_
-#define _ENTITY_TORCH_
+#ifndef ENTITY_TORCH_H
+#define ENTITY_TORCH_H
 
 #include "entity.h"
 

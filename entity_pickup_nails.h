@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_PICKUP_NAILS_
-#define _ENTITY_PICKUP_NAILS_
+#ifndef ENTITY_PICKUP_NAILS_H
+#define ENTITY_PICKUP_NAILS_H
 
 #include "entity.h"
 

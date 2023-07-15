@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_TRIGGER_LEVEL_
-#define _ENTITY_TRIGGER_LEVEL_
+#ifndef ENTITY_TRIGGER_LEVEL_H
+#define ENTITY_TRIGGER_LEVEL_H
 
 #include "entity.h"
 

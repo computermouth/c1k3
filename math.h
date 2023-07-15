@@ -1,6 +1,6 @@
 
-#ifndef _MATH_
-#define _MATH_
+#ifndef MATH_H
+#define MATH_H
 
 typedef struct {
     float x;

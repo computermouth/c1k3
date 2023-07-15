@@ -23,8 +23,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _VECTOR_H_
-#define _VECTOR_H_
+#ifndef VECTOR_H
+#define VECTOR_H
 
 #include <stdbool.h>
 #include <stdlib.h>

@@ -1,6 +1,6 @@
 
-#ifndef _MODEL_
-#define _MODEL_
+#ifndef MODEL_H
+#define MODEL_H
 
 #include <stdint.h>
 

@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_ENEMY_
-#define _ENTITY_ENEMY_
+#ifndef ENTITY_ENEMY_H
+#define ENTITY_ENEMY_H
 
 #include "entity.h"
 

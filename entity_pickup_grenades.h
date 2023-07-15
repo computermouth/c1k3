@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_PICKUP_GRENADES_
-#define _ENTITY_PICKUP_GRENADES_
+#ifndef ENTITY_PICKUP_GRENADES_H
+#define ENTITY_PICKUP_GRENADES_H
 
 #include "entity.h"
 

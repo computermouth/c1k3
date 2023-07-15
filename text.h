@@ -1,6 +1,6 @@
 
-#ifndef _TEXT_
-#define _TEXT_
+#ifndef TEXT_H
+#define TEXT_H
 
 #include <stdint.h>
 

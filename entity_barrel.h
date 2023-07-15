@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_BARREL_
-#define _ENTITY_BARREL_
+#ifndef ENTITY_BARREL_H
+#define ENTITY_BARREL_H
 
 #include "entity.h"
 

@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_PARTICLE_
-#define _ENTITY_PARTICLE_
+#ifndef ENTITY_PARTICLE_H
+#define ENTITY_PARTICLE_H
 
 #include "entity.h"
 

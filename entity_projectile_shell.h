@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_PROJECTILE_SHELL_
-#define _ENTITY_PROJECTILE_SHELL_
+#ifndef ENTITY_PROJECTILE_SHELL_H
+#define ENTITY_PROJECTILE_SHELL_H
 
 #include "entity.h"
 

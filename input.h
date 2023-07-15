@@ -1,6 +1,6 @@
 
-#ifndef _INPUT_
-#define _INPUT_
+#ifndef INPUT_H
+#define INPUT_H
 
 #include <stdbool.h>
 

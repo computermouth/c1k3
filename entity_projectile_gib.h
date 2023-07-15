@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_PROJECTILE_GIB_
-#define _ENTITY_PROJECTILE_GIB_
+#ifndef ENTITY_PROJECTILE_GIB_H
+#define ENTITY_PROJECTILE_GIB_H
 
 #include "entity.h"
 

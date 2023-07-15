@@ -1,6 +1,6 @@
 
-#ifndef _ENTITY_ENEMY_ENFORCER_
-#define _ENTITY_ENEMY_ENFORCER_
+#ifndef ENTITY_ENEMY_ENFORCER_H
+#define ENTITY_ENEMY_ENFORCER_H
 
 #include "entity.h"
 
