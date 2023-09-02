@@ -11,16 +11,16 @@
 #include "render.h"
 #include "input.h"
 #include "text.h"
+#include "vector.h"
 
 state_t game_state = MENU_STATE;
 float game_tick = 0.0f;
 float game_time = 0.016f;
 float game_message_timeout = 0;
 
-// entity_t
-vector * game_entities = NULL;
-
-// entity_t *
+// todo, can __game_entities be remade to be contiguous memory?
+// maybe lists are indices into game_entities?
+vector * __game_entities = NULL;
 vector * game_entities_list_all = NULL;
 vector * game_entities_list_friendly = NULL;
 vector * game_entities_list_enemies = NULL;
@@ -69,8 +69,17 @@ void game_entities_friendly_pop(entity_t ** e) {
 
 void game_free_entities() {
 
-    vector_free(game_entities);
-    game_entities = NULL;
+    if (__game_entities){
+        size_t ge_len = vector_size(__game_entities);
+        for(size_t i = 0; i < ge_len; i++){
+            entity_t ** e = vector_at(__game_entities, i);
+            if(*e)
+                free(*e);
+        }
+    }
+    
+    vector_free(__game_entities);
+    __game_entities = NULL;
 
     vector_free(game_entities_list_all);
     vector_free(game_entities_list_friendly);
@@ -88,7 +97,7 @@ void game_init(int map_index) {
     game_free_entities();
 
     // entity_t
-    game_entities = vector_init(sizeof(entity_t));
+    __game_entities = vector_init(sizeof(entity_t *));
 
     // entity_t *
     game_entities_list_all = vector_init(sizeof(entity_t *));
@@ -124,9 +133,8 @@ uint32_t game_finish(uint32_t interval, void *param) {
 // memory from the new alive_entities collection
 entity_t * game_spawn (void (*init)(entity_t *, vec3_t, uint8_t, uint8_t), vec3_t pos, uint8_t p1, uint8_t p2) {
 
-    entity_t * e = vector_push(game_entities, &(entity_t) {
-        0
-    });
+    entity_t * e = calloc(1, sizeof(entity_t));
+    vector_push(__game_entities, &e);
     init(e, pos, p1, p2);
 
     return e;
@@ -154,21 +162,25 @@ void game_run(float time_now) {
     }
 
     // clean up _dead entities
-    uint32_t len = vector_size(game_entities);
+    uint32_t len = vector_size(__game_entities);
     for (uint32_t i = 0; i < len; i++) {
-        entity_t * e = vector_at(game_entities, i);
+        entity_t ** pe = vector_at(__game_entities, i);
+        entity_t * e = *pe;
         if (e->_dead) {
             if (e == game_entity_player)
                 game_entity_player = NULL;
-            vector_erase(game_entities, i);
+            free(e);
+            vector_erase(__game_entities, i);
             i--;
             len--;
         } else {
             switch (e->_group) {
             case ENTITY_GROUP_ENEMY:
+                game_entities_all_push(&e);
                 game_entities_enemies_push(&e);
                 break;
             case ENTITY_GROUP_PLAYER:
+                game_entities_all_push(&e);
                 game_entities_friendly_push(&e);
                 break;
             case ENTITY_GROUP_ALL:
@@ -177,15 +189,17 @@ void game_run(float time_now) {
                 game_entities_friendly_push(&e);
                 break;
             default:
+                game_entities_all_push(&e);
                 break;
             }
         }
     }
 
     // run updates after _dead entities have been removed
-    len = vector_size(game_entities);
+    len = vector_size(__game_entities);
     for (uint32_t i = 0; i < len; i++) {
-        entity_t * e = vector_at(game_entities, i);
+        entity_t ** te = vector_at(__game_entities, i);
+        entity_t * e = *te;
         e->_update(e);
     }
 
