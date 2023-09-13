@@ -4,6 +4,7 @@
 -I./c1k3-assets/ttf
 -I./external/lodepng
 -I./external/libdsa
+-I./external/mpack
 -I/usr/include/SDL2
 -I/usr/include/glib-2.0
 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include

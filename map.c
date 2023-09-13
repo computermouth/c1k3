@@ -28,8 +28,95 @@
 #include "entity_pickup_key.h"
 #include "entity_torch.h"
 
+#include "mpack.h"
+
 map_t * map;
 vector * map_data = NULL;
+
+
+
+typedef struct {
+    uint32_t t;
+    int32_t b;
+} bblock_t;
+
+typedef struct {
+    vector * blocks;
+    uint8_t * e;
+    uint32_t e_size;
+    uint8_t cm[((map_size * map_size * map_size) >> 3)];
+} bmap_t;
+
+typedef struct {
+    float start[3];
+    float size[3];
+    uint8_t tex_id;
+} packed_map_cube_t;
+
+typedef struct {
+    const char * texture;
+    size_t size;
+} packed_ref_cube_t;
+
+void mpack_map_parse() {
+
+    // pass in via args
+    const char * data = (char *)data_blend_map;
+    const size_t data_len = data_blend_map_len;
+
+    mpack_tree_t tree = { 0 };
+    mpack_tree_init_data(&tree, data, data_len);
+    mpack_tree_parse(&tree);
+    mpack_node_t root = mpack_tree_root(&tree);
+
+    mpack_node_t mp_ref_cubes = mpack_node_map_cstr(root, "ref_cubes");
+    mpack_node_t mp_ref_entts = mpack_node_map_cstr(root, "ref_entts");
+    mpack_node_t mp_map_cubes = mpack_node_map_cstr(root, "map_cubes");
+    mpack_node_t mp_map_entts = mpack_node_map_cstr(root, "map_entts");
+    mpack_node_t mp_map_lites = mpack_node_map_cstr(root, "map_lites");
+    mpack_node_t mp_map_playr = mpack_node_map_cstr(root, "map_player");
+
+    size_t ref_cubes_sz = mpack_node_array_length(mp_ref_cubes);
+    size_t ref_entts_sz = mpack_node_array_length(mp_ref_entts);
+    size_t map_cubes_sz = mpack_node_array_length(mp_map_cubes);
+    size_t map_entts_sz = mpack_node_array_length(mp_map_entts);
+    size_t map_lites_sz = mpack_node_array_length(mp_map_lites);
+    size_t map_playr_sz = mpack_node_array_length(mp_map_playr);
+
+    // populate ref cubes
+    vector * ref_cubes = vector_init(sizeof(char *));
+    for(uint32_t i = 0; i < ref_cubes_sz; i++) {
+        mpack_node_t bin = mpack_node_array_at(mp_ref_cubes, i);
+        packed_ref_cube_t * t = vector_push(ref_cubes, &(packed_ref_cube_t) { 0 });
+        t->texture = mpack_node_bin_data(bin);
+        t->size = mpack_node_bin_size(bin);
+        
+        fprintf(stderr, "[%d] size -- %zu\n", i, t->size);
+        fprintf(stderr, "[%d] %p\n", i, t->texture);
+    }
+
+    fprintf(stderr,
+            "ref_cubes_sz: %zu\n"
+            "ref_entts_sz: %zu\n"
+            "map_cubes_sz: %zu\n"
+            "map_entts_sz: %zu\n"
+            "map_lites_sz: %zu\n"
+            "map_playr_sz: %zu\n",
+            ref_cubes_sz,
+            ref_entts_sz,
+            map_cubes_sz,
+            map_entts_sz,
+            map_lites_sz,
+            map_playr_sz
+           );
+
+    mpack_error_t err = mpack_tree_destroy(&tree);
+    if ( err != mpack_ok) {
+        fprintf(stderr, "An error occurred decoding the data -- %s!\n", mpack_error_to_string(err));
+        return;
+    }
+
+}
 
 void map_parse() {
 
@@ -101,6 +188,8 @@ void map_parse() {
         tmp_map->e_size = e_size;
         tmp_map->blocks = blocks;
     }
+
+    mpack_map_parse();
 
 }
 

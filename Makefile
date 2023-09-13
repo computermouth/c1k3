@@ -12,8 +12,9 @@ TST_SRC = tests/test.c
 BIN_NAM = c1k3
 
 # todo generate
-IFLAGS = -I ./c1k3-assets -I ./c1k3-assets/img -I ./c1k3-assets/audio -I ./c1k3-assets/ttf -I ./external/lodepng -I ./external/libdsa
+IFLAGS = -I ./c1k3-assets -I ./c1k3-assets/img -I ./c1k3-assets/audio -I ./c1k3-assets/ttf -I ./external/lodepng -I ./external/libdsa -I ./external/mpack
 
+# todo -Wextra
 CFLAGS = -Wall $(IFLAGS) $(shell sdl2-config --cflags) $(shell pkg-config --cflags SDL2_mixer SDL2_ttf) -std=c11 -pedantic
 LFLAGS = -lm $(shell sdl2-config --libs) $(shell pkg-config --libs SDL2_mixer SDL2_ttf)
 
