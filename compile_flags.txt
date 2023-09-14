@@ -2,6 +2,7 @@
 -I./c1k3-assets/img
 -I./c1k3-assets/audio
 -I./c1k3-assets/ttf
+-I./c1k3-assets/blend
 -I./external/lodepng
 -I./external/libdsa
 -I./external/mpack

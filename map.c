@@ -29,11 +29,10 @@
 #include "entity_torch.h"
 
 #include "mpack.h"
+#include "vector.h"
 
 map_t * map;
 vector * map_data = NULL;
-
-
 
 typedef struct {
     uint32_t t;
@@ -48,21 +47,21 @@ typedef struct {
 } bmap_t;
 
 typedef struct {
-    float start[3];
-    float size[3];
-    uint8_t tex_id;
-} packed_map_cube_t;
-
-typedef struct {
     const char * texture;
     size_t size;
 } packed_ref_cube_t;
 
+typedef struct {
+    uint64_t start[3];
+    uint64_t size[3];
+    uint8_t tex_id;
+} packed_map_cube_t;
+
 void mpack_map_parse() {
 
     // pass in via args
-    const char * data = (char *)data_blend_map;
-    const size_t data_len = data_blend_map_len;
+    const char * data = (char *)data_map3;
+    const size_t data_len = data_map3_len;
 
     mpack_tree_t tree = { 0 };
     mpack_tree_init_data(&tree, data, data_len);
@@ -115,6 +114,8 @@ void mpack_map_parse() {
         fprintf(stderr, "An error occurred decoding the data -- %s!\n", mpack_error_to_string(err));
         return;
     }
+
+    vector_free(ref_cubes);
 
 }
 

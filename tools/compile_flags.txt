@@ -1,0 +1,3 @@
+-I../external/libdsa
+-I../external/mpack
+-I../external/cgltf

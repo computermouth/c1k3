@@ -12,7 +12,9 @@ TST_SRC = tests/test.c
 BIN_NAM = c1k3
 
 # todo generate
-IFLAGS = -I ./c1k3-assets -I ./c1k3-assets/img -I ./c1k3-assets/audio -I ./c1k3-assets/ttf -I ./external/lodepng -I ./external/libdsa -I ./external/mpack
+IFLAGS  = -I./c1k3-assets -I./c1k3-assets/img -I./c1k3-assets/audio -I./c1k3-assets/ttf -I./c1k3-assets/blend
+IFLAGS += -I./external/lodepng -I./external/libdsa -I./external/mpack -I./external/cgltf
+IFLAGS += -I./tools
 
 # todo -Wextra
 CFLAGS = -Wall $(IFLAGS) $(shell sdl2-config --cflags) $(shell pkg-config --cflags SDL2_mixer SDL2_ttf) -std=c11 -pedantic
@@ -93,8 +95,12 @@ memtest: valbuild
 	valgrind --track-origins=yes --leak-check=yes --gen-suppressions=all --suppressions=valgrind.supp ./$(BIN_NAM)
 
 .NOTPARALLEL:
-assets:
+assets: tools/mapc
 	make -C c1k3-assets
+
+tools/mapc: OPT_FLAGS = $(DBGSN_CFLAGS)
+tools/mapc:
+	$(CC) $(OPT_FLAGS) tools/mapc.c -o tools/mapc $(EXT_OBJ) $(LFLAGS)
 
 %.o: %.c
 	$(CC) $(OPT_FLAGS) -c $< -o $@
