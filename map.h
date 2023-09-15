@@ -39,6 +39,11 @@ typedef enum {
 // move the following
 
 typedef struct {
+    char * k;
+    char * v;
+} entity_extra_params_t;
+
+typedef struct {
     vec3_t position;
 } entity_player_params_t;
 
@@ -50,14 +55,8 @@ typedef struct {
 typedef struct {
     vec3_t position;
     uint32_t texture;
-    uint8_t patrol_dir;
-} entity_hound_params_t;
-
-typedef struct {
-    vec3_t position;
-    uint32_t texture;
-    uint8_t patrol_dir;
-} entity_grunt_params_t;
+    entity_extra_params_t * extras;
+} entity_generic_params_t;
 
 // to here, back to their header files or some shit
 // along with I guess some parsing info
@@ -67,8 +66,7 @@ typedef struct {
     union {
         entity_player_params_t entity_player_params;
         entity_light_params_t entity_light_params;
-        entity_hound_params_t entity_hound_params;
-        entity_grunt_params_t entity_grunt_params;
+        entity_generic_params_t entity_generic_params;
     };
 } entity_params_t;
 

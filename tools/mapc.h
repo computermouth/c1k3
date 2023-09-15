@@ -39,6 +39,8 @@ typedef struct {
     mapc_verts_t verts;
     mapc_txtr_t txtr;
     mapc_fpos3_t fpos;
+    vector * extras;
+    char entity_name[100];
 } mapc_rm_entt_t;
 
 typedef struct {
@@ -50,6 +52,8 @@ typedef struct {
 typedef struct {
     uint8_t texture;
     mapc_fpos3_t fpos;
+    vector * extras;
+    char entity_name[100];
 } mapc_out_entt_t;
 
 typedef struct {
@@ -60,5 +64,10 @@ typedef struct {
 typedef struct {
     mapc_fpos3_t fpos;
 } mapc_out_plyr_t;
+
+typedef struct {
+    char k[100];
+    char v[100];
+} mapc_extra_kv_t;
 
 #endif

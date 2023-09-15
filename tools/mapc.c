@@ -260,6 +260,7 @@ void prep_out() {
 
         vector_push(out_cube_vec, &oc);
     }
+    vector_free(map_cube_vec);
 
     // map entt -> out entt
     len = vector_size(map_entt_vec);
@@ -277,10 +278,13 @@ void prep_out() {
                 .z = entt->fpos.z,
             },
             .texture = (uint8_t)texture_id,
+            .extras = entt->extras,
         };
+        strncpy(oe.entity_name, entt->entity_name, 100);
 
         vector_push(out_entt_vec, &oe);
     }
+    vector_free(map_entt_vec);
 
     fprintf(stderr, "outcubelen: %zu\n", vector_size(out_cube_vec));
     fprintf(stderr, "outenttlen: %zu\n", vector_size(out_entt_vec));
@@ -428,7 +432,7 @@ bool node_is_cube(cgltf_node * node) {
     for(int i = 0; i < count; i++) {
         if( tokens[i].type == JSMN_STRING
                 && tokens[i].size > 0
-                && strncmp(xjson + tokens[i].start, "type", tokens[i].end - tokens[i].start) == 0
+                && strncmp(xjson + tokens[i].start, "_type", tokens[i].end - tokens[i].start) == 0
                 && tokens[i + 1].type == JSMN_STRING
                 && strncmp(xjson + tokens[i + 1].start, "cube", tokens[i + 1].end - tokens[i + 1].start) == 0
           )
@@ -438,7 +442,7 @@ bool node_is_cube(cgltf_node * node) {
     return false;
 }
 
-bool node_is_entity(cgltf_node * node) {
+bool node_is_entity(cgltf_node * node, char * name) {
     if(node->extras.data == NULL)
         return false;
 
@@ -449,15 +453,35 @@ bool node_is_entity(cgltf_node * node) {
     jsmn_init(&parser);
     int count = jsmn_parse(&parser, xjson, strlen(xjson), tokens, JSON_MAX_TOKENS);
 
+    bool is_entity = false;
     for(int i = 0; i < count; i++) {
         if( tokens[i].type == JSMN_STRING
                 && tokens[i].size > 0
-                && strncmp(xjson + tokens[i].start, "type", tokens[i].end - tokens[i].start) == 0
+                && strncmp(xjson + tokens[i].start, "_type", tokens[i].end - tokens[i].start) == 0
                 && tokens[i + 1].type == JSMN_STRING
                 && strncmp(xjson + tokens[i + 1].start, "entity", tokens[i + 1].end - tokens[i + 1].start) == 0
-          )
-            return true;
+          ){
+            is_entity = true;
+          }
     }
+    
+    if (!is_entity)
+        return false;
+    
+    for(int i = 0; i < count; i++) {
+        if( tokens[i].type == JSMN_STRING
+                && tokens[i].size > 0
+                && strncmp(xjson + tokens[i].start, "_entity", tokens[i].end - tokens[i].start) == 0
+                && tokens[i + 1].type == JSMN_STRING
+          ){
+            strncpy(name, xjson + tokens[i + 1].start, tokens[i + 1].end - tokens[i + 1].start);
+            name[tokens[i + 1].end - tokens[i + 1].start] = '\0';
+            fprintf(stderr, "type: %s\n", name);
+            return true;
+          }
+    }
+    
+    fprintf(stderr, "E: couldn't find entity_name");
 
     return false;
 }
@@ -476,7 +500,7 @@ bool entity_is_player(cgltf_node * node) {
     for(int i = 0; i < count; i++) {
         if( tokens[i].type == JSMN_STRING
                 && tokens[i].size > 0
-                && strncmp(xjson + tokens[i].start, "entity", tokens[i].end - tokens[i].start) == 0
+                && strncmp(xjson + tokens[i].start, "_entity", tokens[i].end - tokens[i].start) == 0
                 && tokens[i + 1].type == JSMN_STRING
                 && strncmp(xjson + tokens[i + 1].start, "player", tokens[i + 1].end - tokens[i + 1].start) == 0
           )
@@ -500,7 +524,7 @@ bool entity_is_light(cgltf_node * node) {
     for(int i = 0; i < count; i++) {
         if( tokens[i].type == JSMN_STRING
                 && tokens[i].size > 0
-                && strncmp(xjson + tokens[i].start, "entity", tokens[i].end - tokens[i].start) == 0
+                && strncmp(xjson + tokens[i].start, "_entity", tokens[i].end - tokens[i].start) == 0
                 && tokens[i + 1].type == JSMN_STRING
                 && strncmp(xjson + tokens[i + 1].start, "light", tokens[i + 1].end - tokens[i + 1].start) == 0
           )
@@ -543,6 +567,42 @@ fail:
     exit(1);
 }
 
+vector * extras_strings_from_node(cgltf_node * node){
+    if (node->extras.data == NULL)
+        return NULL;
+    
+    vector * kv_vec = vector_init(sizeof(mapc_extra_kv_t));
+
+    jsmn_parser parser = { 0 };
+    jsmntok_t tokens[JSON_MAX_TOKENS] = { 0 };
+    const char * xjson = node->extras.data;
+
+    jsmn_init(&parser);
+    int count = jsmn_parse(&parser, xjson, strlen(xjson), tokens, JSON_MAX_TOKENS);
+
+    for(int i = 0; i < count; i++) {
+        if( tokens[i].type == JSMN_STRING
+                && tokens[i].size > 0
+                && strncmp(xjson + tokens[i].start, "_entity", tokens[i].end - tokens[i].start) != 0
+                && strncmp(xjson + tokens[i].start, "_type", tokens[i].end - tokens[i].start) != 0
+                && tokens[i + 1].type == JSMN_STRING
+          ){
+                mapc_extra_kv_t tmp_kv = {0};
+                strncpy(tmp_kv.k, xjson + tokens[i].start, tokens[i].end - tokens[i].start);
+                strncpy(tmp_kv.v, xjson + tokens[i + 1].start, tokens[i + 1].end - tokens[i + 1].start);
+              fprintf(stderr, "found kv: {'%s': '%s'}\n", tmp_kv.k, tmp_kv.v);
+              vector_push(kv_vec, &tmp_kv);
+          }
+    }
+    
+    // extras was not empty
+    if (vector_size(kv_vec))
+        return kv_vec;
+    // extras was empty
+    vector_free(kv_vec);
+    return NULL;
+}
+
 typedef enum {
     CLASS_REF,
     CLASS_MAP,
@@ -566,11 +626,13 @@ mapc_pos3_t group_meshes(cgltf_data * data) {
         mesh_group_t mg = GROUP_INVALID;
         mesh_class_t mc = CLASS_MAP;
         mapc_out_lite_t ol = { 0 };
+        vector * extras_vec = NULL;
+        char entity_name[100];
 
         // determine group
         if(node_is_cube(n))
             mg = GROUP_CUBE;
-        else if (node_is_entity(n)) {
+        else if (node_is_entity(n, entity_name)) {
             mg = GROUP_ENTT;
             if(entity_is_light(n))
                 mg = GROUP_ENTT_LIGHT;
@@ -662,8 +724,9 @@ skip_negative:
             case GROUP_ENTT:
                 // map entt
                 vector_push(map_entt_vec, &(mapc_rm_entt_t) {
-                    .txtr = get_image(n), .fpos = start
+                    .txtr = get_image(n), .fpos = start, .extras = extras_strings_from_node(n)
                 });
+                strncpy(((mapc_rm_entt_t *)vector_at(map_entt_vec, vector_size(map_entt_vec) - 1))->entity_name, entity_name, 100);
                 fprintf(stderr, "map_entt_vec '%s'\n", n->name);
                 break;
             case GROUP_ENTT_LIGHT:
@@ -882,11 +945,16 @@ int main(int argc, char * argv[]) {
     // map entts
     {
         mpack_write_cstr(&writer, "map_entts");
+        size_t arrlen = vector_size(out_entt_vec) + vector_size(out_lite_vec) + vector_size(out_plyr_vec);
+        // size_t arrlen = vector_size(out_entt_vec);
+        mpack_start_array(&writer, arrlen);
         size_t melen = vector_size(out_entt_vec);
-        mpack_start_array(&writer, melen);
         for(size_t i = 0; i < melen; i++) {
             mapc_out_entt_t * oe = vector_at(out_entt_vec, i);
-            mpack_start_map(&writer, 2);
+            mpack_start_map(&writer, 4);
+
+            mpack_write_cstr(&writer, "type");
+            mpack_write_cstr(&writer, oe->entity_name);
 
             mpack_write_cstr(&writer, "tex_id");
             mpack_write_u8(&writer, oe->texture);
@@ -897,20 +965,26 @@ int main(int argc, char * argv[]) {
             mpack_write_float(&writer, oe->fpos.y);
             mpack_write_float(&writer, oe->fpos.z);
             mpack_finish_array(&writer);
+            
+            mpack_write_cstr(&writer, "param");
+            size_t param_len = vector_size(oe->extras);
+            mpack_start_map(&writer, param_len);
+            for(size_t i = 0; i < param_len; i++){
+                mpack_write_cstr(&writer, ((mapc_extra_kv_t*)vector_at(oe->extras, i))->k);
+                mpack_write_cstr(&writer, ((mapc_extra_kv_t*)vector_at(oe->extras, i))->v);
+            }
+            mpack_finish_map(&writer);
 
             mpack_finish_map(&writer);
         }
-        mpack_finish_array(&writer);
-    }
-
-    // map lights
-    {
-        mpack_write_cstr(&writer, "map_lites");
+        // map lights
         size_t ollen = vector_size(out_lite_vec);
-        mpack_start_array(&writer, ollen);
         for(size_t i = 0; i < ollen; i++) {
             mapc_out_lite_t * ol = vector_at(out_lite_vec, i);
-            mpack_start_map(&writer, 2);
+            mpack_start_map(&writer, 3);
+
+            mpack_write_cstr(&writer, "type");
+            mpack_write_cstr(&writer, "light");
 
             mpack_write_cstr(&writer, "color");
             mpack_start_array(&writer, 4);
@@ -929,24 +1003,73 @@ int main(int argc, char * argv[]) {
 
             mpack_finish_map(&writer);
         }
+        // map player
+        {
+            size_t pllen = vector_size(out_plyr_vec);
+            if (pllen != 1)
+                fprintf(stderr, "E: len(player) == %zu\n", pllen);
+    
+            mapc_out_plyr_t * op = vector_at(out_plyr_vec, 0);
+            mpack_start_map(&writer, 2);
+            mpack_write_cstr(&writer, "type");
+            mpack_write_cstr(&writer, "player");
+            
+            mpack_write_cstr(&writer, "pos");
+            mpack_start_array(&writer, 3);
+            mpack_write_float(&writer, op->fpos.x);
+            mpack_write_float(&writer, op->fpos.z);
+            mpack_write_float(&writer, op->fpos.y);
+            mpack_finish_array(&writer);
+            mpack_finish_map(&writer);
+        }
+        
         mpack_finish_array(&writer);
     }
 
-    // map player
-    {
-        mpack_write_cstr(&writer, "map_player");
-        size_t pllen = vector_size(out_plyr_vec);
-        if (pllen != 1)
-            fprintf(stderr, "E: len(player) == %zu\n", pllen);
+    // // map lights
+    // {
+    //     mpack_write_cstr(&writer, "map_lites");
+    //     size_t ollen = vector_size(out_lite_vec);
+    //     mpack_start_array(&writer, ollen);
+    //     for(size_t i = 0; i < ollen; i++) {
+    //         mapc_out_lite_t * ol = vector_at(out_lite_vec, i);
+    //         mpack_start_map(&writer, 2);
 
-        mapc_out_plyr_t * op = vector_at(out_plyr_vec, 0);
+    //         mpack_write_cstr(&writer, "color");
+    //         mpack_start_array(&writer, 4);
+    //         mpack_write_u8(&writer, ol->color[0]);
+    //         mpack_write_u8(&writer, ol->color[1]);
+    //         mpack_write_u8(&writer, ol->color[2]);
+    //         mpack_write_u8(&writer, ol->color[3]);
+    //         mpack_finish_array(&writer);
 
-        mpack_start_array(&writer, 3);
-        mpack_write_float(&writer, op->fpos.x);
-        mpack_write_float(&writer, op->fpos.y);
-        mpack_write_float(&writer, op->fpos.z);
-        mpack_finish_array(&writer);
-    }
+    //         mpack_write_cstr(&writer, "pos");
+    //         mpack_start_array(&writer, 3);
+    //         mpack_write_float(&writer, ol->fpos.x);
+    //         mpack_write_float(&writer, ol->fpos.z);
+    //         mpack_write_float(&writer, ol->fpos.y);
+    //         mpack_finish_array(&writer);
+
+    //         mpack_finish_map(&writer);
+    //     }
+    //     mpack_finish_array(&writer);
+    // }
+
+    // // map player
+    // {
+    //     mpack_write_cstr(&writer, "map_player");
+    //     size_t pllen = vector_size(out_plyr_vec);
+    //     if (pllen != 1)
+    //         fprintf(stderr, "E: len(player) == %zu\n", pllen);
+
+    //     mapc_out_plyr_t * op = vector_at(out_plyr_vec, 0);
+
+    //     mpack_start_array(&writer, 3);
+    //     mpack_write_float(&writer, op->fpos.x);
+    //     mpack_write_float(&writer, op->fpos.z);
+    //     mpack_write_float(&writer, op->fpos.y);
+    //     mpack_finish_array(&writer);
+    // }
 
     mpack_complete_map(&writer);
 
@@ -961,7 +1084,6 @@ int main(int argc, char * argv[]) {
     free(mp_data);
 
     vector_free(ref_cube_vec);
-    vector_free(map_cube_vec);
 
     size_t len = vector_size(ref_entt_vec);
     for(size_t i = 0; i < len; i++) {
@@ -972,7 +1094,6 @@ int main(int argc, char * argv[]) {
         vector_free(e->verts.anim_frames);
     }
     vector_free(ref_entt_vec);
-    vector_free(map_entt_vec);
 
     vector_free(out_cube_vec);
     vector_free(out_entt_vec);

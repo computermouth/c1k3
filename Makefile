@@ -98,7 +98,8 @@ memtest: valbuild
 assets: tools/mapc
 	make -C c1k3-assets
 
-tools/mapc: OPT_FLAGS = $(DBGSN_CFLAGS)
+##tools/mapc: OPT_FLAGS = $(DBGSN_CFLAGS)
+tools/mapc: OPT_FLAGS = $(RELEA_CFLAGS)
 tools/mapc: $(EXT_OBJ)
 	$(CC) $(OPT_FLAGS) tools/mapc.c -o tools/mapc $(EXT_OBJ) $(LFLAGS)
 
