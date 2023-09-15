@@ -35,27 +35,87 @@ map_t * map;
 vector * map_data = NULL;
 
 typedef struct {
-    uint32_t t;
-    int32_t b;
-} bblock_t;
+    char * entity_string;
+    void (*constructor_func)(entity_t *, vec3_t, uint8_t, uint8_t);
+} entity_table_t;
 
-typedef struct {
-    vector * blocks;
-    uint8_t * e;
-    uint32_t e_size;
-    uint8_t cm[((map_size * map_size * map_size) >> 3)];
-} bmap_t;
+entity_table_t entity_table[__ENTITY_ID_END] = { 0 };
 
-typedef struct {
-    const char * texture;
-    size_t size;
-} packed_ref_cube_t;
+void map_init() {
+    // populate entity_table for map parsing
+    entity_table[ENTITY_ID_PLAYER] = (entity_table_t) {
+        "__UNUSED", entity_player_constructor
+    };
+    entity_table[ENTITY_ID_ENEMY_GRUNT] = (entity_table_t) {
+        "grunt", entity_enemy_grunt_constructor
+    };
+    entity_table[ENTITY_ID_ENEMY_ENFORCER] = (entity_table_t) {
+        "enforcer", entity_enemy_enforcer_constructor,
+    };
+    entity_table[ENTITY_ID_ENEMY_OGRE] = (entity_table_t) {
+        "ogre", entity_enemy_ogre_constructor
+    };
+    entity_table[ENTITY_ID_ENEMY_ZOMBIE] = (entity_table_t) {
+        "zombie", entity_enemy_zombie_constructor
+    };
+    entity_table[ENTITY_ID_ENEMY_HOUND] = (entity_table_t) {
+        "hound", entity_enemy_hound_constructor
+    };
+    entity_table[ENTITY_ID_PICKUP_NAILGUN] = (entity_table_t) {
+        "nailgun", entity_pickup_nailgun_constructor
+    };
+    entity_table[ENTITY_ID_PICKUP_GRENADELAUNCHER] = (entity_table_t) {
+        "grenadelauncher", entity_pickup_grenadelauncher_constructor
+    };
+    entity_table[ENTITY_ID_PICKUP_HEALTH] = (entity_table_t) {
+        "health", entity_pickup_health_constructor
+    };
+    entity_table[ENTITY_ID_PICKUP_NAILS] = (entity_table_t) {
+        "nails", entity_pickup_nails_constructor
+    };
+    entity_table[ENTITY_ID_PICKUP_GRENADES] = (entity_table_t) {
+        "key", entity_pickup_key_constructor
+    };
+    entity_table[ENTITY_ID_PICKUP_KEY] = (entity_table_t) {
+        "grenades", entity_pickup_grenades_constructor
+    };
+    entity_table[ENTITY_ID_BARREL] = (entity_table_t) {
+        "barrel", entity_barrel_constructor
+    };
+    entity_table[ENTITY_ID_LIGHT] = (entity_table_t) {
+        "light", entity_light_constructor
+    };
+    entity_table[ENTITY_ID_TRIGGER_LEVEL] = (entity_table_t) {
+        "trigger", entity_trigger_level_constructor
+    };
+    entity_table[ENTITY_ID_DOOR] = (entity_table_t) {
+        "door", entity_door_constructor
+    };
+    entity_table[ENTITY_ID_TORCH] = (entity_table_t) {
+        "torch", entity_torch_constructor
+    };
+}
 
-typedef struct {
-    uint64_t start[3];
-    uint64_t size[3];
-    uint8_t tex_id;
-} packed_map_cube_t;
+// todo, remove once levels have been reproduced
+void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = {
+    /* 00 */ entity_player_constructor,
+    /* 01 */ entity_enemy_grunt_constructor,
+    /* 02 */ entity_enemy_enforcer_constructor,
+    /* 03 */ entity_enemy_ogre_constructor,
+    /* 04 */ entity_enemy_zombie_constructor,
+    /* 05 */ entity_enemy_hound_constructor,
+    /* 06 */ entity_pickup_nailgun_constructor,
+    /* 07 */ entity_pickup_grenadelauncher_constructor,
+    /* 08 */ entity_pickup_health_constructor,
+    /* 09 */ entity_pickup_nails_constructor,
+    /* 10 */ entity_pickup_grenades_constructor,
+    /* 11 */ entity_barrel_constructor,
+    /* 12 */ entity_light_constructor,
+    /* 13 */ entity_trigger_level_constructor,
+    /* 14 */ entity_door_constructor,
+    /* 15 */ entity_pickup_key_constructor,
+    /* 16 */ entity_torch_constructor,
+};
 
 void mpack_map_parse() {
 
@@ -63,11 +123,17 @@ void mpack_map_parse() {
     const char * data = (char *)data_map3;
     const size_t data_len = data_map3_len;
 
+    // push empty map, get pointer back
+    map_t * tmp_map = vector_push(map_data, &(map_t) {
+        0
+    });
+
     mpack_tree_t tree = { 0 };
     mpack_tree_init_data(&tree, data, data_len);
     mpack_tree_parse(&tree);
     mpack_node_t root = mpack_tree_root(&tree);
 
+    // todo, error handling, check if nil node
     mpack_node_t mp_ref_cubes = mpack_node_map_cstr(root, "ref_cubes");
     mpack_node_t mp_ref_entts = mpack_node_map_cstr(root, "ref_entts");
     mpack_node_t mp_map_cubes = mpack_node_map_cstr(root, "map_cubes");
@@ -82,32 +148,124 @@ void mpack_map_parse() {
     size_t map_lites_sz = mpack_node_array_length(mp_map_lites);
     size_t map_playr_sz = mpack_node_array_length(mp_map_playr);
 
+    // fprintf(stderr,
+    //         "ref_cubes_sz: %zu\n"
+    //         "ref_entts_sz: %zu\n"
+    //         "map_cubes_sz: %zu\n"
+    //         "map_entts_sz: %zu\n"
+    //         "map_lites_sz: %zu\n"
+    //         "map_playr_sz: %zu\n",
+    //         ref_cubes_sz,
+    //         ref_entts_sz,
+    //         map_cubes_sz,
+    //         map_entts_sz,
+    //         map_lites_sz,
+    //         map_playr_sz
+    //        );
+
     // populate ref cubes
-    vector * ref_cubes = vector_init(sizeof(char *));
+    vector * ref_cube_tex_id_list = vector_init(sizeof(uint32_t));
     for(uint32_t i = 0; i < ref_cubes_sz; i++) {
         mpack_node_t bin = mpack_node_array_at(mp_ref_cubes, i);
-        packed_ref_cube_t * t = vector_push(ref_cubes, &(packed_ref_cube_t) { 0 });
-        t->texture = mpack_node_bin_data(bin);
-        t->size = mpack_node_bin_size(bin);
-        
-        fprintf(stderr, "[%d] size -- %zu\n", i, t->size);
-        fprintf(stderr, "[%d] %p\n", i, t->texture);
+        uint32_t id = r_create_texture((png_bin_t) {
+            .data = (uint8_t *)mpack_node_bin_data(bin), .len = mpack_node_bin_size(bin)
+        });
+        // fprintf(stderr, "rcti [%u][%u]\n", i, id);
+        vector_push(ref_cube_tex_id_list, &id);
     }
 
-    fprintf(stderr,
-            "ref_cubes_sz: %zu\n"
-            "ref_entts_sz: %zu\n"
-            "map_cubes_sz: %zu\n"
-            "map_entts_sz: %zu\n"
-            "map_lites_sz: %zu\n"
-            "map_playr_sz: %zu\n",
-            ref_cubes_sz,
-            ref_entts_sz,
-            map_cubes_sz,
-            map_entts_sz,
-            map_lites_sz,
-            map_playr_sz
-           );
+    // parse and store blocks + collision map
+    vector * blocks = vector_init(sizeof(block_t));
+    for(uint32_t i = 0; i < map_cubes_sz; i++) {
+        mpack_node_t mp_mc = mpack_node_array_at(mp_map_cubes, i);
+
+        mpack_node_t mp_mc_st = mpack_node_map_cstr(mp_mc, "start");
+        mpack_node_t mp_mc_st_x = mpack_node_array_at(mp_mc_st, 0);
+        mpack_node_t mp_mc_st_y = mpack_node_array_at(mp_mc_st, 1);
+        mpack_node_t mp_mc_st_z = mpack_node_array_at(mp_mc_st, 2);
+
+        mpack_node_t mp_mc_sz = mpack_node_map_cstr(mp_mc, "size");
+        mpack_node_t mp_mc_sz_x = mpack_node_array_at(mp_mc_sz, 0);
+        mpack_node_t mp_mc_sz_y = mpack_node_array_at(mp_mc_sz, 1);
+        mpack_node_t mp_mc_sz_z = mpack_node_array_at(mp_mc_sz, 2);
+
+        mpack_node_t mp_mc_id = mpack_node_map_cstr(mp_mc, "tex_id");
+
+        uint64_t x = mpack_node_u64(mp_mc_st_x);
+        uint64_t y = mpack_node_u64(mp_mc_st_y);
+        uint64_t z = mpack_node_u64(mp_mc_st_z);
+        uint64_t sx = mpack_node_u64(mp_mc_sz_x);
+        uint64_t sy = mpack_node_u64(mp_mc_sz_y);
+        uint64_t sz = mpack_node_u64(mp_mc_sz_z);
+        uint64_t tex_index = mpack_node_u8(mp_mc_id);
+
+        uint32_t global_tex_id = *(uint32_t *)vector_at(ref_cube_tex_id_list, tex_index);
+
+        // todo, all cube geometry for the whole game is in vram
+        // regardless of what level you're on?
+        vector_push(blocks, &(block_t) {
+            .t = global_tex_id,
+            .b = r_push_block(x << 5, y << 4, z << 5, sx << 5, sy << 4, sz << 5, global_tex_id),
+        });
+
+        // todo, dynamic allocate 3d cm
+        // and i guess round up to next multiple of 8
+        // assign to pointer in tmp_map
+
+        // The collision map is a bitmap; 8 x blocks per byte
+        for (uint32_t cz = z; cz < z + sz; cz++) {
+            for (uint32_t cy = y; cy < y + sy; cy++) {
+                for (uint32_t cx = x; cx < x + sx; cx++) {
+                    tmp_map->cm[
+                        (
+                            cz * map_size * map_size +
+                            cy * map_size +
+                            cx
+                        ) >> 3
+                    ] |= 1 << (cx & 7);
+                }
+            }
+        }
+    }
+    tmp_map->blocks = blocks;
+    
+    vector * map_entities = vector_init(sizeof(entity_params_t));
+    // push lights to map_entities
+    for (uint32_t i = 0; i < map_lites_sz; i++) {
+        mpack_node_t mp_ml = mpack_node_array_at(mp_map_lites, i);
+        mpack_node_t mp_ml_pos = mpack_node_map_cstr(mp_ml, "pos");
+        mpack_node_t mp_ml_rgba = mpack_node_map_cstr(mp_ml, "color");
+        entity_params_t tmp_ep = {
+            .id = ENTITY_ID_LIGHT,
+            .entity_light_params = {
+                .position = {
+                    .x = mpack_node_float(mpack_node_array_at(mp_ml_pos, 0)),
+                    .y = mpack_node_float(mpack_node_array_at(mp_ml_pos, 1)),
+                    .z = mpack_node_float(mpack_node_array_at(mp_ml_pos, 2)),
+                },
+                .rgba = {
+                    mpack_node_u8(mpack_node_array_at(mp_ml_rgba, 0)),
+                    mpack_node_u8(mpack_node_array_at(mp_ml_rgba, 1)),
+                    mpack_node_u8(mpack_node_array_at(mp_ml_rgba, 2)),
+                    mpack_node_u8(mpack_node_array_at(mp_ml_rgba, 3)),
+                }
+            }
+        };
+        // fprintf(stderr, "lite[%d]: xyz[%f,%f,%f] rgba[%u,%u,%u,%u]\n", i,
+        //     tmp_ep.entity_light_params.position.x,
+        //     tmp_ep.entity_light_params.position.y,
+        //     tmp_ep.entity_light_params.position.z,
+        //     tmp_ep.entity_light_params.rgba[0],
+        //     tmp_ep.entity_light_params.rgba[1],
+        //     tmp_ep.entity_light_params.rgba[2],
+        //     tmp_ep.entity_light_params.rgba[3]);
+        
+        vector_push(map_entities, &tmp_ep);
+    }
+    // todo, temporary
+    vector_push(map_entities, &(entity_params_t){.id = ENTITY_ID_PLAYER, .entity_player_params.position = {.x = 4.0f, .y = 4.0f, .z = 4.0f}});
+    tmp_map->e_size = vector_size(map_entities);
+    tmp_map->entity_params = map_entities;
 
     mpack_error_t err = mpack_tree_destroy(&tree);
     if ( err != mpack_ok) {
@@ -115,13 +273,14 @@ void mpack_map_parse() {
         return;
     }
 
-    vector_free(ref_cubes);
-
+    vector_free(ref_cube_tex_id_list);
 }
 
 void map_parse() {
 
     map_data = vector_init(sizeof(map_t));
+
+    mpack_map_parse();
 
     const uint8_t * data = data_maps;
 
@@ -190,55 +349,14 @@ void map_parse() {
         tmp_map->blocks = blocks;
     }
 
-    mpack_map_parse();
-
 }
 
 void map_load (map_t * m) {
     // todo, should this just be an index into a global map_collection_t?
     map = m;
 
-    // backup -- entity_constructor
-    // Entity Id to class - must be consistent with map_packer.c line ~900
-    // void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = {
-    //     /* 00 */ entity_player_constructor,
-    //     /* 01 */ entity_enemy_grunt_constructor,
-    //     /* 02 */ entity_enemy_enforcer_constructor,
-    //     /* 03 */ entity_enemy_ogre_constructor,
-    //     /* 04 */ entity_enemy_zombie_constructor,
-    //     /* 05 */ entity_enemy_hound_constructor,
-    //     /* 06 */ entity_pickup_nailgun_constructor,
-    //     /* 07 */ entity_pickup_grenadelauncher_constructor,
-    //     /* 08 */ entity_pickup_health_constructor,
-    //     /* 09 */ entity_pickup_nails_constructor,
-    //     /* 10 */ entity_pickup_grenades_constructor,
-    //     /* 11 */ entity_barrel_constructor,
-    //     /* 12 */ entity_light_constructor,
-    //     /* 13 */ entity_trigger_level_constructor,
-    //     /* 14 */ entity_door_constructor,
-    //     /* 15 */ entity_pickup_key_constructor,
-    //     /* 16 */ entity_torch_constructor,
-    // };
-    void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = { // todo, obv
-        /* 00 */ entity_player_constructor,
-        /* 01 */ entity_enemy_grunt_constructor,
-        /* 02 */ entity_enemy_enforcer_constructor,
-        /* 03 */ entity_enemy_ogre_constructor,
-        /* 04 */ entity_enemy_zombie_constructor,
-        /* 05 */ entity_enemy_hound_constructor,
-        /* 06 */ entity_pickup_nailgun_constructor,
-        /* 07 */ entity_pickup_grenadelauncher_constructor,
-        /* 08 */ entity_pickup_health_constructor,
-        /* 09 */ entity_pickup_nails_constructor,
-        /* 10 */ entity_pickup_grenades_constructor,
-        /* 11 */ entity_barrel_constructor,
-        /* 12 */ entity_light_constructor,
-        /* 13 */ entity_trigger_level_constructor,
-        /* 14 */ entity_door_constructor,
-        /* 15 */ entity_pickup_key_constructor,
-        /* 16 */ entity_torch_constructor,
-    };
-
+    if (map->entity_params != NULL)
+        goto map_load_ng;
     for (uint32_t i = 0; i < map->e_size;) {
         void (*func)(entity_t *, vec3_t, uint8_t, uint8_t) = spawn_class[map->e[i++]];
         int x = m->e[i++] * 32;
@@ -257,6 +375,33 @@ void map_load (map_t * m) {
         p2
         );
     }
+    // exit if old maps were used
+    return;
+    
+    map_load_ng:
+    for (uint32_t i = 0; i < map->e_size; i++) {
+        entity_params_t * ep = vector_at(map->entity_params, i);
+        void (*func)(entity_t *, vec3_t, uint8_t, uint8_t) = entity_table[ep->id].constructor_func;
+        // todo, spawn the things with parameters
+        if(ep->id == ENTITY_ID_LIGHT){
+            game_spawn(
+                func,
+                (vec3_t){
+                    .x = ep->entity_light_params.position.x * 32,
+                    .y = ep->entity_light_params.position.y * 16,
+                    .z = ep->entity_light_params.position.z * 32
+                }, 127 + (128 * i), 127 + (128 * i));
+        }else if(ep->id == ENTITY_ID_PLAYER){
+            game_spawn(
+                func,
+                (vec3_t){
+                    .x = 8.0f * 32,
+                    .y = 11.0f * 16,
+                    .z = 11.0f * 32
+                }, 0, 0);
+        }
+    }
+    
 }
 
 uint8_t map_block_at(int32_t x, int32_t y, int32_t z) {
@@ -328,6 +473,7 @@ void map_quit() {
     for(uint32_t i = 0; i < len; i++) {
         map_t * map = vector_at(map_data, i);
         vector_free(map->blocks);
+        vector_free(map->entity_params);
     }
     vector_free(map_data);
 }

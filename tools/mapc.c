@@ -581,13 +581,13 @@ mapc_pos3_t group_meshes(cgltf_data * data) {
         mapc_fpos3_t start = {
             .x = n->translation[0],
             .y = n->translation[1],
-            .z = n->translation[2],
+            .z = n->translation[2] * 2,
         };
 
         mapc_fpos3_t size = {
             .x = n->scale[0],
             .y = n->scale[1],
-            .z = n->scale[2],
+            .z = n->scale[2] * 2,
         };
 
         // todo, if cube, start and end are either .0f or .5f
@@ -863,15 +863,15 @@ int main(int argc, char * argv[]) {
             mpack_write_cstr(&writer, "start");
             mpack_start_array(&writer, 3);
             mpack_write_u64(&writer, oc->start.x);
-            mpack_write_u64(&writer, oc->start.y);
             mpack_write_u64(&writer, oc->start.z);
+            mpack_write_u64(&writer, oc->start.y);
             mpack_finish_array(&writer);
 
             mpack_write_cstr(&writer, "size");
             mpack_start_array(&writer, 3);
             mpack_write_u64(&writer, oc->size.x);
-            mpack_write_u64(&writer, oc->size.y);
             mpack_write_u64(&writer, oc->size.z);
+            mpack_write_u64(&writer, oc->size.y);
             mpack_finish_array(&writer);
 
             mpack_finish_map(&writer);
@@ -923,8 +923,8 @@ int main(int argc, char * argv[]) {
             mpack_write_cstr(&writer, "pos");
             mpack_start_array(&writer, 3);
             mpack_write_float(&writer, ol->fpos.x);
-            mpack_write_float(&writer, ol->fpos.y);
             mpack_write_float(&writer, ol->fpos.z);
+            mpack_write_float(&writer, ol->fpos.y);
             mpack_finish_array(&writer);
 
             mpack_finish_map(&writer);

@@ -51,7 +51,7 @@ GLuint r_compile_shader(GLenum type, char* source);
 GLuint r_create_program(GLuint vertex_shader, GLuint fragment_shader);
 GLint r_vertex_attrib(GLuint shader_program, const GLchar *attrib_name, int count, int vertex_size, long int offset);
 void r_init();
-void r_create_texture(png_bin_t p);
+size_t r_create_texture(png_bin_t p);
 void r_prepare_frame(float r, float g, float b);
 void r_end_frame();
 void r_draw(draw_call_t call);

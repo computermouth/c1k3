@@ -69,15 +69,15 @@ void game_entities_friendly_pop(entity_t ** e) {
 
 void game_free_entities() {
 
-    if (__game_entities){
+    if (__game_entities) {
         size_t ge_len = vector_size(__game_entities);
-        for(size_t i = 0; i < ge_len; i++){
+        for(size_t i = 0; i < ge_len; i++) {
             entity_t ** e = vector_at(__game_entities, i);
             if(*e)
                 free(*e);
         }
     }
-    
+
     vector_free(__game_entities);
     __game_entities = NULL;
 

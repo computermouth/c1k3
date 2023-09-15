@@ -23,6 +23,7 @@ void game_load() {
     // not sure why, todo
     text_init();
     r_init();
+    map_init();
 
     for(int i = 0; i < data_textures_len; i++)
         r_create_texture(data_textures[i]);

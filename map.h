@@ -14,15 +14,76 @@ typedef struct {
     int32_t b;
 } block_t;
 
+// todo, move entity table and init to another file?
+typedef enum {
+    ENTITY_ID_PLAYER,
+    ENTITY_ID_ENEMY_GRUNT,
+    ENTITY_ID_ENEMY_ENFORCER,
+    ENTITY_ID_ENEMY_OGRE,
+    ENTITY_ID_ENEMY_ZOMBIE,
+    ENTITY_ID_ENEMY_HOUND,
+    ENTITY_ID_PICKUP_NAILGUN,
+    ENTITY_ID_PICKUP_GRENADELAUNCHER,
+    ENTITY_ID_PICKUP_HEALTH,
+    ENTITY_ID_PICKUP_NAILS,
+    ENTITY_ID_PICKUP_GRENADES,
+    ENTITY_ID_PICKUP_KEY,
+    ENTITY_ID_BARREL,
+    ENTITY_ID_LIGHT,
+    ENTITY_ID_TRIGGER_LEVEL,
+    ENTITY_ID_DOOR,
+    ENTITY_ID_TORCH,
+    __ENTITY_ID_END,
+} entity_id_t;
+
+// move the following
+
+typedef struct {
+    vec3_t position;
+} entity_player_params_t;
+
+typedef struct {
+    vec3_t position;
+    uint8_t rgba[4];
+} entity_light_params_t;
+
+typedef struct {
+    vec3_t position;
+    uint32_t texture;
+    uint8_t patrol_dir;
+} entity_hound_params_t;
+
+typedef struct {
+    vec3_t position;
+    uint32_t texture;
+    uint8_t patrol_dir;
+} entity_grunt_params_t;
+
+// to here, back to their header files or some shit
+// along with I guess some parsing info
+
+typedef struct {
+    entity_id_t id;
+    union {
+        entity_player_params_t entity_player_params;
+        entity_light_params_t entity_light_params;
+        entity_hound_params_t entity_hound_params;
+        entity_grunt_params_t entity_grunt_params;
+    };
+} entity_params_t;
+
 typedef struct {
     vector * blocks;
     uint8_t * e;
+    // entity_params is for new map format only
+    vector * entity_params;
     uint32_t e_size;
     uint8_t cm[((map_size * map_size * map_size) >> 3)];
 } map_t;
 
 extern vector * map_data;
 
+void map_init();
 void map_parse();
 void map_load (map_t * m);
 uint8_t map_block_at(int32_t x, int32_t y, int32_t z);

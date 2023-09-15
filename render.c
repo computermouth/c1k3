@@ -197,7 +197,7 @@ void r_init() {
 
 }
 
-void r_create_texture(png_bin_t p) {
+size_t r_create_texture(png_bin_t p) {
 
     uint32_t width;
     uint32_t height;
@@ -206,7 +206,11 @@ void r_create_texture(png_bin_t p) {
 
     // todo, port picopng?
     error = lodepng_decode32(&img, &width, &height, p.data, p.len);
-    if(error) printf("lodepng error %u: %s\n", error, lodepng_error_text(error));
+    if(error) {
+        // todo, return some safe built-in default texture?
+        printf("lodepng error %u: %s\n", error, lodepng_error_text(error));
+        return 0;
+    }
 
     GLuint texture;
     glGenTextures(1, &texture);
@@ -226,6 +230,7 @@ void r_create_texture(png_bin_t p) {
 
     free(img);
 
+    return vector_size(r_textures) - 1;
 }
 
 void r_prepare_frame(float r, float g, float b) {
