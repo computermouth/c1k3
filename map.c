@@ -210,7 +210,80 @@ void mpack_map_parse() {
         });
         // fprintf(stderr, "rcti [%u][%u]\n", i, id);
         vector_push(ref_cube_tex_id_list, &id);
+    } 
+    
+    // populate ref entts
+    vector * ref_entt_list = vector_init(sizeof(ref_entt_t));
+    for(uint32_t i = 0; i < ref_entts_sz; i++) {
+        ref_entt_t tmp_entt = { 0 };
+        mpack_node_t entt_map = mpack_node_array_at(mp_ref_entts, i);
+        
+        // name
+        mpack_node_t name_node = mpack_node_map_cstr(entt_map, "name");
+        size_t name_len = mpack_node_strlen(name_node);
+        const char * name = mpack_node_str(name_node);
+        strncpy(tmp_entt.entity_name, name, name_len);
+        
+        // texture
+        mpack_node_t tex_bin = mpack_node_map_cstr(entt_map, "txtr");
+        uint32_t id = r_create_texture((png_bin_t) {
+            .data = (uint8_t *)mpack_node_bin_data(tex_bin), .len = mpack_node_bin_size(tex_bin)
+        });
+        tmp_entt.tex_id = id;
+        
+        // frame_names
+        mpack_node_t frame_name_arr = mpack_node_map_cstr(entt_map, "anim_names");
+        size_t frame_name_len = mpack_node_array_length(frame_name_arr);
+        char (*fn)[frame_name_len][100] = calloc(1, sizeof(*fn));
+        for(size_t fi = 0; fi < frame_name_len; fi++){
+            mpack_node_t fnas = mpack_node_array_at(frame_name_arr, fi);
+            const char * fns = mpack_node_str(fnas);
+            size_t fns_len = mpack_node_strlen(fnas);
+            strncpy((*fn)[fi], fns, fns_len);
+        }
+        tmp_entt.frame_names = fn;
+        
+        // vert_len -- todo, check this better
+        mpack_node_t u_arr = mpack_node_map_cstr(entt_map, "u");
+        mpack_node_t v_arr = mpack_node_map_cstr(entt_map, "v");
+        size_t ulen = mpack_node_array_length(u_arr);
+        size_t vlen = mpack_node_array_length(v_arr);
+        if (ulen != vlen)
+            fprintf(stderr, "E: ulen != vlen on ref_entt[%d]\n", i);
+        tmp_entt.vert_len = ulen;
+        
+        // u
+        tmp_entt.u = calloc(tmp_entt.vert_len, sizeof(float));
+        for(size_t ui = 0; ui < tmp_entt.vert_len; ui++)
+            tmp_entt.u[ui] = mpack_node_float(mpack_node_array_at(u_arr, ui));
+        // v
+        tmp_entt.v = calloc(tmp_entt.vert_len, sizeof(float));
+        for(size_t vi = 0; vi < tmp_entt.vert_len; vi++)
+            tmp_entt.v[vi] = mpack_node_float(mpack_node_array_at(v_arr, vi));
+
+        // frames
+        mpack_node_t frame_arr = mpack_node_map_cstr(entt_map, "anim_frames");
+        size_t frame_arr_len = mpack_node_array_length(frame_arr);
+        if (frame_arr_len != frame_name_len)
+            fprintf(stderr, "E: frame_arr_len != frame_name_len on ref_entt[%d]\n", i);
+        float (*frames)[frame_arr_len][tmp_entt.vert_len][3] = calloc(1, sizeof(*frames));
+        for(size_t fi = 0; fi < frame_arr_len; fi++){
+            mpack_node_t frame_vert_arr = mpack_node_array_at(frame_arr, fi);
+            size_t fva_len = mpack_node_array_length(frame_vert_arr);
+            for (size_t vi = 0; vi < tmp_entt.vert_len; vi++){
+                mpack_node_t frame_vert_xyz_arr = mpack_node_array_at(frame_vert_arr, fi);
+                size_t fvax_len = mpack_node_array_length(frame_vert_xyz_arr);
+                (*frames)[fi][vi][0] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 0));
+                (*frames)[fi][vi][1] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 1));
+                (*frames)[fi][vi][2] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 2));
+            }
+        }
+        tmp_entt.frame_len = frame_arr_len;
+        tmp_entt.frames = frames;
+        
+        vector_push(ref_entt_list, &tmp_entt);
     }
+    tmp_map->ref_entities = ref_entt_list;
 
     // parse and store blocks + collision map
     vector * blocks = vector_init(sizeof(block_t));
@@ -338,7 +411,7 @@ void mpack_map_parse() {
     }
     
     tmp_map->e_size = vector_size(map_entities);
-    tmp_map->entity_params = map_entities;
+    tmp_map->map_entities = map_entities;
 
     mpack_error_t err = mpack_tree_destroy(&tree);
     if ( err != mpack_ok) {
@@ -428,7 +501,7 @@ void map_load (map_t * m) {
     // todo, should this just be an index into a global map_collection_t?
     map = m;
 
-    if (map->entity_params != NULL)
+    if (map->map_entities != NULL)
         goto map_load_ng;
     for (uint32_t i = 0; i < map->e_size;) {
         void (*func)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *) = spawn_class[map->e[i++]];
@@ -454,7 +527,7 @@ void map_load (map_t * m) {
     
     map_load_ng:
     for (uint32_t i = 0; i < map->e_size; i++) {
-        entity_params_t * ep = vector_at(map->entity_params, i);
+        entity_params_t * ep = vector_at(map->map_entities, i);
         void (*func)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *) = entity_table[ep->id].constructor_func;
         // todo, spawn the things with parameters
         if(ep->id == ENTITY_ID_LIGHT){

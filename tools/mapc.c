@@ -697,6 +697,7 @@ skip_negative:
                 vector_push(ref_entt_vec, &(mapc_rm_entt_t) {
                     .txtr = get_image(n), .fpos = start, .verts = get_verts_from_mesh(n->mesh)
                 });
+                strncpy(((mapc_rm_entt_t *)vector_at(ref_entt_vec, vector_size(ref_entt_vec) - 1))->entity_name, entity_name, 100);
                 fprintf(stderr, "ref_entt_vec '%s'\n", n->name);
                 break;
             case GROUP_ENTT_LIGHT:
@@ -846,8 +847,13 @@ int main(int argc, char * argv[]) {
         size_t ntlen = vector_size(ref_entt_vec);
         mpack_start_array(&writer, ntlen);
         for(size_t i = 0; i < ntlen; i++) {
-            mpack_start_map(&writer, 5);
+            mpack_start_map(&writer, 6);
             mapc_rm_entt_t * re = vector_at(ref_entt_vec, i);
+            {   // entity_name
+                mpack_write_cstr(&writer, "name");
+                mpack_write_cstr(&writer, re->entity_name);
+            }
+            
             {   // txtr
                 mpack_write_cstr(&writer, "txtr");
                 mpack_start_bin(&writer, re->txtr.len);

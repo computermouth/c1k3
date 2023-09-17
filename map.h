@@ -71,10 +71,22 @@ typedef struct {
 } entity_params_t;
 
 typedef struct {
+    size_t vert_len;
+    float * u;
+    float * v;
+    size_t frame_len;
+    char (*frame_names)[][100];
+    void * frames; // actually frames[][][3]
+    uint32_t tex_id;
+    char entity_name[100];
+} ref_entt_t;
+
+typedef struct {
     vector * blocks;
     uint8_t * e;
-    // entity_params is for new map format only
-    vector * entity_params;
+    // map_entities and ref_entities is for new map format only
+    vector * map_entities; // entity_params_t
+    vector * ref_entities; // ref_entt_t
     uint32_t e_size;
     uint8_t cm[((map_size * map_size * map_size) >> 3)];
 } map_t;
