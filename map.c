@@ -36,7 +36,7 @@ vector * map_data = NULL;
 
 typedef struct {
     char * entity_string;
-    void (*constructor_func)(entity_t *, vec3_t, uint8_t, uint8_t);
+    void (*constructor_func)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *);
 } entity_table_t;
 
 entity_table_t entity_table[__ENTITY_ID_END] = { 0 };
@@ -97,7 +97,7 @@ void map_init() {
 }
 
 // todo, remove once levels have been reproduced
-void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = {
+void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *) = {
     /* 00 */ entity_player_constructor,
     /* 01 */ entity_enemy_grunt_constructor,
     /* 02 */ entity_enemy_enforcer_constructor,
@@ -155,8 +155,11 @@ entity_extra_params_t * map_get_entity_kv(mpack_node_t n){
 void mpack_map_parse() {
 
     // pass in via args
-    const char * data = (char *)data_map3;
-    const size_t data_len = data_map3_len;
+    // const char * data = (char *)data_map3;
+    // const size_t data_len = data_map3_len;
+    
+    const char * data = (char *)data_map1;
+    const size_t data_len = data_map1_len;
 
     // push empty map, get pointer back
     map_t * tmp_map = vector_push(map_data, &(map_t) {
@@ -428,7 +431,7 @@ void map_load (map_t * m) {
     if (map->entity_params != NULL)
         goto map_load_ng;
     for (uint32_t i = 0; i < map->e_size;) {
-        void (*func)(entity_t *, vec3_t, uint8_t, uint8_t) = spawn_class[map->e[i++]];
+        void (*func)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *) = spawn_class[map->e[i++]];
         int x = m->e[i++] * 32;
         int y = m->e[i++] * 16;
         int z = m->e[i++] * 32;
@@ -442,7 +445,8 @@ void map_load (map_t * m) {
             .x = x, .y = y, .z = z
         },
         p1,
-        p2
+        p2,
+        NULL
         );
     }
     // exit if old maps were used
@@ -451,7 +455,7 @@ void map_load (map_t * m) {
     map_load_ng:
     for (uint32_t i = 0; i < map->e_size; i++) {
         entity_params_t * ep = vector_at(map->entity_params, i);
-        void (*func)(entity_t *, vec3_t, uint8_t, uint8_t) = entity_table[ep->id].constructor_func;
+        void (*func)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *) = entity_table[ep->id].constructor_func;
         // todo, spawn the things with parameters
         if(ep->id == ENTITY_ID_LIGHT){
             game_spawn(
@@ -460,7 +464,7 @@ void map_load (map_t * m) {
                     .x = ep->entity_light_params.position.x * 32,
                     .y = ep->entity_light_params.position.y * 16,
                     .z = ep->entity_light_params.position.z * 32
-                }, 127 + (128 * i), 127 + (128 * i));
+                }, 0, 0, ep);
         }else if(ep->id == ENTITY_ID_PLAYER){
             game_spawn(
                 func,
@@ -468,7 +472,7 @@ void map_load (map_t * m) {
                     .x = ep->entity_player_params.position.x * 32,
                     .y = ep->entity_player_params.position.y * 16,
                     .z = ep->entity_player_params.position.z * 32
-                }, 0, 0);
+                }, 0, 0, ep);
         } else {
             game_spawn(
                 func,
@@ -476,7 +480,9 @@ void map_load (map_t * m) {
                     .x = ep->entity_generic_params.position.x * 32,
                     .y = ep->entity_generic_params.position.y * 16,
                     .z = ep->entity_generic_params.position.z * 32
-                }, 0, 0);
+                }, 0, 0, ep);
+            // todo
+            // free kv
             fprintf(stderr, "unimp: %d\n", ep->id);
         }
     }
@@ -484,6 +490,10 @@ void map_load (map_t * m) {
 }
 
 uint8_t map_block_at(int32_t x, int32_t y, int32_t z) {
+    if (x < 0 || y < 0 || z < 0){
+        fprintf(stderr, "E: tested collision in negative space\n");
+        return 1;
+    }
     return map->cm[
                (
                    z * map_size * map_size +

@@ -27,7 +27,7 @@ animation_collection_t default_anim_collection = {
     .num_animations = 1,
 };
 
-void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
+void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
 
     e->p = pos;
     e->s = (vec3_t) {
@@ -256,7 +256,7 @@ void entity_draw_model(entity_t * e) {
 
 void entity_spawn_particles(entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime) {
     for (uint32_t i = 0; i < amount; i++) {
-        entity_t * particle = game_spawn((void (*)(entity_t *, vec3_t, uint8_t, uint8_t))entity_particle_constructor, e->p, 0, 0);
+        entity_t * particle = game_spawn((void (*)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *))entity_particle_constructor, e->p, 0, 0, NULL);
         particle->_model = model;
         particle->_texture = texture;
         particle->_expires = true;

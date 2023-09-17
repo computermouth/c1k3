@@ -6,8 +6,8 @@
 
 void entity_trigger_level_update(entity_t * e);
 
-void entity_trigger_level_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_constructor(e, pos, p1, p2);
+void entity_trigger_level_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
+    entity_constructor(e, pos, p1, p2, ep);
     e->_update = (void (*)(void *))entity_trigger_level_update;
     e->_init(e, p1, p2);
 }

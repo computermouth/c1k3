@@ -131,11 +131,11 @@ uint32_t game_finish(uint32_t interval, void *param) {
 // it is, the pointer that gets returned here is potentially destroyed after update
 // functions are ran and game_entities is completely replaced with new values in new
 // memory from the new alive_entities collection
-entity_t * game_spawn (void (*init)(entity_t *, vec3_t, uint8_t, uint8_t), vec3_t pos, uint8_t p1, uint8_t p2) {
+entity_t * game_spawn (void (*init)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *), vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
 
     entity_t * e = calloc(1, sizeof(entity_t));
     vector_push(__game_entities, &e);
-    init(e, pos, p1, p2);
+    init(e, pos, p1, p2, ep);
 
     return e;
 }

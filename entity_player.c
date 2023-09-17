@@ -24,9 +24,9 @@ void entity_player_update(entity_t * e);
 void entity_player_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 void entity_player_kill(entity_t * e);
 
-void entity_player_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
+void entity_player_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
 
-    entity_constructor(e, pos, p1, p2);
+    entity_constructor(e, pos, p1, p2, ep);
 
     // todo, these casts kinda suck
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_player_init;
@@ -178,7 +178,7 @@ void entity_player_update(entity_t * e) {
         }
         else {
             weapon->_shoot(weapon, e->p, e->_yaw, e->_pitch);
-            entity_t * tmp_light = game_spawn(entity_light_constructor, e->p, 10, 0xff);
+            entity_t * tmp_light = game_spawn(entity_light_constructor, e->p, 10, 0xff, NULL);
             tmp_light->_expires = game_time + 0.1;
             tmp_light->_die_at = game_time + 0.1;
         }

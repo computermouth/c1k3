@@ -47,8 +47,8 @@ void entity_enemy_zombie_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_enemy_zombie_receive_damage(entity_t * e, entity_t *from, int32_t amount);
 void entity_enemy_zombie_attack(entity_t * e);
 
-void entity_enemy_zombie_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_enemy_constructor(e, pos, p1, p2);
+void entity_enemy_zombie_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
+    entity_enemy_constructor(e, pos, p1, p2, ep);
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_enemy_zombie_init;
     e->_receive_damage = (void (*)(void *, void *, int32_t))entity_enemy_zombie_receive_damage;
     e->_attack = (void (*)(void *))entity_enemy_zombie_attack;

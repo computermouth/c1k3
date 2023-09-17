@@ -4,8 +4,8 @@
 void entity_particle_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_particle_update(entity_t * e);
 
-void entity_particle_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_constructor(e, pos, p1, p2);
+void entity_particle_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
+    entity_constructor(e, pos, p1, p2, ep);
 
     // todo, these casts kinda suck
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_particle_init;

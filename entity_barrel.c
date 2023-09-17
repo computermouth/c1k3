@@ -12,8 +12,8 @@
 void entity_barrel_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_barrel_kill(entity_t * e);
 
-void entity_barrel_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_constructor(e, pos, p1, p2);
+void entity_barrel_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
+    entity_constructor(e, pos, p1, p2, ep);
 
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_barrel_init;
     e->_kill = (void (*)(void *))entity_barrel_kill;
@@ -50,7 +50,7 @@ void entity_barrel_kill(entity_t * e) {
         model_t * m = vector_at(model_gib_pieces, i);
         e->_spawn_particles(e, 2, 600, m, 21, 1);
     }
-    entity_t * tmp_light = game_spawn(entity_light_constructor, vec3_add(e->p, vec3(0,16,0)), 250, 0x08f);
+    entity_t * tmp_light = game_spawn(entity_light_constructor, vec3_add(e->p, vec3(0,16,0)), 250, 0x08f, NULL);
     tmp_light->_expires = true;
     tmp_light->_die_at = game_time + 0.2;
 

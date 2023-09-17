@@ -47,8 +47,8 @@ void entity_enemy_hound_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_enemy_hound_did_collide_with_entity(entity_t * e, entity_t * other);
 void entity_enemy_hound_attack(entity_t * e);
 
-void entity_enemy_hound_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_enemy_constructor(e, pos, p1, p2);
+void entity_enemy_hound_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
+    entity_enemy_constructor(e, pos, p1, p2, ep);
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_enemy_hound_init;
     e->_did_collide_with_entity = (void (*)(void *, void *))entity_enemy_hound_did_collide_with_entity;
     e->_attack = (void (*)(void *))entity_enemy_hound_attack;

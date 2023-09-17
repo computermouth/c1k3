@@ -75,6 +75,11 @@ const uint32_t data_song_len = audio_song_ogg_len;
 const uint8_t * data_maps = maps;
 const uint32_t data_maps_len = maps_len;
 
+#include "map1.h"
+
+const uint8_t * data_map1 = blend_map1_map;
+const uint32_t data_map1_len = blend_map1_map_len;
+
 #include "map3.h"
 
 const uint8_t * data_map3 = blend_map3_map;

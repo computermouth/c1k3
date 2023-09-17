@@ -17,6 +17,9 @@ extern const uint32_t data_maps_len;
 extern const uint8_t * data_models;
 extern const uint32_t data_models_len;
 
+extern const uint8_t * data_map1;
+extern const uint32_t data_map1_len;
+
 extern const uint8_t * data_map3;
 extern const uint32_t data_map3_len;
 

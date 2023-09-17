@@ -10,6 +10,7 @@
 #include "model.h"
 #include "weapon.h"
 #include "vector.h"
+#include "map.h"
 
 typedef enum {
     ENEMY_STATE_IDLE,
@@ -148,9 +149,7 @@ typedef struct {
 
 } entity_t;
 
-// todo, jesus christ, I think p1 and p2 are typeless and subject to usage
-// might have to pass floats just to cover weirder cases
-void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2);
+void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t *);
 void entity_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_update(entity_t * e);
 void entity_update_physics(entity_t * e);
