@@ -962,8 +962,8 @@ int main(int argc, char * argv[]) {
             mpack_write_cstr(&writer, "pos");
             mpack_start_array(&writer, 3);
             mpack_write_float(&writer, oe->fpos.x);
-            mpack_write_float(&writer, oe->fpos.y);
             mpack_write_float(&writer, oe->fpos.z);
+            mpack_write_float(&writer, oe->fpos.y);
             mpack_finish_array(&writer);
             
             mpack_write_cstr(&writer, "param");
@@ -1025,51 +1025,6 @@ int main(int argc, char * argv[]) {
         
         mpack_finish_array(&writer);
     }
-
-    // // map lights
-    // {
-    //     mpack_write_cstr(&writer, "map_lites");
-    //     size_t ollen = vector_size(out_lite_vec);
-    //     mpack_start_array(&writer, ollen);
-    //     for(size_t i = 0; i < ollen; i++) {
-    //         mapc_out_lite_t * ol = vector_at(out_lite_vec, i);
-    //         mpack_start_map(&writer, 2);
-
-    //         mpack_write_cstr(&writer, "color");
-    //         mpack_start_array(&writer, 4);
-    //         mpack_write_u8(&writer, ol->color[0]);
-    //         mpack_write_u8(&writer, ol->color[1]);
-    //         mpack_write_u8(&writer, ol->color[2]);
-    //         mpack_write_u8(&writer, ol->color[3]);
-    //         mpack_finish_array(&writer);
-
-    //         mpack_write_cstr(&writer, "pos");
-    //         mpack_start_array(&writer, 3);
-    //         mpack_write_float(&writer, ol->fpos.x);
-    //         mpack_write_float(&writer, ol->fpos.z);
-    //         mpack_write_float(&writer, ol->fpos.y);
-    //         mpack_finish_array(&writer);
-
-    //         mpack_finish_map(&writer);
-    //     }
-    //     mpack_finish_array(&writer);
-    // }
-
-    // // map player
-    // {
-    //     mpack_write_cstr(&writer, "map_player");
-    //     size_t pllen = vector_size(out_plyr_vec);
-    //     if (pllen != 1)
-    //         fprintf(stderr, "E: len(player) == %zu\n", pllen);
-
-    //     mapc_out_plyr_t * op = vector_at(out_plyr_vec, 0);
-
-    //     mpack_start_array(&writer, 3);
-    //     mpack_write_float(&writer, op->fpos.x);
-    //     mpack_write_float(&writer, op->fpos.z);
-    //     mpack_write_float(&writer, op->fpos.y);
-    //     mpack_finish_array(&writer);
-    // }
 
     mpack_complete_map(&writer);
 
