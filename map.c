@@ -8,6 +8,7 @@
 #include "game.h"
 #include "map.h"
 #include "data.h"
+#include "model.h"
 #include "render.h"
 #include "entity.h"
 #include "entity_player.h"
@@ -253,13 +254,13 @@ void mpack_map_parse() {
         tmp_entt.vert_len = ulen;
         
         // u
-        tmp_entt.u = calloc(tmp_entt.vert_len, sizeof(float));
+        float * u = calloc(tmp_entt.vert_len, sizeof(float));
         for(size_t ui = 0; ui < tmp_entt.vert_len; ui++)
-            tmp_entt.u[ui] = mpack_node_float(mpack_node_array_at(u_arr, ui));
+            u[ui] = mpack_node_float(mpack_node_array_at(u_arr, ui));
         // v
-        tmp_entt.v = calloc(tmp_entt.vert_len, sizeof(float));
+        float * v = calloc(tmp_entt.vert_len, sizeof(float));
         for(size_t vi = 0; vi < tmp_entt.vert_len; vi++)
-            tmp_entt.v[vi] = mpack_node_float(mpack_node_array_at(v_arr, vi));
+            v[vi] = mpack_node_float(mpack_node_array_at(v_arr, vi));
 
         // frames
         mpack_node_t frame_arr = mpack_node_map_cstr(entt_map, "anim_frames");
@@ -278,9 +279,11 @@ void mpack_map_parse() {
                 (*frames)[fi][vi][2] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 2));
             }
         }
-        tmp_entt.frame_len = frame_arr_len;
-        tmp_entt.frames = frames;
-        
+        int fuck = "get model and texture into entities";
+        tmp_entt.frames = model_load_ng(frames, frame_arr_len, ulen, u, v);
+        free(u);
+        free(v);
+        free(frames);
         vector_push(ref_entt_list, &tmp_entt);
     }
     tmp_map->ref_entities = ref_entt_list;
@@ -635,7 +638,8 @@ void map_quit() {
     for(uint32_t i = 0; i < len; i++) {
         map_t * map = vector_at(map_data, i);
         vector_free(map->blocks);
-        vector_free(map->entity_params);
+        vector_free(map->map_entities);
+        vector_free(map->ref_entities);
     }
     vector_free(map_data);
 }

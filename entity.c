@@ -231,8 +231,8 @@ void entity_draw_model(entity_t * e) {
     // Calculate which frames to use and how to mix them
     float f = e->_anim_time / (float)e->_anim->time;
     float mix = f - floorf(f);
-    uint32_t frame_cur = e->_anim->frames[(int32_t)f % e->_anim->num_frames];
-    uint32_t frame_next = e->_anim->frames[(1 + (int32_t)f) % e->_anim->num_frames];
+    uint32_t frame_cur = e->_anim->frames[(uint32_t)f % e->_anim->num_frames];
+    uint32_t frame_next = e->_anim->frames[(1 + (uint32_t)f) % e->_anim->num_frames];
 
     // Swap frames if we're looping to the first frame again
     if (frame_next < frame_cur) {

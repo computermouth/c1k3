@@ -150,6 +150,52 @@ model_t model_load(uint8_t * data, vec3_t scale) {
     return out;
 }
 
+vector * model_load_ng(void * void_verts, uint32_t frame_len, uint32_t vert_len, float * u, float * v) {
+    // todo, scale??
+    vector * frame_ids = vector_init(sizeof(int));
+    float (*model_verts)[frame_len][vert_len][3] = void_verts;
+    
+    uint32_t u_i = 0;
+    uint32_t v_i = 0;
+    // frame
+    for (uint32_t frame_i = 0; frame_i < frame_len; frame_i++) {
+        // point to first vertex in frame
+        vector_push(frame_ids, &r_num_verts);
+
+        // vertex of frame
+        for (uint32_t vert_i = 0; vert_i < vert_len; vert_i+=3) {
+
+            vec3_t fv[3];
+
+            typedef struct {
+                float u;
+                float v;
+            } uv_t;
+            uv_t uv[3];
+            
+            for (uint32_t face_i = 0; face_i < 3; face_i++) {
+                
+                fv[face_i] = vec3(
+                    (*model_verts)[frame_i][vert_i + face_i][0],
+                    (*model_verts)[frame_i][vert_i + face_i][1],
+                    (*model_verts)[frame_i][vert_i + face_i][2]
+                );
+                uv[face_i] = (uv_t) {
+                    .u = u[u_i++], // god forgive me
+                    .v = v[v_i++]
+                };
+            }
+
+            vec3_t n = vec3_face_normal(fv[2], fv[1], fv[0]);
+            r_push_vert(fv[2], n, uv[2].u, uv[2].v);
+            r_push_vert(fv[1], n, uv[1].u, uv[1].v);
+            r_push_vert(fv[0], n, uv[0].u, uv[0].v);
+        }
+    }
+
+    return frame_ids;
+}
+
 void model_quit() {
 
 

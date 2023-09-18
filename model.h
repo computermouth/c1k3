@@ -6,6 +6,7 @@
 
 #include "math.h"
 #include "vector.h"
+#include "map.h"
 
 typedef struct {
     uint8_t * data;
@@ -14,6 +15,11 @@ typedef struct {
     uint32_t frame_len;
     uint32_t nv;
 } model_t;
+
+typedef struct {
+    vector * frames;
+    uint32_t nv;
+} model_ng_t;
 
 extern vector * model_data;
 extern model_t model_q;
@@ -48,6 +54,7 @@ extern model_t model_nail; // aka. nail
 
 void model_parse();
 model_t model_load(uint8_t * data, vec3_t scale);
+vector * model_load_ng(void * void_verts, uint32_t frame_len, uint32_t vert_len, float * u, float * v);
 void model_quit();
 
 #endif

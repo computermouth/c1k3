@@ -72,11 +72,9 @@ typedef struct {
 
 typedef struct {
     size_t vert_len;
-    float * u;
-    float * v;
     size_t frame_len;
     char (*frame_names)[][100];
-    void * frames; // actually frames[][][3]
+    vector * frames;
     uint32_t tex_id;
     char entity_name[100];
 } ref_entt_t;
