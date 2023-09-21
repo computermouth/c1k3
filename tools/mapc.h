@@ -23,6 +23,7 @@ typedef struct {
 } mapc_txtr_t;
 
 typedef struct {
+    size_t index_count;
     vector * u;
     vector * v;
     vector * anim_names;

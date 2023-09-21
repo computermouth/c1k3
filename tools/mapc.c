@@ -89,7 +89,7 @@ mapc_verts_t get_verts_from_mesh(cgltf_mesh * mesh) {
         (*indices)[i] = t;
         fprintf(stderr, "i: %zu/%zu -- %d -- {%u}\n", i, index_count, success, (*indices)[i]);
     }
-    // out_v.vert_len = index_count;
+    out_v.index_count = index_count;
     
     // get all positions
     float (*pos)[position_accessor->count][3] = calloc(sizeof(*pos), 1);
@@ -108,9 +108,11 @@ mapc_verts_t get_verts_from_mesh(cgltf_mesh * mesh) {
     // parse uvs out per-face
     out_v.u = vector_init(sizeof(float));
     out_v.v = vector_init(sizeof(float));
-    for(size_t i = 0; i < uv_accessor->count; i++){
-        vector_push(out_v.u, &(*uvs)[i][0]);
-        vector_push(out_v.v, &(*uvs)[i][1]);
+    for(size_t i = 0; i < index_count; i++){
+        uint16_t index = (*indices)[i];
+        float * uv = (*uvs)[index];
+        vector_push(out_v.u, &uv[0]);
+        vector_push(out_v.v, &uv[1]);
     }
 
     // push default frame
@@ -131,16 +133,14 @@ mapc_verts_t get_verts_from_mesh(cgltf_mesh * mesh) {
     // create and push target frames
     for(size_t i = 0; i < prim.targets_count; i++) {
         cgltf_morph_target* morph_target = &(prim.targets[i]);
-        // ought to check if attributes[0] is POSITION
         cgltf_accessor * morph_position_accessor = morph_target->attributes[index_of_attribute_name(morph_target->attributes, morph_target->attributes_count, ATN_POSITION)].data;
         
-        printf("fart");
         // get all morph positions
         float (*m_pos)[morph_position_accessor->count][3] = calloc(sizeof(*m_pos), 1);
-        for(size_t j = 0; j < morph_position_accessor->count; j++) 
-            cgltf_accessor_read_float(morph_position_accessor, j, (cgltf_float*)&(*m_pos)[j], 3);
-        
-        fprintf(stderr, "name: %s\n", morph_position_accessor->name);
+        for(size_t j = 0; j < morph_position_accessor->count; j++) {
+            cgltf_bool success = cgltf_accessor_read_float(morph_position_accessor, j, (cgltf_float*)&(*m_pos)[j], 3);
+            fprintf(stderr, "mp_j: %zu -- %d -- {%f, %f, %f}\n", j, success, (*m_pos)[j][0], (*m_pos)[j][1], (*m_pos)[j][2]);
+        }
 
         for(size_t j = 0; j < index_count; j++) {
             uint16_t index = (*indices)[j];
@@ -148,11 +148,16 @@ mapc_verts_t get_verts_from_mesh(cgltf_mesh * mesh) {
             tmp_frame[j].x += tmp_pos[0];
             tmp_frame[j].y += tmp_pos[1];
             tmp_frame[j].z += tmp_pos[2];
+            fprintf(stderr, "i: %zu -- {%f, %f, %f}\n", j, tmp_frame[j].x, tmp_frame[j].y, tmp_frame[j].z);
         }
         vector_push(out_v.anim_frames, tmp_frame);
         // reset tmp_frame to default
         memcpy(tmp_frame, default_frame, sizeof(mapc_fpos3_t) * index_count);
+        free(m_pos);
     }
+    free(indices);
+    free(pos);
+    free(uvs);
     free(tmp_frame);
 
     return out_v;
@@ -644,7 +649,6 @@ mapc_pos3_t group_meshes(cgltf_data * data) {
         mesh_group_t mg = GROUP_INVALID;
         mesh_class_t mc = CLASS_MAP;
         mapc_out_lite_t ol = { 0 };
-        vector * extras_vec = NULL;
         char entity_name[100];
 
         // determine group
@@ -882,6 +886,8 @@ int main(int argc, char * argv[]) {
             {   // u
                 mpack_write_cstr(&writer, "u");
                 size_t ulen = vector_size(re->verts.u);
+                if (ulen != re->verts.index_count)
+                    fprintf(stderr, "E: ref_entt[%zu] -- ulen(%zu) != index_len(%zu)\n", i, ulen, re->verts.index_count);
                 mpack_start_array(&writer, ulen);
                 for(size_t j = 0; j < ulen; j++)
                     mpack_write_float(&writer, *(float *)vector_at(re->verts.u, j));
@@ -891,6 +897,8 @@ int main(int argc, char * argv[]) {
             {   // v
                 mpack_write_cstr(&writer, "v");
                 size_t vlen = vector_size(re->verts.v);
+                if (vlen != re->verts.index_count)
+                    fprintf(stderr, "E: ref_entt[%zu] -- vlen != index_len\n", i);
                 mpack_start_array(&writer, vlen);
                 for(size_t j = 0; j < vlen; j++)
                     mpack_write_float(&writer, *(float *)vector_at(re->verts.v, j));
@@ -906,20 +914,16 @@ int main(int argc, char * argv[]) {
                 mpack_finish_array(&writer);
             }
 
-            size_t ulen = vector_size(re->verts.u);
-            size_t vlen = vector_size(re->verts.v);
-            if (ulen != vlen)
-                break;
-
             {   // anim_frames
                 mpack_write_cstr(&writer, "anim_frames");
                 size_t aframe_len = vector_size(re->verts.anim_frames);
                 mpack_start_array(&writer, aframe_len);
                 for(size_t j = 0; j < aframe_len; j++) {
                     mapc_fpos3_t * anim_frame = vector_at(re->verts.anim_frames,j);
-                    mpack_start_array(&writer, ulen);
-                    for(size_t k = 0; k < ulen; k++) {
+                    mpack_start_array(&writer, re->verts.index_count);
+                    for(size_t k = 0; k < re->verts.index_count; k++) {
                         mpack_start_array(&writer, 3);
+                        // not sure why these don't need to be y<->z swapped
                         mpack_write_float(&writer, anim_frame[k].x);
                         mpack_write_float(&writer, anim_frame[k].y);
                         mpack_write_float(&writer, anim_frame[k].z);
@@ -1075,7 +1079,15 @@ int main(int argc, char * argv[]) {
     vector_free(ref_entt_vec);
 
     vector_free(out_cube_vec);
+
+    len = vector_size(out_entt_vec);
+    for(size_t i = 0; i < len; i++) {
+        mapc_out_entt_t * e = vector_at(out_entt_vec, i);
+        vector_free(e->extras);
+    }
     vector_free(out_entt_vec);
+    vector_free(out_lite_vec);
+    vector_free(out_plyr_vec);
 
     cgltf_free(data);
 
