@@ -37,7 +37,7 @@ typedef struct {
 // to free on quit
 extern vector * r_draw_calls;
 extern vector * r_textures;
-extern int r_num_verts;
+extern uint32_t r_num_verts;
 extern vec3_t r_camera;
 extern GLfloat r_camera_pitch;
 extern GLfloat r_camera_yaw;

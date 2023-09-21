@@ -35,7 +35,7 @@ char * SHADER_FRAG =
 
 // 8 properties per vert [x,y,z, u,v, nx,ny,nz]
 float r_buffer[R_MAX_VERTS*8] = {0};
-int r_num_verts = 0;
+uint32_t r_num_verts = 0;
 
 // 2 vec3 per light [(x,y,z), [r,g,b], ...]
 float r_light_buffer[R_MAX_LIGHT_V3*3] = {0};
