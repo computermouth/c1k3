@@ -14,6 +14,15 @@ typedef struct {
     int32_t b;
 } block_t;
 
+typedef struct {
+    size_t vert_len;
+    size_t frame_len;
+    char (*frame_names)[][100];
+    vector * frames;
+    uint32_t tex_id;
+    char entity_name[100];
+} ref_entt_t;
+
 // todo, move entity table and init to another file?
 typedef enum {
     ENTITY_ID_PLAYER,
@@ -54,7 +63,7 @@ typedef struct {
 
 typedef struct {
     vec3_t position;
-    uint32_t texture;
+    ref_entt_t * ref_entt;
     entity_extra_params_t * extras;
 } entity_generic_params_t;
 
@@ -71,20 +80,12 @@ typedef struct {
 } entity_params_t;
 
 typedef struct {
-    size_t vert_len;
-    size_t frame_len;
-    char (*frame_names)[][100];
-    vector * frames;
-    uint32_t tex_id;
-    char entity_name[100];
-} ref_entt_t;
-
-typedef struct {
     vector * blocks;
     uint8_t * e;
     // map_entities and ref_entities is for new map format only
     vector * map_entities; // entity_params_t
     vector * ref_entities; // ref_entt_t
+    vector * ref_ent_index; // size_t
     uint32_t e_size;
     uint8_t cm[((map_size * map_size * map_size) >> 3)];
 } map_t;

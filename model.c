@@ -109,7 +109,7 @@ model_t model_load(uint8_t * data, vec3_t scale) {
     // todo, junk
     out.data = data;
     out.nv = num_indices * 3;
-
+    
     for (uint32_t frame_index = 0; frame_index < num_frames; frame_index++) {
         out.frame_len++;
         out.frames = realloc(out.frames, sizeof(uint32_t) * out.frame_len);
@@ -152,7 +152,7 @@ model_t model_load(uint8_t * data, vec3_t scale) {
 
 vector * model_load_ng(void * void_verts, uint32_t frame_len, uint32_t vert_len, float * u, float * v) {
     // todo, scale??
-    vector * frame_ids = vector_init(sizeof(int));
+    vector * frame_ids = vector_init(sizeof(uint32_t));
     float (*model_verts)[frame_len][vert_len][3] = void_verts;
     
     uint32_t u_i = 0;
@@ -162,6 +162,9 @@ vector * model_load_ng(void * void_verts, uint32_t frame_len, uint32_t vert_len,
         // point to first vertex in frame
         vector_push(frame_ids, &r_num_verts);
 
+        // reset uv indices
+        u_i = 0;
+        v_i = 0;
         // vertex of frame
         for (uint32_t vert_i = 0; vert_i < vert_len; vert_i+=3) {
 
@@ -175,14 +178,15 @@ vector * model_load_ng(void * void_verts, uint32_t frame_len, uint32_t vert_len,
             
             for (uint32_t face_i = 0; face_i < 3; face_i++) {
                 
+                // scale to match cube dimensions
                 fv[face_i] = vec3(
-                    (*model_verts)[frame_i][vert_i + face_i][0],
-                    (*model_verts)[frame_i][vert_i + face_i][1],
-                    (*model_verts)[frame_i][vert_i + face_i][2]
+                    (*model_verts)[frame_i][vert_i + face_i][0] * 32,
+                    (*model_verts)[frame_i][vert_i + face_i][1] * 32,
+                    (*model_verts)[frame_i][vert_i + face_i][2] * 32
                 );
                 uv[face_i] = (uv_t) {
                     .u = u[u_i++], // god forgive me
-                    .v = v[v_i++]
+                    .v = v[v_i++]  // maybe could be vert_i / 3 + face_i, fuck
                 };
             }
 

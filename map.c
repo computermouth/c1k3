@@ -177,29 +177,21 @@ void mpack_map_parse() {
     mpack_node_t mp_ref_entts = mpack_node_map_cstr(root, "ref_entts");
     mpack_node_t mp_map_cubes = mpack_node_map_cstr(root, "map_cubes");
     mpack_node_t mp_map_entts = mpack_node_map_cstr(root, "map_entts");
-    // mpack_node_t mp_map_lites = mpack_node_map_cstr(root, "map_lites");
-    // mpack_node_t mp_map_playr = mpack_node_map_cstr(root, "map_player");
 
     size_t ref_cubes_sz = mpack_node_array_length(mp_ref_cubes);
     size_t ref_entts_sz = mpack_node_array_length(mp_ref_entts);
     size_t map_cubes_sz = mpack_node_array_length(mp_map_cubes);
     size_t map_entts_sz = mpack_node_array_length(mp_map_entts);
-    // size_t map_lites_sz = mpack_node_array_length(mp_map_lites);
-    // size_t map_playr_sz = mpack_node_array_length(mp_map_playr);
 
     // fprintf(stderr,
     //         "ref_cubes_sz: %zu\n"
     //         "ref_entts_sz: %zu\n"
     //         "map_cubes_sz: %zu\n"
     //         "map_entts_sz: %zu\n"
-    //         "map_lites_sz: %zu\n"
-    //         "map_playr_sz: %zu\n",
     //         ref_cubes_sz,
     //         ref_entts_sz,
     //         map_cubes_sz,
     //         map_entts_sz,
-    //         map_lites_sz,
-    //         map_playr_sz
     //        );
 
     // populate ref cubes
@@ -215,6 +207,9 @@ void mpack_map_parse() {
     
     // populate ref entts
     vector * ref_entt_list = vector_init(sizeof(ref_entt_t));
+    for(uint32_t i = 0; i < __ENTITY_ID_END; i++)
+        vector_push(ref_entt_list, &(ref_entt_t){0});
+    
     for(uint32_t i = 0; i < ref_entts_sz; i++) {
         ref_entt_t tmp_entt = { 0 };
         mpack_node_t entt_map = mpack_node_array_at(mp_ref_entts, i);
@@ -227,10 +222,10 @@ void mpack_map_parse() {
         
         // texture
         mpack_node_t tex_bin = mpack_node_map_cstr(entt_map, "txtr");
-        uint32_t id = r_create_texture((png_bin_t) {
+        uint32_t tid = r_create_texture((png_bin_t) {
             .data = (uint8_t *)mpack_node_bin_data(tex_bin), .len = mpack_node_bin_size(tex_bin)
         });
-        tmp_entt.tex_id = id;
+        tmp_entt.tex_id = tid;
         
         // frame_names
         mpack_node_t frame_name_arr = mpack_node_map_cstr(entt_map, "anim_names");
@@ -272,19 +267,25 @@ void mpack_map_parse() {
             mpack_node_t frame_vert_arr = mpack_node_array_at(frame_arr, fi);
             size_t fva_len = mpack_node_array_length(frame_vert_arr);
             for (size_t vi = 0; vi < tmp_entt.vert_len; vi++){
-                mpack_node_t frame_vert_xyz_arr = mpack_node_array_at(frame_vert_arr, fi);
+                mpack_node_t frame_vert_xyz_arr = mpack_node_array_at(frame_vert_arr, vi);
                 size_t fvax_len = mpack_node_array_length(frame_vert_xyz_arr);
                 (*frames)[fi][vi][0] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 0));
                 (*frames)[fi][vi][1] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 1));
                 (*frames)[fi][vi][2] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 2));
             }
         }
-        int fuck = "get model and texture into entities";
         tmp_entt.frames = model_load_ng(frames, frame_arr_len, ulen, u, v);
         free(u);
         free(v);
         free(frames);
-        vector_push(ref_entt_list, &tmp_entt);
+        
+        // insert tmp_entt into ref_entt_list[ENTITY_ID_X]
+        entity_id_t id = map_lookup_entity(name, name_len);
+        if(id == __ENTITY_ID_END){
+            fprintf(stderr, "E: failed to id entity %s -- skipping\n", name);
+            continue;
+        }
+        vector_set(ref_entt_list, id, &tmp_entt);
     }
     tmp_map->ref_entities = ref_entt_list;
 
@@ -402,12 +403,12 @@ void mpack_map_parse() {
             default:
                 vector_push(map_entities, &(entity_params_t){
                     .id = id,
+                    .entity_generic_params.ref_entt = vector_at(tmp_map->ref_entities, id),
                     .entity_generic_params.position = {
                         .x = mpack_node_float(mpack_node_array_at(mp_me_pos, 0)),
                         .y = mpack_node_float(mpack_node_array_at(mp_me_pos, 1)),
                         .z = mpack_node_float(mpack_node_array_at(mp_me_pos, 2)),
                     },
-                    .entity_generic_params.texture = 1,
                     .entity_generic_params.extras = map_get_entity_kv(mp_ml_extras)
                 });
         }
