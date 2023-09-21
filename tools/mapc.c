@@ -8,7 +8,6 @@
 #include <libgen.h>
 
 #include "vector.h"
-// #include "microtar.h"
 #define CGLTF_IMPLEMENTATION
 #include "cgltf.h"
 #include "mpack.h"
@@ -35,61 +34,31 @@ vector * out_plyr_vec = NULL;
 
 char * default_frame_name = "default";
 
+typedef enum {
+    ATN_TEXCOORD_0,
+    ATN_POSITION,
+} attname_t;
+
+char * attstr[] = {
+    "TEXCOORD_0",
+    "POSITION"
+};
+
+cgltf_size index_of_attribute_name(cgltf_attribute * attributes, cgltf_size att_len, attname_t a){
+    char * astr = attstr[a];
+    for(cgltf_size i = 0; i < att_len; i++){
+        if (strcmp(attributes[i].name, astr) == 0)
+            return i;
+    }
+    
+    fprintf(stderr, "E: couldn't find attstr[%d]: %s\n", a, astr);
+    exit(1);
+    return 9999;
+}
+
 mapc_verts_t get_verts_from_mesh(cgltf_mesh * mesh) {
 
     mapc_verts_t out_v = {0};
-
-    // Find the index of the TEXCOORD_0 attribute
-    cgltf_attribute* uvAttribute = NULL;
-    for (cgltf_size i = 0; i < mesh->primitives[0].attributes_count; ++i) {
-        if (strcmp(mesh->primitives[0].attributes[i].name, "TEXCOORD_0") == 0) {
-            uvAttribute = &mesh->primitives[0].attributes[i];
-            break;
-        }
-    }
-
-    // Find the index of the POSITION attribute
-    cgltf_attribute* position_attribute = NULL;
-    for (cgltf_size i = 0; i < mesh->primitives[0].attributes_count; ++i) {
-        if (strcmp(mesh->primitives[0].attributes[i].name, "POSITION") == 0) {
-            position_attribute = &mesh->primitives[0].attributes[i];
-            break;
-        }
-    }
-
-    if (!uvAttribute || !position_attribute) {
-        fprintf(stderr, "E: missing uv or position attribute\n");
-        return out_v;
-    }
-
-    cgltf_accessor* uvAccessor = uvAttribute->data;
-    cgltf_buffer_view* uvBufferView = uvAccessor->buffer_view;
-    cgltf_buffer* uvBuffer = uvBufferView->buffer;
-
-    cgltf_accessor* position_accessor = position_attribute->data;
-
-    if(position_accessor->count != uvAccessor->count) {
-        fprintf(stderr, "E: position count doesn't match uv count\n");
-        return out_v;
-    }
-
-    // get uv values
-    size_t uvCount = uvAccessor->count;
-    size_t uvOffset = uvAccessor->offset + uvBufferView->offset;
-    float* uvData = (float*)(uvBuffer->data + uvOffset);
-
-    // get position
-    for (size_t i = 0; i < mesh->target_names_count; ++i) {
-        fprintf(stderr, "morph_target: %s\n", mesh->target_names[i]);
-    }
-
-    // done
-    out_v.u = vector_init(sizeof(float));
-    out_v.v = vector_init(sizeof(float));
-    for(size_t i = 0; i < uvCount; i++) {
-        vector_push(out_v.u, &(uvData[i * 2 + 0]));
-        vector_push(out_v.v, &(uvData[i * 2 + 1]));
-    }
 
     // push target names
     out_v.anim_names = vector_init(sizeof(char *));
@@ -99,41 +68,90 @@ mapc_verts_t get_verts_from_mesh(cgltf_mesh * mesh) {
         vector_push(out_v.anim_names, &(mesh->target_names[i]));
     }
 
+    cgltf_primitive prim = mesh->primitives[0];
+
+    // Find the index of the POSITION, TEXCOORD_0(uv) attributes, and the index accessor
+    cgltf_accessor * position_accessor = prim.attributes[index_of_attribute_name(prim.attributes, prim.attributes_count, ATN_POSITION)].data;
+    cgltf_accessor * uv_accessor = prim.attributes[index_of_attribute_name(prim.attributes, prim.attributes_count, ATN_TEXCOORD_0)].data;
+    cgltf_accessor * index_accessor = prim.indices;
+
+    if (!position_accessor || !uv_accessor || !index_accessor) {
+        fprintf(stderr, "E: missing position, uv, or index attribute/accessor\n");
+        return out_v;
+    }
+    
+    // get all indices
+    size_t index_count = index_accessor->count;
+    uint16_t (*indices)[index_count] = calloc(sizeof(*indices), 1);
+    for(size_t i = 0; i < index_count; i++){
+        cgltf_uint t;
+        cgltf_bool success = cgltf_accessor_read_uint(index_accessor, i, &t, 1);
+        (*indices)[i] = t;
+        fprintf(stderr, "i: %zu/%zu -- %d -- {%u}\n", i, index_count, success, (*indices)[i]);
+    }
+    // out_v.vert_len = index_count;
+    
+    // get all positions
+    float (*pos)[position_accessor->count][3] = calloc(sizeof(*pos), 1);
+    for(size_t i = 0; i < position_accessor->count; i++){
+        cgltf_bool success = cgltf_accessor_read_float(position_accessor, i, (cgltf_float*)&(*pos)[i], 3);
+        fprintf(stderr, "i: %zu -- %d -- {%f, %f, %f}\n", i, success, (*pos)[i][0], (*pos)[i][1], (*pos)[i][2]);
+    }
+
+    // get all uvs
+    float (*uvs)[uv_accessor->count][2] = calloc(sizeof(*uvs), 1);
+    for(size_t i = 0; i < uv_accessor->count; i++) {
+        cgltf_bool success = cgltf_accessor_read_float(uv_accessor, i, (cgltf_float*)&(*uvs)[i], 2);
+        fprintf(stderr, "i: %zu -- %d -- {%f, %f}\n", i, success, (*uvs)[i][0], (*uvs)[i][1]);
+    }
+    
+    // parse uvs out per-face
+    out_v.u = vector_init(sizeof(float));
+    out_v.v = vector_init(sizeof(float));
+    for(size_t i = 0; i < uv_accessor->count; i++){
+        vector_push(out_v.u, &(*uvs)[i][0]);
+        vector_push(out_v.v, &(*uvs)[i][1]);
+    }
+
     // push default frame
-    out_v.anim_frames = vector_init(sizeof(mapc_fpos3_t) * uvCount);
-    mapc_fpos3_t * tmp_frame = malloc(sizeof(mapc_fpos3_t) * uvCount);
-    for(size_t i = 0; i < position_accessor->count; i++) {
-        cgltf_float tmp[3];
-        cgltf_accessor_read_float(position_accessor, i, tmp, 3);
-        tmp_frame[i].x = tmp[0];
-        tmp_frame[i].y = tmp[1];
-        tmp_frame[i].z = tmp[2];
+    out_v.anim_frames = vector_init(sizeof(mapc_fpos3_t) * index_count);
+    mapc_fpos3_t * tmp_frame = malloc(sizeof(mapc_fpos3_t) * index_count);
+    for(size_t i = 0; i < index_count; i++) {
+        uint16_t index = (*indices)[i];
+        float * tmp_pos = (*pos)[index];
+        tmp_frame[i].x = tmp_pos[0];
+        tmp_frame[i].y = tmp_pos[1];
+        tmp_frame[i].z = tmp_pos[2];
+        float * uv_pos = (*uvs)[index];
+        fprintf(stderr, ".xyz={%f,%f,%f}, .uv={%f,%f}\n", tmp_pos[0], tmp_pos[1], tmp_pos[2], uv_pos[0], uv_pos[1] );
     }
     vector_push(out_v.anim_frames, tmp_frame);
     mapc_fpos3_t * default_frame = vector_at(out_v.anim_frames, 0);
-
+    
     // create and push target frames
-    cgltf_primitive * tmp_prim = &(mesh->primitives[0]);
-    for(size_t i = 0; i < tmp_prim->targets_count; i++) {
-        cgltf_morph_target* morphTarget = &(tmp_prim->targets[i]);
+    for(size_t i = 0; i < prim.targets_count; i++) {
+        cgltf_morph_target* morph_target = &(prim.targets[i]);
         // ought to check if attributes[0] is POSITION
-        cgltf_attribute* morphPositionAttr = &morphTarget->attributes[0];
-        fprintf(stderr, "name: %s\n", morphPositionAttr->name);
+        cgltf_accessor * morph_position_accessor = morph_target->attributes[index_of_attribute_name(morph_target->attributes, morph_target->attributes_count, ATN_POSITION)].data;
+        
+        printf("fart");
+        // get all morph positions
+        float (*m_pos)[morph_position_accessor->count][3] = calloc(sizeof(*m_pos), 1);
+        for(size_t j = 0; j < morph_position_accessor->count; j++) 
+            cgltf_accessor_read_float(morph_position_accessor, j, (cgltf_float*)&(*m_pos)[j], 3);
+        
+        fprintf(stderr, "name: %s\n", morph_position_accessor->name);
 
-        cgltf_accessor* morph_position_accessor = morphPositionAttr->data;
-        cgltf_buffer_view* morph_position_buffer_view = morph_position_accessor->buffer_view;
-        cgltf_buffer* morph_position_buffer = morph_position_buffer_view->buffer;
-
-        for(size_t j = 0; j < morph_position_accessor->count; j++) {
-            cgltf_float tmp[3];
-            bool ok = cgltf_accessor_read_float(morph_position_accessor, j, tmp, 3);
-            tmp_frame[j].x += tmp[0];
-            tmp_frame[j].y += tmp[1];
-            tmp_frame[j].z += tmp[2];
+        for(size_t j = 0; j < index_count; j++) {
+            uint16_t index = (*indices)[j];
+            float * tmp_pos = (*m_pos)[index];
+            tmp_frame[j].x += tmp_pos[0];
+            tmp_frame[j].y += tmp_pos[1];
+            tmp_frame[j].z += tmp_pos[2];
         }
         vector_push(out_v.anim_frames, tmp_frame);
         // reset tmp_frame to default
-        memcpy(tmp_frame, default_frame, sizeof(mapc_fpos3_t) * uvCount);
+        memcpy(tmp_frame, default_frame, sizeof(mapc_fpos3_t) * index_count);
     }
     free(tmp_frame);
 
