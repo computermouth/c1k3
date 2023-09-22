@@ -53,7 +53,7 @@ void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
                 )
             ),
             0,
-            0
+            0, NULL
         );
 
     projectile->v = vec3_rotate_yaw_pitch(

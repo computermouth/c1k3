@@ -14,13 +14,13 @@ void entity_enemy_grunt_attack(entity_t * e);
 animation_t grunt_animations[] = {
     {   // 0: Idle
         .time = 1,
-        .num_frames = 1,
-        .frames = (uint32_t[]){0},
+        .num_frames = 2,
+        .frames = (uint32_t[]){0, 1},
     },
     {   // 1: Walk
         .time = 0.40f,
-        .num_frames = 1,
-        .frames = (uint32_t[]){1},
+        .num_frames = 2,
+        .frames = (uint32_t[]){1, 0},
     }
 };
 
@@ -43,7 +43,8 @@ void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_
     
     e->_texture = ep->entity_generic_params.ref_entt->tex_id;
     // e->_model->frames = vector_begin(ep->entity_generic_params.ref_entt->frames);
-    e->_model->frames[1] = 0;
+    e->_model->frames[0] = 0;
+    e->_model->frames[1] = 204;
     // e->_model->frames[1] = 204;
 
     e->_state_collection = (enemy_state_collection_t) {
