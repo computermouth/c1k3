@@ -1017,13 +1017,17 @@ int main(int argc, char * argv[]) {
             mpack_finish_array(&writer);
             
             mpack_write_cstr(&writer, "param");
-            size_t param_len = vector_size(oe->extras);
-            mpack_start_map(&writer, param_len);
-            for(size_t i = 0; i < param_len; i++){
-                mpack_write_cstr(&writer, ((mapc_extra_kv_t*)vector_at(oe->extras, i))->k);
-                mpack_write_cstr(&writer, ((mapc_extra_kv_t*)vector_at(oe->extras, i))->v);
+            if(oe->extras){
+                size_t param_len = vector_size(oe->extras);
+                mpack_start_map(&writer, param_len);
+                for(size_t i = 0; i < param_len; i++){
+                    mpack_write_cstr(&writer, ((mapc_extra_kv_t*)vector_at(oe->extras, i))->k);
+                    mpack_write_cstr(&writer, ((mapc_extra_kv_t*)vector_at(oe->extras, i))->v);
+                }
+                mpack_finish_map(&writer);
+            } else {
+                mpack_write_nil(&writer);
             }
-            mpack_finish_map(&writer);
 
             mpack_finish_map(&writer);
         }

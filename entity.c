@@ -27,18 +27,18 @@ animation_collection_t default_anim_collection = {
     .num_animations = 1,
 };
 
-int64_t entity_frame_from_name(char * needle, char (*haystack)[][100], size_t len){
+int64_t entity_frame_from_name(char * needle, char (*haystack)[][100], size_t len) {
     int64_t rc = -1;
-    for(size_t i = 0; i < len; i++){
+    for(size_t i = 0; i < len; i++) {
         if (strcmp(needle, (*haystack)[i]) == 0)
             return i;
     }
     return rc;
 }
 
-char * entity_param_lookup(char * key, vector * v){
+char * entity_param_lookup(char * key, vector * v) {
     size_t plen = vector_size(v);
-    for(size_t i = 0; i < plen; i++){
+    for(size_t i = 0; i < plen; i++) {
         entity_extra_params_t * ep = vector_at(v, i);
         if(strcmp(key, ep->k) == 0)
             return ep->v;
@@ -47,14 +47,14 @@ char * entity_param_lookup(char * key, vector * v){
     return NULL;
 }
 
-void entity_parse_animation_frames(ref_entt_t * curr_entt, animation_t * animations, size_t anim_len, ref_entt_t * last_entt){
+void entity_parse_animation_frames(ref_entt_t * curr_entt, animation_t * animations, size_t anim_len, ref_entt_t * last_entt) {
     // already cached
     if(curr_entt == last_entt)
         return;
-    
-    for(size_t i = 0; i < anim_len; i++){
+
+    for(size_t i = 0; i < anim_len; i++) {
         animation_t tmp_anim = animations[i];
-        for(size_t j = 0; j < tmp_anim.num_frames; j++){
+        for(size_t j = 0; j < tmp_anim.num_frames; j++) {
             char * needle = tmp_anim.frames_ng[j].name;
             int64_t f = entity_frame_from_name(needle, curr_entt->frame_names, curr_entt->frame_len);
             if(f < 0) {
@@ -64,7 +64,7 @@ void entity_parse_animation_frames(ref_entt_t * curr_entt, animation_t * animati
             tmp_anim.frames_ng[j].id = f;
         }
     }
-    
+
     last_entt = curr_entt;
 }
 
@@ -272,12 +272,12 @@ void entity_draw_model(entity_t * e) {
     // Calculate which frames to use and how to mix them
     float f = e->_anim_time / (float)e->_anim->time;
     float mix = f - floorf(f);
-    
+
     // todo, consolidate after frame_ng is in place
     uint32_t frame_cur = 0;
     uint32_t frame_next = 0;
-    
-    if (e->_anim->frames_ng){
+
+    if (e->_anim->frames_ng) {
         frame_cur = e->_anim->frames_ng[(uint32_t)f % e->_anim->num_frames].id;
         frame_next = e->_anim->frames_ng[(1 + (uint32_t)f) % e->_anim->num_frames].id;
     } else {

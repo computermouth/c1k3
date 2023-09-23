@@ -13,6 +13,7 @@
 #include "entity.h"
 #include "entity_player.h"
 #include "entity_enemy_grunt.h"
+#include "entity_enemy_mutant.h"
 #include "entity_enemy_enforcer.h"
 #include "entity_enemy_ogre.h"
 #include "entity_enemy_zombie.h"
@@ -49,6 +50,9 @@ void map_init() {
     };
     entity_table[ENTITY_ID_ENEMY_GRUNT] = (entity_table_t) {
         "grunt", entity_enemy_grunt_constructor
+    };
+    entity_table[ENTITY_ID_ENEMY_MUTANT] = (entity_table_t) {
+        "mutant", entity_enemy_mutant_constructor
     };
     entity_table[ENTITY_ID_ENEMY_ENFORCER] = (entity_table_t) {
         "enforcer", entity_enemy_enforcer_constructor,
@@ -118,26 +122,27 @@ void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *) =
     /* 16 */ entity_torch_constructor,
 };
 
-uint32_t map_lookup_entity(const char * type_name, size_t len){
-    
-    for(uint32_t i = 0; i < __ENTITY_ID_END; i++){
+uint32_t map_lookup_entity(const char * type_name, size_t len) {
+
+    for(uint32_t i = 0; i < __ENTITY_ID_END; i++) {
         if (strncmp(type_name, entity_table[i].entity_string, 1) == 0)
             return i;
     }
-    
+
     return __ENTITY_ID_END;
 }
 
-vector * map_get_entity_kv(mpack_node_t n){
+vector * map_get_entity_kv(mpack_node_t n) {
+    // will be nil if empty
     if (mpack_node_type(n) != mpack_type_map)
         return NULL;
-    
+
     size_t nodelen = mpack_node_map_count(n);
     if (nodelen < 1)
         return NULL;
-    
+
     vector * ep = vector_init(sizeof(entity_extra_params_t));
-    for(size_t i = 0; i < nodelen; i++){
+    for(size_t i = 0; i < nodelen; i++) {
         mpack_node_t k = mpack_node_map_key_at(n, i);
         mpack_node_t v = mpack_node_map_value_at(n, i);
         if(mpack_node_type(k) != mpack_type_str || mpack_node_type(v) != mpack_type_str)
@@ -149,7 +154,7 @@ vector * map_get_entity_kv(mpack_node_t n){
         strncpy(tmpx.v, mpack_node_str(v), mpack_node_strlen(v));
         vector_push(ep, &tmpx);
     }
-    
+
     return ep;
 }
 
@@ -158,7 +163,7 @@ void mpack_map_parse() {
     // pass in via args
     // const char * data = (char *)data_map3;
     // const size_t data_len = data_map3_len;
-    
+
     const char * data = (char *)data_map1;
     const size_t data_len = data_map1_len;
 
@@ -203,42 +208,44 @@ void mpack_map_parse() {
         });
         // fprintf(stderr, "rcti [%u][%u]\n", i, id);
         vector_push(ref_cube_tex_id_list, &id);
-    } 
-    
+    }
+
     // populate ref entts
     vector * ref_entt_list = vector_init(sizeof(ref_entt_t));
     for(uint32_t i = 0; i < __ENTITY_ID_END; i++)
-        vector_push(ref_entt_list, &(ref_entt_t){0});
-    
+        vector_push(ref_entt_list, &(ref_entt_t) {
+        0
+    });
+
     for(uint32_t i = 0; i < ref_entts_sz; i++) {
         ref_entt_t tmp_entt = { 0 };
         mpack_node_t entt_map = mpack_node_array_at(mp_ref_entts, i);
-        
+
         // name
         mpack_node_t name_node = mpack_node_map_cstr(entt_map, "name");
         size_t name_len = mpack_node_strlen(name_node);
         const char * name = mpack_node_str(name_node);
         strncpy(tmp_entt.entity_name, name, name_len);
-        
+
         // texture
         mpack_node_t tex_bin = mpack_node_map_cstr(entt_map, "txtr");
         uint32_t tid = r_create_texture((png_bin_t) {
             .data = (uint8_t *)mpack_node_bin_data(tex_bin), .len = mpack_node_bin_size(tex_bin)
         });
         tmp_entt.tex_id = tid;
-        
+
         // frame_names
         mpack_node_t frame_name_arr = mpack_node_map_cstr(entt_map, "anim_names");
         size_t frame_name_len = mpack_node_array_length(frame_name_arr);
         char (*fn)[frame_name_len][100] = calloc(1, sizeof(*fn));
-        for(size_t fi = 0; fi < frame_name_len; fi++){
+        for(size_t fi = 0; fi < frame_name_len; fi++) {
             mpack_node_t fnas = mpack_node_array_at(frame_name_arr, fi);
             const char * fns = mpack_node_str(fnas);
             size_t fns_len = mpack_node_strlen(fnas);
             strncpy((*fn)[fi], fns, fns_len);
         }
         tmp_entt.frame_names = fn;
-        
+
         // vert_len -- todo, check this better
         mpack_node_t u_arr = mpack_node_map_cstr(entt_map, "u");
         mpack_node_t v_arr = mpack_node_map_cstr(entt_map, "v");
@@ -247,7 +254,7 @@ void mpack_map_parse() {
         if (ulen != vlen)
             fprintf(stderr, "E: ulen != vlen on ref_entt[%d]\n", i);
         tmp_entt.vert_len = ulen;
-        
+
         // u
         float * u = calloc(tmp_entt.vert_len, sizeof(float));
         for(size_t ui = 0; ui < tmp_entt.vert_len; ui++)
@@ -263,10 +270,10 @@ void mpack_map_parse() {
         if (frame_arr_len != frame_name_len)
             fprintf(stderr, "E: frame_arr_len != frame_name_len on ref_entt[%d]\n", i);
         float (*frames)[frame_arr_len][tmp_entt.vert_len][3] = calloc(1, sizeof(*frames));
-        for(size_t fi = 0; fi < frame_arr_len; fi++){
+        for(size_t fi = 0; fi < frame_arr_len; fi++) {
             mpack_node_t frame_vert_arr = mpack_node_array_at(frame_arr, fi);
             size_t fva_len = mpack_node_array_length(frame_vert_arr);
-            for (size_t vi = 0; vi < tmp_entt.vert_len; vi++){
+            for (size_t vi = 0; vi < tmp_entt.vert_len; vi++) {
                 mpack_node_t frame_vert_xyz_arr = mpack_node_array_at(frame_vert_arr, vi);
                 size_t fvax_len = mpack_node_array_length(frame_vert_xyz_arr);
                 (*frames)[fi][vi][0] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 0));
@@ -279,10 +286,10 @@ void mpack_map_parse() {
         free(u);
         free(v);
         free(frames);
-        
+
         // insert tmp_entt into ref_entt_list[ENTITY_ID_X]
         entity_id_t id = map_lookup_entity(name, name_len);
-        if(id == __ENTITY_ID_END){
+        if(id == __ENTITY_ID_END) {
             fprintf(stderr, "E: failed to id entity %s -- skipping\n", name);
             continue;
         }
@@ -344,23 +351,23 @@ void mpack_map_parse() {
         }
     }
     tmp_map->blocks = blocks;
-    
+
     vector * map_entities = vector_init(sizeof(entity_params_t));
     // push all entities
-    for (uint32_t i = 0; i < map_entts_sz; i++){
+    for (uint32_t i = 0; i < map_entts_sz; i++) {
         mpack_node_t mp_me = mpack_node_array_at(mp_map_entts, i);
         mpack_node_t mp_me_type = mpack_node_map_cstr(mp_me, "type");
         mpack_node_t mp_me_pos = mpack_node_map_cstr(mp_me, "pos");
         const char * type_name = mpack_node_str(mp_me_type);
         entity_id_t id = map_lookup_entity(type_name, 0);
-        if(id == __ENTITY_ID_END){
+        if(id == __ENTITY_ID_END) {
             fprintf(stderr, "E: failed to id entity %s -- skipping\n", type_name);
             continue;
         }
-        
+
         // have to do these before the switch
         // not all will be present, so init has to be checked first
-        
+
         // light-only param
         mpack_node_t mp_ml_rgba = { 0 };
         if(mpack_node_map_contains_cstr(mp_me, "color"))
@@ -373,48 +380,48 @@ void mpack_map_parse() {
         mpack_node_t mp_ml_extras = { 0 };
         if(mpack_node_map_contains_cstr(mp_me, "param"))
             mp_ml_extras = mpack_node_map_cstr(mp_me, "param");
-        
-        switch (id){
-            case ENTITY_ID_PLAYER:
-                vector_push(map_entities, &(entity_params_t){
-                    .id = id,
-                    .entity_player_params.position = {
-                        .x = mpack_node_float(mpack_node_array_at(mp_me_pos, 0)),
-                        .y = mpack_node_float(mpack_node_array_at(mp_me_pos, 1)),
-                        .z = mpack_node_float(mpack_node_array_at(mp_me_pos, 2)),
-                    },
-                });
-                break;
-            case ENTITY_ID_LIGHT:
-                vector_push(map_entities, &(entity_params_t){
-                    .id = id,
-                    .entity_light_params.position = {
-                        .x = mpack_node_float(mpack_node_array_at(mp_me_pos, 0)),
-                        .y = mpack_node_float(mpack_node_array_at(mp_me_pos, 1)),
-                        .z = mpack_node_float(mpack_node_array_at(mp_me_pos, 2)),
-                    },
-                    .entity_light_params.rgba = {
-                        mpack_node_u8(mpack_node_array_at(mp_ml_rgba, 0)),
-                        mpack_node_u8(mpack_node_array_at(mp_ml_rgba, 1)),
-                        mpack_node_u8(mpack_node_array_at(mp_ml_rgba, 2)),
-                        mpack_node_u8(mpack_node_array_at(mp_ml_rgba, 3)),
-                    }
-                });
-                break;
-            default:
-                vector_push(map_entities, &(entity_params_t){
-                    .id = id,
-                    .entity_generic_params.ref_entt = vector_at(tmp_map->ref_entities, id),
-                    .entity_generic_params.position = {
-                        .x = mpack_node_float(mpack_node_array_at(mp_me_pos, 0)),
-                        .y = mpack_node_float(mpack_node_array_at(mp_me_pos, 1)),
-                        .z = mpack_node_float(mpack_node_array_at(mp_me_pos, 2)),
-                    },
-                    .entity_generic_params.extras = map_get_entity_kv(mp_ml_extras)
-                });
+
+        switch (id) {
+        case ENTITY_ID_PLAYER:
+            vector_push(map_entities, &(entity_params_t) {
+                .id = id,
+                .entity_player_params.position = {
+                    .x = mpack_node_float(mpack_node_array_at(mp_me_pos, 0)),
+                    .y = mpack_node_float(mpack_node_array_at(mp_me_pos, 1)),
+                    .z = mpack_node_float(mpack_node_array_at(mp_me_pos, 2)),
+                },
+            });
+            break;
+        case ENTITY_ID_LIGHT:
+            vector_push(map_entities, &(entity_params_t) {
+                .id = id,
+                .entity_light_params.position = {
+                    .x = mpack_node_float(mpack_node_array_at(mp_me_pos, 0)),
+                    .y = mpack_node_float(mpack_node_array_at(mp_me_pos, 1)),
+                    .z = mpack_node_float(mpack_node_array_at(mp_me_pos, 2)),
+                },
+                .entity_light_params.rgba = {
+                    mpack_node_u8(mpack_node_array_at(mp_ml_rgba, 0)),
+                    mpack_node_u8(mpack_node_array_at(mp_ml_rgba, 1)),
+                    mpack_node_u8(mpack_node_array_at(mp_ml_rgba, 2)),
+                    mpack_node_u8(mpack_node_array_at(mp_ml_rgba, 3)),
+                }
+            });
+            break;
+        default:
+            vector_push(map_entities, &(entity_params_t) {
+                .id = id,
+                .entity_generic_params.ref_entt = vector_at(tmp_map->ref_entities, id),
+                .entity_generic_params.position = {
+                    .x = mpack_node_float(mpack_node_array_at(mp_me_pos, 0)),
+                    .y = mpack_node_float(mpack_node_array_at(mp_me_pos, 1)),
+                    .z = mpack_node_float(mpack_node_array_at(mp_me_pos, 2)),
+                },
+                .entity_generic_params.extras = map_get_entity_kv(mp_ml_extras)
+            });
         }
     }
-    
+
     tmp_map->e_size = vector_size(map_entities);
     tmp_map->map_entities = map_entities;
 
@@ -529,46 +536,46 @@ void map_load (map_t * m) {
     }
     // exit if old maps were used
     return;
-    
-    map_load_ng:
+
+map_load_ng:
     for (uint32_t i = 0; i < map->e_size; i++) {
         entity_params_t * ep = vector_at(map->map_entities, i);
         void (*func)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *) = entity_table[ep->id].constructor_func;
         // todo, spawn the things with parameters
-        if(ep->id == ENTITY_ID_LIGHT){
+        if(ep->id == ENTITY_ID_LIGHT) {
             game_spawn(
                 func,
-                (vec3_t){
-                    .x = ep->entity_light_params.position.x * 32,
-                    .y = ep->entity_light_params.position.y * 16,
-                    .z = ep->entity_light_params.position.z * 32
-                }, 0, 0, ep);
-        }else if(ep->id == ENTITY_ID_PLAYER){
+            (vec3_t) {
+                .x = ep->entity_light_params.position.x * 32,
+                .y = ep->entity_light_params.position.y * 16,
+                .z = ep->entity_light_params.position.z * 32
+            }, 0, 0, ep);
+        } else if(ep->id == ENTITY_ID_PLAYER) {
             game_spawn(
                 func,
-                (vec3_t){
-                    .x = ep->entity_player_params.position.x * 32,
-                    .y = ep->entity_player_params.position.y * 16,
-                    .z = ep->entity_player_params.position.z * 32
-                }, 0, 0, ep);
+            (vec3_t) {
+                .x = ep->entity_player_params.position.x * 32,
+                .y = ep->entity_player_params.position.y * 16,
+                .z = ep->entity_player_params.position.z * 32
+            }, 0, 0, ep);
         } else {
             game_spawn(
                 func,
-                (vec3_t){
-                    .x = ep->entity_generic_params.position.x * 32,
-                    .y = ep->entity_generic_params.position.y * 16,
-                    .z = ep->entity_generic_params.position.z * 32
-                }, 0, 0, ep);
+            (vec3_t) {
+                .x = ep->entity_generic_params.position.x * 32,
+                .y = ep->entity_generic_params.position.y * 16,
+                .z = ep->entity_generic_params.position.z * 32
+            }, 0, 0, ep);
             // todo
             // free kv
             fprintf(stderr, "unimp: %d\n", ep->id);
         }
     }
-    
+
 }
 
 uint8_t map_block_at(int32_t x, int32_t y, int32_t z) {
-    if (x < 0 || y < 0 || z < 0){
+    if (x < 0 || y < 0 || z < 0) {
         fprintf(stderr, "E: tested collision in negative space\n");
         return 1;
     }
@@ -651,19 +658,19 @@ void map_quit() {
     for(uint32_t i = 0; i < len; i++) {
         map_t * map = vector_at(map_data, i);
         vector_free(map->blocks);
-        
-        if (map->map_entities){
+
+        if (map->map_entities) {
             size_t melen = vector_size(map->map_entities);
-            for(size_t j = 0; j < melen; j++){
+            for(size_t j = 0; j < melen; j++) {
                 entity_params_t * ep = vector_at(map->map_entities, j);
                 vector_free(ep->entity_generic_params.extras);
             }
             vector_free(map->map_entities);
         }
-        
-        if (map->ref_entities){
+
+        if (map->ref_entities) {
             size_t relen = vector_size(map->ref_entities);
-            for(size_t j = 0; j < relen; j++){
+            for(size_t j = 0; j < relen; j++) {
                 ref_entt_t * re = vector_at(map->ref_entities, j);
                 free(re->frame_names);
                 vector_free(re->frames);

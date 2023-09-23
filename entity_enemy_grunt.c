@@ -17,14 +17,14 @@ animation_t grunt_animations[] = {
         .time = 1,
         .num_frames = 1,
         // .frames = (uint32_t[]){0, 0},
-        .frames_ng = (animation_frame_t[]){
+        .frames_ng = (animation_frame_t[]) {
             {.name = "default"},
         },
     },
     {   // 1: Walk
         .time = 0.40f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]){
+        .frames_ng = (animation_frame_t[]) {
             {.name = "run_1"},
             {.name = "run_2"},
             {.name = "run_3"},
@@ -34,7 +34,7 @@ animation_t grunt_animations[] = {
     {   // 2: Run
         .time = 0.20f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]){
+        .frames_ng = (animation_frame_t[]) {
             {.name = "run_1"},
             {.name = "run_2"},
             {.name = "run_3"},
@@ -44,7 +44,7 @@ animation_t grunt_animations[] = {
     {   // 3: Attack prepare
         .time = 0.25f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]){
+        .frames_ng = (animation_frame_t[]) {
             {.name = "default"},
             {.name = "shoot"},
             {.name = "shoot"},
@@ -54,7 +54,7 @@ animation_t grunt_animations[] = {
     {   // 4: Attack
         .time = 0.25f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]){
+        .frames_ng = (animation_frame_t[]) {
             {.name = "shoot"},
             {.name = "default"},
             {.name = "default"},
@@ -64,7 +64,7 @@ animation_t grunt_animations[] = {
 };
 
 // hack for caching parsed frame names per-map
-ref_entt_t * last_ref_entt = NULL;
+static ref_entt_t * last_ref_entt = NULL;
 
 enemy_state_t grunt_enemy_states[_ENEMY_STATE_NULL] = {
     {ENEMY_ANIMATION_IDLE,   0, 0.1, _ENEMY_STATE_NULL},
@@ -78,26 +78,26 @@ enemy_state_t grunt_enemy_states[_ENEMY_STATE_NULL] = {
 };
 
 void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
-    
+
     char * str_p1 = entity_param_lookup("patrol", ep->entity_generic_params.extras);
     if (str_p1)
         p1 = atoi(str_p1);
-    else 
+    else
         p1 = 0;
-    
+
     entity_enemy_constructor(e, pos, p1, p2, ep);
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_enemy_grunt_init;
     e->_attack = (void (*)(void *))entity_enemy_grunt_attack;
     e->_init(e, p1, p2);
-    
+
     // todo, move everything from here on to grunt_init
     entity_parse_animation_frames(
-        ep->entity_generic_params.ref_entt, 
-        grunt_animations, 
+        ep->entity_generic_params.ref_entt,
+        grunt_animations,
         sizeof(grunt_animations)/sizeof(grunt_animations[0]),
         last_ref_entt
     );
-    
+
     e->_texture = ep->entity_generic_params.ref_entt->tex_id;
     e->_model->frames = vector_begin(ep->entity_generic_params.ref_entt->frames);
 
@@ -110,7 +110,7 @@ void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_
         .animations = grunt_animations,
         .num_animations = sizeof(grunt_animations)/sizeof(grunt_animations[0]),
     };
-    
+
     e->_set_state(e, e->_state);
 }
 

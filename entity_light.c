@@ -18,7 +18,7 @@ void entity_light_constructor(entity_t * e, vec3_t pos, uint8_t light, uint8_t c
     e->_update = (void (*)(void *))entity_light_update;
 
     // todo, have init take an ep later
-    if(ep){
+    if(ep) {
         union {
             struct {
                 uint8_t r: 3;
@@ -30,7 +30,7 @@ void entity_light_constructor(entity_t * e, vec3_t pos, uint8_t light, uint8_t c
         color = rgb8.v;
         light = ep->entity_light_params.rgba[3];
     }
-    
+
     e->_init(e, light, color);
 }
 
