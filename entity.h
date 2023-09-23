@@ -53,9 +53,16 @@ typedef enum {
 } entity_group_t;
 
 typedef struct {
+    size_t id;
+    char * name;
+} animation_frame_t;
+
+typedef struct {
     float time;
     uint32_t num_frames;
+    animation_frame_t * frames_ng;
     uint32_t * frames;
+    // todo, remove ^
 } animation_t;
 
 typedef struct {

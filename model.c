@@ -205,12 +205,12 @@ vector * model_load_ng(void * void_verts, uint32_t frame_len, uint32_t vert_len,
 
 void model_quit() {
 
-
+    // todo, do these in map_quit once everything's sorted
     if (model_q.frames)                      free(model_q.frames);
     if (model_explosion.frames)              free(model_explosion.frames);
     if (model_blood.frames)                  free(model_blood.frames);
     if (model_gib.frames)                    free(model_gib.frames);
-    if (model_grunt.frames)                  free(model_grunt.frames);
+    // if (model_grunt.frames)                  free(model_grunt.frames);
     if (model_enforcer.frames)               free(model_enforcer.frames);
     if (model_zombie.frames)                 free(model_zombie.frames);
     if (model_ogre.frames)                   free(model_ogre.frames);

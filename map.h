@@ -48,8 +48,8 @@ typedef enum {
 // move the following
 
 typedef struct {
-    char * k;
-    char * v;
+    char k[100];
+    char v[100];
 } entity_extra_params_t;
 
 typedef struct {
@@ -64,7 +64,7 @@ typedef struct {
 typedef struct {
     vec3_t position;
     ref_entt_t * ref_entt;
-    entity_extra_params_t * extras;
+    vector * extras;
 } entity_generic_params_t;
 
 // to here, back to their header files or some shit

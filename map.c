@@ -128,7 +128,7 @@ uint32_t map_lookup_entity(const char * type_name, size_t len){
     return __ENTITY_ID_END;
 }
 
-entity_extra_params_t * map_get_entity_kv(mpack_node_t n){
+vector * map_get_entity_kv(mpack_node_t n){
     if (mpack_node_type(n) != mpack_type_map)
         return NULL;
     
@@ -136,7 +136,7 @@ entity_extra_params_t * map_get_entity_kv(mpack_node_t n){
     if (nodelen < 1)
         return NULL;
     
-    entity_extra_params_t * ep = calloc(nodelen, sizeof(entity_extra_params_t));
+    vector * ep = vector_init(sizeof(entity_extra_params_t));
     for(size_t i = 0; i < nodelen; i++){
         mpack_node_t k = mpack_node_map_key_at(n, i);
         mpack_node_t v = mpack_node_map_value_at(n, i);
@@ -144,10 +144,10 @@ entity_extra_params_t * map_get_entity_kv(mpack_node_t n){
             return NULL;
         size_t klen = mpack_node_strlen(k);
         size_t vlen = mpack_node_strlen(v);
-        ep->k = calloc(klen, sizeof(char));
-        ep->v = calloc(vlen, sizeof(char));
-        strncpy(ep->k, mpack_node_str(k), mpack_node_strlen(k));
-        strncpy(ep->v, mpack_node_str(v), mpack_node_strlen(v));
+        entity_extra_params_t tmpx = { 0 };
+        strncpy(tmpx.k, mpack_node_str(k), mpack_node_strlen(k));
+        strncpy(tmpx.v, mpack_node_str(v), mpack_node_strlen(v));
+        vector_push(ep, &tmpx);
     }
     
     return ep;
@@ -274,6 +274,7 @@ void mpack_map_parse() {
                 (*frames)[fi][vi][2] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 2));
             }
         }
+        tmp_entt.frame_len = frame_arr_len;
         tmp_entt.frames = model_load_ng(frames, frame_arr_len, ulen, u, v);
         free(u);
         free(v);
@@ -634,13 +635,41 @@ void map_draw() {
     }
 }
 
+typedef struct {
+    vector * blocks;
+    uint8_t * e;
+    // map_entities and ref_entities is for new map format only
+    vector * map_entities; // entity_params_t
+    vector * ref_entities; // ref_entt_t
+    vector * ref_ent_index; // size_t
+    uint32_t e_size;
+    uint8_t cm[((map_size * map_size * map_size) >> 3)];
+} map_ts;
+
 void map_quit() {
     uint32_t len = vector_size(map_data);
     for(uint32_t i = 0; i < len; i++) {
         map_t * map = vector_at(map_data, i);
         vector_free(map->blocks);
-        vector_free(map->map_entities);
-        vector_free(map->ref_entities);
+        
+        if (map->map_entities){
+            size_t melen = vector_size(map->map_entities);
+            for(size_t j = 0; j < melen; j++){
+                entity_params_t * ep = vector_at(map->map_entities, j);
+                vector_free(ep->entity_generic_params.extras);
+            }
+            vector_free(map->map_entities);
+        }
+        
+        if (map->ref_entities){
+            size_t relen = vector_size(map->ref_entities);
+            for(size_t j = 0; j < relen; j++){
+                ref_entt_t * re = vector_at(map->ref_entities, j);
+                free(re->frame_names);
+                vector_free(re->frames);
+            }
+            vector_free(map->ref_entities);
+        }
     }
     vector_free(map_data);
 }
