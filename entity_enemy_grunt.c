@@ -15,21 +15,52 @@ void entity_enemy_grunt_attack(entity_t * e);
 animation_t grunt_animations[] = {
     {   // 0: Idle
         .time = 1,
-        .num_frames = 2,
+        .num_frames = 1,
         // .frames = (uint32_t[]){0, 0},
         .frames_ng = (animation_frame_t[]){
             {.name = "default"},
-            {.name = "Key 1"},
         },
     },
     {   // 1: Walk
         .time = 0.40f,
-        .num_frames = 2,
+        .num_frames = 4,
         .frames_ng = (animation_frame_t[]){
-            {.name = "Key 1"},
+            {.name = "run_1"},
+            {.name = "run_2"},
+            {.name = "run_3"},
+            {.name = "run_4"},
+        },
+    },
+    {   // 2: Run
+        .time = 0.20f,
+        .num_frames = 4,
+        .frames_ng = (animation_frame_t[]){
+            {.name = "run_1"},
+            {.name = "run_2"},
+            {.name = "run_3"},
+            {.name = "run_4"},
+        },
+    },
+    {   // 3: Attack prepare
+        .time = 0.25f,
+        .num_frames = 4,
+        .frames_ng = (animation_frame_t[]){
+            {.name = "default"},
+            {.name = "shoot"},
+            {.name = "shoot"},
+            {.name = "shoot"},
+        },
+    },
+    {   // 4: Attack
+        .time = 0.25f,
+        .num_frames = 4,
+        .frames_ng = (animation_frame_t[]){
+            {.name = "shoot"},
+            {.name = "default"},
+            {.name = "default"},
             {.name = "default"},
         },
-    }
+    },
 };
 
 // hack for caching parsed frame names per-map
@@ -38,27 +69,35 @@ ref_entt_t * last_ref_entt = NULL;
 enemy_state_t grunt_enemy_states[_ENEMY_STATE_NULL] = {
     {ENEMY_ANIMATION_IDLE,   0, 0.1, _ENEMY_STATE_NULL},
     {ENEMY_ANIMATION_WALK, 0.5, 0.5, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_IDLE,   0, 0.1, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_WALK,   0, 1.1, ENEMY_STATE_IDLE},
-    {ENEMY_ANIMATION_IDLE,   0, 0.4, ENEMY_STATE_ATTACK_RECOVER},
-    {ENEMY_ANIMATION_WALK,   0, 0.4, ENEMY_STATE_ATTACK_EXEC},
+    {ENEMY_ANIMATION_RUN,   1, 0.3, _ENEMY_STATE_NULL},
+    {ENEMY_ANIMATION_IDLE,   0, 0.1, ENEMY_STATE_FOLLOW},
+    {ENEMY_ANIMATION_ATTACK,   0, 0.4, ENEMY_STATE_ATTACK_RECOVER},
+    {ENEMY_ANIMATION_ATTACK_PREPARE,   0, 0.4, ENEMY_STATE_ATTACK_EXEC},
     {ENEMY_ANIMATION_IDLE,   0, 0.1, ENEMY_STATE_ATTACK_PREPARE},
-    {ENEMY_ANIMATION_WALK,   0, 0.1, ENEMY_STATE_ATTACK_AIM},
+    {ENEMY_ANIMATION_RUN,   1, 0.8, ENEMY_STATE_ATTACK_AIM},
 };
 
 int64_t entity_frame_from_name(char * needle, char (*haystack)[][100], size_t len){
     int64_t rc = -1;
-    
     for(size_t i = 0; i < len; i++){
-        char * p = (*haystack)[i];
         if (strcmp(needle, (*haystack)[i]) == 0)
             return i;
     }
-    
     return rc;
 }
 
-void entity_parse_animation_frames(ref_entt_t * curr_entt, animation_t animations[], size_t anim_len, ref_entt_t * last_entt){
+char * entity_param_lookup(char * key, vector * v){
+    size_t plen = vector_size(v);
+    for(size_t i = 0; i < plen; i++){
+        entity_extra_params_t * ep = vector_at(v, i);
+        if(strcmp(key, ep->k) == 0)
+            return ep->v;
+    }
+    fprintf(stderr, "E: failed to lookup key '%s'\n", key);
+    return NULL;
+}
+
+void entity_parse_animation_frames(ref_entt_t * curr_entt, animation_t * animations, size_t anim_len, ref_entt_t * last_entt){
     // already cached
     if(curr_entt == last_entt)
         return;
@@ -80,6 +119,13 @@ void entity_parse_animation_frames(ref_entt_t * curr_entt, animation_t animation
 }
 
 void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
+    
+    char * str_p1 = entity_param_lookup("patrol", ep->entity_generic_params.extras);
+    if (str_p1)
+        p1 = atoi(str_p1);
+    else 
+        p1 = 0;
+    
     entity_enemy_constructor(e, pos, p1, p2, ep);
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_enemy_grunt_init;
     e->_attack = (void (*)(void *))entity_enemy_grunt_attack;
@@ -106,7 +152,7 @@ void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_
         .num_animations = sizeof(grunt_animations)/sizeof(grunt_animations[0]),
     };
     
-    
+    e->_set_state(e, e->_state);
 }
 
 void entity_enemy_grunt_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {

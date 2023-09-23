@@ -796,6 +796,26 @@ skip_negative:
     return max_xyz;
 }
 
+// 270 degrees in radians
+#define DEG270 (3.0 * M_PI / 2.0)
+
+mapc_fpos3_t rotate_on_x(mapc_fpos3_t fp_in){
+    float rot_matrix[3][3] = {
+        {cos(DEG270), -sin(DEG270), 0},
+        {sin(DEG270), cos(DEG270), 0},
+        {0, 0, 1}
+    };
+    
+    float f_i[3] = {fp_in.x, fp_in.y, fp_in.z};
+    float f_o[3] = { 0 };
+    
+    for(int i = 0; i < 3; i++)
+        for(int j = 0; j < 3; j++)
+            f_o[i] += rot_matrix[i][j] * f_i[j];
+    
+    return (mapc_fpos3_t){.x = f_o[0], .y = f_o[1], .z = f_o[2]};
+}
+
 int main(int argc, char * argv[]) {
 
     if (argc != 2) {
@@ -923,10 +943,12 @@ int main(int argc, char * argv[]) {
                     mpack_start_array(&writer, re->verts.index_count);
                     for(size_t k = 0; k < re->verts.index_count; k++) {
                         mpack_start_array(&writer, 3);
-                        // not sure why these don't need to be y<->z swapped
-                        mpack_write_float(&writer, anim_frame[k].x);
-                        mpack_write_float(&writer, anim_frame[k].y);
-                        mpack_write_float(&writer, anim_frame[k].z);
+                        // rotate 270 degrees on x, then y<->z swap                     
+                        mapc_fpos3_t t = rotate_on_x(anim_frame[k]);
+                        mpack_write_float(&writer, -t.x);
+                        mpack_write_float(&writer, t.z);
+                        mpack_write_float(&writer, t.y);
+                        
                         mpack_finish_array(&writer);
                     }
                     mpack_finish_array(&writer);
