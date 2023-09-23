@@ -156,6 +156,10 @@ typedef struct {
 
 } entity_t;
 
+
+int64_t entity_frame_from_name(char * needle, char (*haystack)[][100], size_t len);
+char * entity_param_lookup(char * key, vector * v);
+void entity_parse_animation_frames(ref_entt_t * curr_entt, animation_t * animations, size_t anim_len, ref_entt_t * last_entt);
 void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t *);
 void entity_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_update(entity_t * e);
