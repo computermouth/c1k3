@@ -9,27 +9,23 @@
 #include "vector.h"
 
 void entity_enemy_mutant_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_enemy_mutant_attack(entity_t * e);
 
 // todo, once animations are actually parse-able
 animation_t mutant_animations[] = {
     {   // 0: Idle
         .time = 0.25,
-        .num_frames = 14,
+        .num_frames = 9,
         .frames_ng = (animation_frame_t[]) {
             {.name = "default"},
-            {.name = "d_01"},
-            {.name = "d_02"},
-            {.name = "d_03"},
-            {.name = "d_04"},
-            {.name = "d_05"},
-            {.name = "d_06"},
-            {.name = "d_07"},
-            {.name = "d_08"},
-            {.name = "d_09"},
-            {.name = "d_10"},
-            {.name = "d_11"},
-            {.name = "d_12"},
-            {.name = "d_13"},
+            {.name = "MutantMesh.001"},
+            {.name = "MutantMesh.002"},
+            {.name = "MutantMesh.003"},
+            {.name = "MutantMesh.004"},
+            {.name = "MutantMesh.005"},
+            {.name = "MutantMesh.006"},
+            {.name = "MutantMesh.007"},
+            {.name = "MutantMesh.008"},
         },
     }
 };
@@ -38,14 +34,14 @@ animation_t mutant_animations[] = {
 static ref_entt_t * last_ref_entt = NULL;
 
 enemy_state_t mutant_enemy_states[_ENEMY_STATE_NULL] = {
-    {ENEMY_ANIMATION_IDLE,   1, 0.8, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_IDLE,   1, 0.8, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_IDLE,   1, 0.8, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_IDLE,   1, 0.8, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_IDLE,   1, 0.8, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_IDLE,   1, 0.8, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_IDLE,   1, 0.8, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_IDLE,   1, 0.8, _ENEMY_STATE_NULL},
+    {ENEMY_ANIMATION_IDLE,   0, 0.8, _ENEMY_STATE_NULL},
+    {ENEMY_ANIMATION_IDLE,   0.5, 0.8, _ENEMY_STATE_NULL},
+    {ENEMY_ANIMATION_IDLE,   0, 0.8, _ENEMY_STATE_NULL},
+    {ENEMY_ANIMATION_IDLE,   0, 0.8, _ENEMY_STATE_NULL},
+    {ENEMY_ANIMATION_IDLE,   0, 0.8, _ENEMY_STATE_NULL},
+    {ENEMY_ANIMATION_IDLE,   0, 0.8, _ENEMY_STATE_NULL},
+    {ENEMY_ANIMATION_IDLE,   0, 0.8, _ENEMY_STATE_NULL},
+    {ENEMY_ANIMATION_IDLE,   0, 0.8, _ENEMY_STATE_NULL},
 };
 
 // todo, do something less stupid with this
@@ -55,6 +51,7 @@ void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8
 
     entity_enemy_constructor(e, pos, p1, p2, ep);
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_enemy_mutant_init;
+    e->_attack = (void (*)(void *))entity_enemy_mutant_attack;
     e->_init(e, p1, p2);
 
     // todo, move everything from here on to mutant_init
@@ -100,3 +97,5 @@ void entity_enemy_mutant_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
     e->_speed = 0;
     e->_model = &model_mutant;
 }
+
+void entity_enemy_mutant_attack(entity_t * e) {}

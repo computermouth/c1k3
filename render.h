@@ -7,10 +7,10 @@
 #include "data.h"
 #include "vector.h"
 
-#define INTERNAL_W 320 * 4
-#define INTERNAL_H 180 * 4
-#define D_WINDOW_W 640 * 2
-#define D_WINDOW_H 360 * 2
+#define INTERNAL_W 320
+#define INTERNAL_H 180
+#define D_WINDOW_W 640
+#define D_WINDOW_H 360
 
 // todo, verify these all need to be exposed
 
