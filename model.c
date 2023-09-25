@@ -181,7 +181,7 @@ vector * model_load_ng(void * void_verts, uint32_t frame_len, uint32_t vert_len,
                 // scale to match cube dimensions
                 fv[face_i] = vec3(
                                  // flip x because blender
-                                 (*model_verts)[frame_i][vert_i + face_i][0] * 32,
+                                 (*model_verts)[frame_i][vert_i + face_i][0] * -32,
                                  (*model_verts)[frame_i][vert_i + face_i][1] * 32,
                                  (*model_verts)[frame_i][vert_i + face_i][2] * 32
                              );
@@ -191,12 +191,11 @@ vector * model_load_ng(void * void_verts, uint32_t frame_len, uint32_t vert_len,
                 };
             }
 
-            vec3_t n = vec3_face_normal(fv[2], fv[1], fv[0]);
-
-            // switch vertex winding because blender
-            r_push_vert(fv[2], n, uv[2].u, uv[2].v);
-            r_push_vert(fv[1], n, uv[1].u, uv[1].v);
+            // switch vertex winding for normals and verts because blender
+            vec3_t n = vec3_face_normal(fv[0], fv[1], fv[2]);
             r_push_vert(fv[0], n, uv[0].u, uv[0].v);
+            r_push_vert(fv[1], n, uv[1].u, uv[1].v);
+            r_push_vert(fv[2], n, uv[2].u, uv[2].v);
         }
     }
 
@@ -225,7 +224,7 @@ void model_quit() {
     if (model_pickup_box.frames)             free(model_pickup_box.frames);
     if (model_pickup_grenades.frames)        free(model_pickup_grenades.frames);
     if (model_pickup_key.frames)             free(model_pickup_key.frames);
-    if (model_door.frames)                   free(model_door.frames);
+    // if (model_door.frames)                   free(model_door.frames);
     if (model_grenade.frames)                free(model_grenade.frames);
     if (model_nail.frames)                   free(model_nail.frames);
 

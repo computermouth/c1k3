@@ -99,6 +99,8 @@ void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_
     );
 
     e->_texture = ep->entity_generic_params.ref_entt->tex_id;
+    // hack for old models
+    free(e->_model->frames);
     e->_model->frames = vector_begin(ep->entity_generic_params.ref_entt->frames);
 
     e->_state_collection = (enemy_state_collection_t) {
