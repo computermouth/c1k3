@@ -26,6 +26,7 @@ vector * out_cube_vec = NULL;
 vector * out_entt_vec = NULL;
 vector * out_lite_vec = NULL;
 vector * out_plyr_vec = NULL;
+vector * out_trgr_vec = NULL;
 
 // turn this into
 // POSITION
@@ -87,7 +88,7 @@ mapc_verts_t get_verts_from_mesh(cgltf_mesh * mesh) {
         cgltf_uint t;
         cgltf_bool success = cgltf_accessor_read_uint(index_accessor, i, &t, 1);
         (*indices)[i] = t;
-        fprintf(stderr, "i: %zu/%zu -- %d -- {%u}\n", i, index_count, success, (*indices)[i]);
+        // fprintf(stderr, "i: %zu/%zu -- %d -- {%u}\n", i, index_count, success, (*indices)[i]);
     }
     out_v.index_count = index_count;
     
@@ -95,14 +96,14 @@ mapc_verts_t get_verts_from_mesh(cgltf_mesh * mesh) {
     float (*pos)[position_accessor->count][3] = calloc(sizeof(*pos), 1);
     for(size_t i = 0; i < position_accessor->count; i++){
         cgltf_bool success = cgltf_accessor_read_float(position_accessor, i, (cgltf_float*)&(*pos)[i], 3);
-        fprintf(stderr, "i: %zu -- %d -- {%f, %f, %f}\n", i, success, (*pos)[i][0], (*pos)[i][1], (*pos)[i][2]);
+        // fprintf(stderr, "i: %zu -- %d -- {%f, %f, %f}\n", i, success, (*pos)[i][0], (*pos)[i][1], (*pos)[i][2]);
     }
 
     // get all uvs
     float (*uvs)[uv_accessor->count][2] = calloc(sizeof(*uvs), 1);
     for(size_t i = 0; i < uv_accessor->count; i++) {
         cgltf_bool success = cgltf_accessor_read_float(uv_accessor, i, (cgltf_float*)&(*uvs)[i], 2);
-        fprintf(stderr, "i: %zu -- %d -- {%f, %f}\n", i, success, (*uvs)[i][0], (*uvs)[i][1]);
+        // fprintf(stderr, "i: %zu -- %d -- {%f, %f}\n", i, success, (*uvs)[i][0], (*uvs)[i][1]);
     }
     
     // parse uvs out per-face
@@ -125,7 +126,7 @@ mapc_verts_t get_verts_from_mesh(cgltf_mesh * mesh) {
         tmp_frame[i].y = tmp_pos[1];
         tmp_frame[i].z = tmp_pos[2];
         float * uv_pos = (*uvs)[index];
-        fprintf(stderr, ".xyz={%f,%f,%f}, .uv={%f,%f}\n", tmp_pos[0], tmp_pos[1], tmp_pos[2], uv_pos[0], uv_pos[1] );
+        // fprintf(stderr, ".xyz={%f,%f,%f}, .uv={%f,%f}\n", tmp_pos[0], tmp_pos[1], tmp_pos[2], uv_pos[0], uv_pos[1] );
     }
     vector_push(out_v.anim_frames, tmp_frame);
     mapc_fpos3_t * default_frame = vector_at(out_v.anim_frames, 0);
@@ -139,7 +140,7 @@ mapc_verts_t get_verts_from_mesh(cgltf_mesh * mesh) {
         float (*m_pos)[morph_position_accessor->count][3] = calloc(sizeof(*m_pos), 1);
         for(size_t j = 0; j < morph_position_accessor->count; j++) {
             cgltf_bool success = cgltf_accessor_read_float(morph_position_accessor, j, (cgltf_float*)&(*m_pos)[j], 3);
-            fprintf(stderr, "mp_j: %zu -- %d -- {%f, %f, %f}\n", j, success, (*m_pos)[j][0], (*m_pos)[j][1], (*m_pos)[j][2]);
+            // fprintf(stderr, "mp_j: %zu -- %d -- {%f, %f, %f}\n", j, success, (*m_pos)[j][0], (*m_pos)[j][1], (*m_pos)[j][2]);
         }
 
         for(size_t j = 0; j < index_count; j++) {
@@ -148,7 +149,7 @@ mapc_verts_t get_verts_from_mesh(cgltf_mesh * mesh) {
             tmp_frame[j].x += tmp_pos[0];
             tmp_frame[j].y += tmp_pos[1];
             tmp_frame[j].z += tmp_pos[2];
-            fprintf(stderr, "i: %zu -- {%f, %f, %f}\n", j, tmp_frame[j].x, tmp_frame[j].y, tmp_frame[j].z);
+            // fprintf(stderr, "i: %zu -- {%f, %f, %f}\n", j, tmp_frame[j].x, tmp_frame[j].y, tmp_frame[j].z);
         }
         vector_push(out_v.anim_frames, tmp_frame);
         // reset tmp_frame to default
@@ -167,6 +168,7 @@ mapc_txtr_t get_image(cgltf_node* node) {
 
     if (node->mesh == NULL) {
         fprintf(stderr, "Node does not have a mesh.\n");
+        exit(1);
         return (mapc_txtr_t) {
             0
         };
@@ -175,6 +177,7 @@ mapc_txtr_t get_image(cgltf_node* node) {
     cgltf_mesh * mesh = node->mesh;
     if (mesh->primitives == NULL) {
         fprintf(stderr, "Mesh does not have primitives.\n");
+        exit(1);
         return (mapc_txtr_t) {
             0
         };
@@ -183,6 +186,7 @@ mapc_txtr_t get_image(cgltf_node* node) {
     cgltf_primitive prim = mesh->primitives[0];
     if (prim.material == NULL) {
         fprintf(stderr, "Primitive does not have a material.\n");
+        exit(1);
         return (mapc_txtr_t) {
             0
         };
@@ -193,6 +197,7 @@ mapc_txtr_t get_image(cgltf_node* node) {
 
     if (pbr->base_color_texture.texture == NULL) {
         fprintf(stderr, "Material does not have an associated texture.\n");
+        exit(1);
         return (mapc_txtr_t) {
             0
         };
@@ -202,6 +207,7 @@ mapc_txtr_t get_image(cgltf_node* node) {
 
     if (texture_view->image == NULL) {
         fprintf(stderr, "Texture does not have an associated image.\n");
+        exit(1);
         return (mapc_txtr_t) {
             0
         };
@@ -211,6 +217,7 @@ mapc_txtr_t get_image(cgltf_node* node) {
 
     if (image->uri != NULL && strlen(image->uri) > 0) {
         fprintf(stderr, "URI-based images are not supported in this example.\n");
+        exit(1);
         return (mapc_txtr_t) {
             0
         };
@@ -218,6 +225,7 @@ mapc_txtr_t get_image(cgltf_node* node) {
 
     if (image->buffer_view == NULL) {
         fprintf(stderr, "Image does not have a buffer view.\n");
+        exit(1);
         return (mapc_txtr_t) {
             0
         };
@@ -557,6 +565,31 @@ bool entity_is_light(cgltf_node * node) {
     return false;
 }
 
+bool entity_is_trigger(cgltf_node * node) {
+    
+    if(node->extras.data == NULL)
+        return false;
+
+    jsmn_parser parser = { 0 };
+    jsmntok_t tokens[JSON_MAX_TOKENS] = { 0 };
+    const char * xjson = node->extras.data;
+
+    jsmn_init(&parser);
+    int count = jsmn_parse(&parser, xjson, strlen(xjson), tokens, JSON_MAX_TOKENS);
+    
+    for(int i = 0; i < count; i++) {
+        if( tokens[i].type == JSMN_STRING
+                && tokens[i].size > 0
+                && strncmp(xjson + tokens[i].start, "_entity", tokens[i].end - tokens[i].start) == 0
+                && tokens[i + 1].type == JSMN_STRING
+                && strncmp(xjson + tokens[i + 1].start, "trigger_", strlen("trigger_")) == 0
+          )
+            return true;
+    }
+
+    return false;
+}
+
 bool light_from_node(cgltf_node * node, mapc_out_lite_t * out) {
 
     if(node->extras.data == NULL)
@@ -635,6 +668,7 @@ typedef enum {
     GROUP_INVALID,
     GROUP_CUBE,
     GROUP_ENTT,
+    GROUP_ENTT_TRIGGER,
     GROUP_ENTT_LIGHT,
     GROUP_ENTT_PLAYER,
 } mesh_group_t;
@@ -655,11 +689,14 @@ mapc_pos3_t group_meshes(cgltf_data * data) {
         if(node_is_cube(n))
             mg = GROUP_CUBE;
         else if (node_is_entity(n, entity_name)) {
-            mg = GROUP_ENTT;
             if(entity_is_light(n))
                 mg = GROUP_ENTT_LIGHT;
-            if(entity_is_player(n))
+            else if(entity_is_player(n))
                 mg = GROUP_ENTT_PLAYER;
+            else if(entity_is_trigger(n))
+                mg = GROUP_ENTT_TRIGGER;
+            else
+                mg = GROUP_ENTT;
         }
 
         mapc_fpos3_t start = {
@@ -722,6 +759,10 @@ skip_negative:
                 strncpy(((mapc_rm_entt_t *)vector_at(ref_entt_vec, vector_size(ref_entt_vec) - 1))->entity_name, entity_name, 100);
                 fprintf(stderr, "ref_entt_vec '%s'\n", n->name);
                 break;
+            case GROUP_ENTT_TRIGGER:
+                // ref trigger -> discard
+                fprintf(stderr, "ref_trgr_light - discarding '%s'\n", n->name);
+                break;
             case GROUP_ENTT_LIGHT:
                 // ref light -> discard
                 fprintf(stderr, "ref_entt_light - discarding '%s'\n", n->name);
@@ -751,6 +792,14 @@ skip_negative:
                 });
                 strncpy(((mapc_rm_entt_t *)vector_at(map_entt_vec, vector_size(map_entt_vec) - 1))->entity_name, entity_name, 100);
                 fprintf(stderr, "map_entt_vec '%s'\n", n->name);
+                break;
+            case GROUP_ENTT_TRIGGER:
+                // map trigger
+                vector_push(out_trgr_vec, &(mapc_out_entt_t) {
+                    .fpos = start, .extras = extras_strings_from_node(n)
+                });
+                strncpy(((mapc_out_entt_t *)vector_at(out_trgr_vec, vector_size(out_trgr_vec) - 1))->entity_name, entity_name, 100);
+                fprintf(stderr, "map_trgr_vec '%s'\n", n->name);
                 break;
             case GROUP_ENTT_LIGHT:
                 ol.fpos = start;
@@ -854,6 +903,7 @@ int main(int argc, char * argv[]) {
     out_entt_vec = vector_init(sizeof(mapc_out_entt_t));
     out_lite_vec = vector_init(sizeof(mapc_out_lite_t));
     out_plyr_vec = vector_init(sizeof(mapc_out_plyr_t));
+    out_trgr_vec = vector_init(sizeof(mapc_out_entt_t));
 
     mapc_pos3_t max_p = group_meshes(data);
 
@@ -995,7 +1045,7 @@ int main(int argc, char * argv[]) {
     // map entts
     {
         mpack_write_cstr(&writer, "map_entts");
-        size_t arrlen = vector_size(out_entt_vec) + vector_size(out_lite_vec) + vector_size(out_plyr_vec);
+        size_t arrlen = vector_size(out_entt_vec) + vector_size(out_lite_vec) + vector_size(out_plyr_vec) + vector_size(out_trgr_vec);
         // size_t arrlen = vector_size(out_entt_vec);
         mpack_start_array(&writer, arrlen);
         size_t melen = vector_size(out_entt_vec);
@@ -1032,30 +1082,32 @@ int main(int argc, char * argv[]) {
             mpack_finish_map(&writer);
         }
         // map lights
-        size_t ollen = vector_size(out_lite_vec);
-        for(size_t i = 0; i < ollen; i++) {
-            mapc_out_lite_t * ol = vector_at(out_lite_vec, i);
-            mpack_start_map(&writer, 3);
-
-            mpack_write_cstr(&writer, "type");
-            mpack_write_cstr(&writer, "light");
-
-            mpack_write_cstr(&writer, "color");
-            mpack_start_array(&writer, 4);
-            mpack_write_u8(&writer, ol->color[0]);
-            mpack_write_u8(&writer, ol->color[1]);
-            mpack_write_u8(&writer, ol->color[2]);
-            mpack_write_u8(&writer, ol->color[3]);
-            mpack_finish_array(&writer);
-
-            mpack_write_cstr(&writer, "pos");
-            mpack_start_array(&writer, 3);
-            mpack_write_float(&writer, ol->fpos.x);
-            mpack_write_float(&writer, ol->fpos.z);
-            mpack_write_float(&writer, ol->fpos.y);
-            mpack_finish_array(&writer);
-
-            mpack_finish_map(&writer);
+        {
+            size_t ollen = vector_size(out_lite_vec);
+            for(size_t i = 0; i < ollen; i++) {
+                mapc_out_lite_t * ol = vector_at(out_lite_vec, i);
+                mpack_start_map(&writer, 3);
+    
+                mpack_write_cstr(&writer, "type");
+                mpack_write_cstr(&writer, "light");
+    
+                mpack_write_cstr(&writer, "color");
+                mpack_start_array(&writer, 4);
+                mpack_write_u8(&writer, ol->color[0]);
+                mpack_write_u8(&writer, ol->color[1]);
+                mpack_write_u8(&writer, ol->color[2]);
+                mpack_write_u8(&writer, ol->color[3]);
+                mpack_finish_array(&writer);
+    
+                mpack_write_cstr(&writer, "pos");
+                mpack_start_array(&writer, 3);
+                mpack_write_float(&writer, ol->fpos.x);
+                mpack_write_float(&writer, ol->fpos.z);
+                mpack_write_float(&writer, ol->fpos.y);
+                mpack_finish_array(&writer);
+    
+                mpack_finish_map(&writer);
+            }
         }
         // map player
         {
@@ -1075,6 +1127,39 @@ int main(int argc, char * argv[]) {
             mpack_write_float(&writer, op->fpos.y);
             mpack_finish_array(&writer);
             mpack_finish_map(&writer);
+        }
+        // map triggers
+        {
+            size_t trlen = vector_size(out_trgr_vec);
+            for(size_t i = 0; i < trlen; i++) {
+                mapc_out_entt_t * ot = vector_at(out_trgr_vec, i);
+                mpack_start_map(&writer, 3);
+    
+                mpack_write_cstr(&writer, "type");
+                mpack_write_cstr(&writer, ot->entity_name);
+    
+                mpack_write_cstr(&writer, "pos");
+                mpack_start_array(&writer, 3);
+                mpack_write_float(&writer, ot->fpos.x);
+                mpack_write_float(&writer, ot->fpos.z);
+                mpack_write_float(&writer, ot->fpos.y);
+                mpack_finish_array(&writer);
+            
+                mpack_write_cstr(&writer, "param");
+                if(ot->extras){
+                    size_t param_len = vector_size(ot->extras);
+                    mpack_start_map(&writer, param_len);
+                    for(size_t i = 0; i < param_len; i++){
+                        mpack_write_cstr(&writer, ((mapc_extra_kv_t*)vector_at(ot->extras, i))->k);
+                        mpack_write_cstr(&writer, ((mapc_extra_kv_t*)vector_at(ot->extras, i))->v);
+                    }
+                    mpack_finish_map(&writer);
+                } else {
+                    mpack_write_nil(&writer);
+                }
+    
+                mpack_finish_map(&writer);
+            }
         }
         
         mpack_finish_array(&writer);
@@ -1115,7 +1200,14 @@ int main(int argc, char * argv[]) {
     vector_free(out_lite_vec);
     vector_free(out_plyr_vec);
 
+    len = vector_size(out_trgr_vec);
+    for(size_t i = 0; i < len; i++) {
+        mapc_out_entt_t * e = vector_at(out_trgr_vec, i);
+        vector_free(e->extras);
+    }
+    vector_free(out_trgr_vec);
+
     cgltf_free(data);
 
-    return 0;
+   return 0;
 }

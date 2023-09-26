@@ -118,6 +118,7 @@ typedef struct {
     float _attack_chance;
     float _turn_bias;
     bool _did_hit;
+    int32_t _trigger_range;
 
     enemy_state_enum_t _STATE_IDLE;
     enemy_state_enum_t _STATE_PATROL;

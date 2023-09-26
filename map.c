@@ -91,7 +91,7 @@ void map_init() {
         "light", entity_light_constructor
     };
     entity_table[ENTITY_ID_TRIGGER_LEVEL] = (entity_table_t) {
-        "trigger", entity_trigger_level_constructor
+        "trigger_level", entity_trigger_level_constructor
     };
     entity_table[ENTITY_ID_DOOR] = (entity_table_t) {
         "door", entity_door_constructor
