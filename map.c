@@ -38,7 +38,7 @@ vector * map_data = NULL;
 
 typedef struct {
     char * entity_string;
-    void (*constructor_func)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *);
+    void (*constructor_func)(entity_t *, vec3_t, uint8_t, uint8_t);
 } entity_table_t;
 
 entity_table_t entity_table[__ENTITY_ID_END] = { 0 };
@@ -69,6 +69,9 @@ void map_init() {
     entity_table[ENTITY_ID_PICKUP_NAILGUN] = (entity_table_t) {
         "nailgun", entity_pickup_nailgun_constructor
     };
+    entity_table[ENTITY_ID_PICKUP_SHOTGUN] = (entity_table_t) {
+        "shotgun", NULL
+    };
     entity_table[ENTITY_ID_PICKUP_GRENADELAUNCHER] = (entity_table_t) {
         "grenadelauncher", entity_pickup_grenadelauncher_constructor
     };
@@ -91,7 +94,7 @@ void map_init() {
         "light", entity_light_constructor
     };
     entity_table[ENTITY_ID_TRIGGER_LEVEL] = (entity_table_t) {
-        "trigger_level", entity_trigger_level_constructor
+        "trigger_levelchange", entity_trigger_level_constructor
     };
     entity_table[ENTITY_ID_DOOR] = (entity_table_t) {
         "door", entity_door_constructor
@@ -102,7 +105,7 @@ void map_init() {
 }
 
 // todo, remove once levels have been reproduced
-void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *) = {
+void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = {
     /* 00 */ entity_player_constructor,
     /* 01 */ entity_enemy_grunt_constructor,
     /* 02 */ entity_enemy_enforcer_constructor,
@@ -122,13 +125,27 @@ void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *) =
     /* 16 */ entity_torch_constructor,
 };
 
-uint32_t map_lookup_entity(const char * type_name, size_t len) {
+ref_entt_t * map_ref_entt_from_name(char * name){
+    size_t relen = vector_size(map->ref_entities);
+    for(size_t i = 0; i < relen; i++) {
+        ref_entt_t * re = vector_at(map->ref_entities, i);
+        // the fuck?
+        // ^because these can be zeroed until all constructors are ng
+        if(re->name_len == 0)
+            continue;
+        if (strncmp(name, re->entity_name, re->name_len) == 0)
+            return re;
+    }
+    
+    return NULL;
+}
 
+uint32_t map_lookup_entity(const char * type_name, size_t len) {
     for(uint32_t i = 0; i < __ENTITY_ID_END; i++) {
-        if (strncmp(type_name, entity_table[i].entity_string, 1) == 0)
+        if (strncmp(type_name, entity_table[i].entity_string, len) == 0)
             return i;
     }
-
+    fprintf(stderr, "E: failed to id entity %s -- skipping\n", type_name);
     return __ENTITY_ID_END;
 }
 
@@ -225,7 +242,9 @@ void mpack_map_parse() {
         mpack_node_t name_node = mpack_node_map_cstr(entt_map, "name");
         size_t name_len = mpack_node_strlen(name_node);
         const char * name = mpack_node_str(name_node);
+        tmp_entt.name_len = name_len;
         strncpy(tmp_entt.entity_name, name, name_len);
+        // fprintf(stderr, "packing %s\n", tmp_entt.entity_name);
 
         // texture
         mpack_node_t tex_bin = mpack_node_map_cstr(entt_map, "txtr");
@@ -290,7 +309,6 @@ void mpack_map_parse() {
         // insert tmp_entt into ref_entt_list[ENTITY_ID_X]
         entity_id_t id = map_lookup_entity(name, name_len);
         if(id == __ENTITY_ID_END) {
-            fprintf(stderr, "E: failed to id entity %s -- skipping\n", name);
             continue;
         }
         vector_set(ref_entt_list, id, &tmp_entt);
@@ -358,8 +376,10 @@ void mpack_map_parse() {
         mpack_node_t mp_me = mpack_node_array_at(mp_map_entts, i);
         mpack_node_t mp_me_type = mpack_node_map_cstr(mp_me, "type");
         mpack_node_t mp_me_pos = mpack_node_map_cstr(mp_me, "pos");
+        
+        size_t type_len = mpack_node_strlen(mp_me_type);
         const char * type_name = mpack_node_str(mp_me_type);
-        entity_id_t id = map_lookup_entity(type_name, 0);
+        entity_id_t id = map_lookup_entity(type_name, type_len);
         if(id == __ENTITY_ID_END) {
             fprintf(stderr, "E: failed to id entity %s -- skipping\n", type_name);
             continue;
@@ -516,7 +536,7 @@ void map_load (map_t * m) {
     if (map->map_entities != NULL)
         goto map_load_ng;
     for (uint32_t i = 0; i < map->e_size;) {
-        void (*func)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *) = spawn_class[map->e[i++]];
+        void (*func)(entity_t *, vec3_t, uint8_t, uint8_t) = spawn_class[map->e[i++]];
         int x = m->e[i++] * 32;
         int y = m->e[i++] * 16;
         int z = m->e[i++] * 32;
@@ -540,8 +560,12 @@ void map_load (map_t * m) {
 map_load_ng:
     for (uint32_t i = 0; i < map->e_size; i++) {
         entity_params_t * ep = vector_at(map->map_entities, i);
-        void (*func)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *) = entity_table[ep->id].constructor_func;
+        void (*func)(entity_t *, vec3_t, uint8_t, uint8_t) = entity_table[ep->id].constructor_func;
         // todo, spawn the things with parameters
+        if(ep->id == __ENTITY_ID_END) {
+            fprintf(stderr, "E: unimp\n");
+            continue;
+        }
         if(ep->id == ENTITY_ID_LIGHT) {
             game_spawn(
                 func,
@@ -568,7 +592,6 @@ map_load_ng:
             }, 0, 0, ep);
             // todo
             // free kv
-            fprintf(stderr, "unimp: %d\n", ep->id);
         }
     }
 

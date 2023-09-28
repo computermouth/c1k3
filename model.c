@@ -216,7 +216,7 @@ void model_quit() {
     if (model_hound.frames)                  free(model_hound.frames);
     if (model_barrel.frames)                 free(model_barrel.frames);
     if (model_torch.frames)                  free(model_torch.frames);
-    if (model_shotgun.frames)                free(model_shotgun.frames);
+    // if (model_shotgun.frames)                free(model_shotgun.frames);
     // if (model_nailgun.frames)                free(model_nailgun.frames);
     if (model_grenadelauncher.frames)        free(model_grenadelauncher.frames);
     // if (model_pickup_nailgun.frames)         free(model_pickup_nailgun.frames);
