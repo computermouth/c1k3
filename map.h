@@ -20,6 +20,7 @@ typedef struct {
     char (*frame_names)[][100];
     vector * frames;
     uint32_t tex_id;
+    size_t name_len;
     char entity_name[100];
 } ref_entt_t;
 
@@ -32,6 +33,7 @@ typedef enum {
     ENTITY_ID_ENEMY_OGRE,
     ENTITY_ID_ENEMY_ZOMBIE,
     ENTITY_ID_ENEMY_HOUND,
+    // ENTITY_ID_PICKUP_SHOTGUN,
     ENTITY_ID_PICKUP_NAILGUN,
     ENTITY_ID_PICKUP_GRENADELAUNCHER,
     ENTITY_ID_PICKUP_HEALTH,
@@ -101,5 +103,6 @@ int map_block_at_box(vec3_t box_start, vec3_t box_end);
 void map_draw();
 bool map_trace(vec3_t a, vec3_t b);
 void map_quit();
+ref_entt_t * map_ref_entt_from_name(char * name);
 
 #endif

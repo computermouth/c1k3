@@ -773,6 +773,7 @@ skip_negative:
                 break;
             default:
                 fprintf(stderr, "invalid group for ref node[%lu]('%s')\n", i, n->name);
+                exit(1);
                 break;
             }
             break;
@@ -816,11 +817,13 @@ skip_negative:
                 break;
             default:
                 fprintf(stderr, "invalid group for map node[%lu]('%s')\n", i, n->name);
+                exit(1);
                 break;
             }
             break;
         default:
             fprintf(stderr, "invalid class for node[%lu]('%s')\n", i, n->name);
+            exit(1);
             break;
         }
 
