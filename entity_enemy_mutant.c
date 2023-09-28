@@ -47,16 +47,16 @@ enemy_state_t mutant_enemy_states[_ENEMY_STATE_NULL] = {
 // todo, do something less stupid with this
 model_t model_mutant = { 0 };
 
-void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
+void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
 
-    entity_enemy_constructor(e, pos, p1, p2, ep);
+    entity_enemy_constructor(e, pos, p1, p2);
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_enemy_mutant_init;
     e->_attack = (void (*)(void *))entity_enemy_mutant_attack;
     e->_init(e, p1, p2);
 
     // todo, move everything from here on to mutant_init
     entity_parse_animation_frames(
-        ep->entity_generic_params.ref_entt,
+        e->_params->entity_generic_params.ref_entt,
         mutant_animations,
         sizeof(mutant_animations)/sizeof(mutant_animations[0]),
         last_ref_entt
@@ -71,8 +71,8 @@ void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8
     e->_STATE_EVADE             = ENEMY_STATE_IDLE;
     e->_STATE_NULL              = _ENEMY_STATE_NULL;
 
-    e->_texture = ep->entity_generic_params.ref_entt->tex_id;
-    entity_generic_params_t egp = ep->entity_generic_params;
+    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
+    entity_generic_params_t egp = e->_params->entity_generic_params;
     ref_entt_t * re = egp.ref_entt;
     vector * frames = re->frames;
     uint32_t * uframes = vector_begin(frames);

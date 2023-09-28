@@ -11,14 +11,14 @@
 void entity_light_init(entity_t * e, uint8_t light, uint8_t color);
 void entity_light_update(entity_t * e);
 
-void entity_light_constructor(entity_t * e, vec3_t pos, uint8_t light, uint8_t color, entity_params_t * ep) {
-    entity_constructor(e, pos, light, color, ep);
+void entity_light_constructor(entity_t * e, vec3_t pos, uint8_t light, uint8_t color) {
+    entity_constructor(e, pos, light, color);
 
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_light_init;
     e->_update = (void (*)(void *))entity_light_update;
 
     // todo, have init take an ep later
-    if(ep) {
+    if(e->_params) {
         union {
             struct {
                 uint8_t r: 3;
@@ -26,9 +26,9 @@ void entity_light_constructor(entity_t * e, vec3_t pos, uint8_t light, uint8_t c
                 uint8_t b: 2;
             } rgb;
             uint8_t v;
-        } rgb8 = { .rgb = { ep->entity_light_params.rgba[0] >> 5, ep->entity_light_params.rgba[1] >> 5, ep->entity_light_params.rgba[2] >> 6 } };
+        } rgb8 = { .rgb = { e->_params->entity_light_params.rgba[0] >> 5, e->_params->entity_light_params.rgba[1] >> 5, e->_params->entity_light_params.rgba[2] >> 6 } };
         color = rgb8.v;
-        light = ep->entity_light_params.rgba[3];
+        light = e->_params->entity_light_params.rgba[3];
     }
 
     e->_init(e, light, color);

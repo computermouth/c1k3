@@ -10,8 +10,8 @@ void entity_projectile_gib_update(entity_t * e);
 void entity_projectile_gib_did_collide(entity_t * e, int axis);
 void entity_projectile_gib_did_collide_with_entity(entity_t * e, entity_t * other);
 
-void entity_projectile_gib_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
-    entity_constructor(e, pos, p1, p2, ep);
+void entity_projectile_gib_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
+    entity_constructor(e, pos, p1, p2);
 
     // todo, these casts kinda suck
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_projectile_gib_init;

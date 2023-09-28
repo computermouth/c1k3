@@ -24,9 +24,9 @@ void entity_player_update(entity_t * e);
 void entity_player_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 void entity_player_kill(entity_t * e);
 
-void entity_player_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
+void entity_player_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
 
-    entity_constructor(e, pos, p1, p2, ep);
+    entity_constructor(e, pos, p1, p2);
 
     // todo, these casts kinda suck
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_player_init;

@@ -12,8 +12,8 @@
 void entity_barrel_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_barrel_kill(entity_t * e);
 
-void entity_barrel_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
-    entity_constructor(e, pos, p1, p2, ep);
+void entity_barrel_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
+    entity_constructor(e, pos, p1, p2);
 
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_barrel_init;
     e->_kill = (void (*)(void *))entity_barrel_kill;

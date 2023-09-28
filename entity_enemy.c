@@ -55,14 +55,14 @@ enemy_state_t default_enemy_states[_ENEMY_STATE_NULL] = {
 void entity_enemy_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_enemy_set_state(entity_t * e, uint32_t state);
 void entity_enemy_update(entity_t * e);
-entity_t * entity_enemy_spawn_projectile(entity_t * e, void (*func)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *), float speed, float yaw_offset, float pitch_offset);
+entity_t * entity_enemy_spawn_projectile(entity_t * e, void (*func)(entity_t *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset);
 void entity_enemy_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 void entity_enemy_kill(entity_t * e);
 void entity_enemy_did_collide(entity_t * e, int axis);
 
-void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
+void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
 
-    entity_constructor(e, pos, p1, p2, ep);
+    entity_constructor(e, pos, p1, p2);
 
     // todo, still hate this
     e->_STATE_IDLE              = ENEMY_STATE_IDLE;
@@ -229,7 +229,7 @@ void entity_enemy_update(entity_t * e) {
     e->_draw_model(e);
 }
 
-entity_t * entity_enemy_spawn_projectile(entity_t * e, void (*func)(entity_t *, vec3_t, uint8_t, uint8_t, entity_params_t *), float speed, float yaw_offset, float pitch_offset) {
+entity_t * entity_enemy_spawn_projectile(entity_t * e, void (*func)(entity_t *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset) {
     entity_t * projectile = game_spawn(func, e->p, 0, 0, NULL);
     projectile->_check_against = ENTITY_GROUP_PLAYER;
     projectile->_yaw = e->_yaw + PI/2.0f;

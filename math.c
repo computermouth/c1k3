@@ -97,7 +97,12 @@ vec3_t vec3_cross(vec3_t a, vec3_t b) {
 }
 
 vec3_t vec3_normalize(vec3_t v) {
-    return vec3_mulf(v, 1/vec3_length(v));
+    // this seems like trash, but some
+    // of the finer models have a vlen of ~0
+    float vlen = vec3_length(v);
+    if(vlen <= 0.001f)
+        vlen = 0.001f;
+    return vec3_mulf(v, 1/vlen);
 }
 
 vec3_t vec3_face_normal(vec3_t v0, vec3_t v1, vec3_t v2) {

@@ -5,8 +5,8 @@
 void entity_pickup_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_pickup_update(entity_t * e);
 
-void entity_pickup_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2, entity_params_t * ep) {
-    entity_constructor(e, pos, p1, p2, ep);
+void entity_pickup_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
+    entity_constructor(e, pos, p1, p2);
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_pickup_init;
     e->_update = (void (*)(void *))entity_pickup_update;
     e->_init(e, p1, p2);
