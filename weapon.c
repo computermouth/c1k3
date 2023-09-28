@@ -80,7 +80,7 @@ weapon_t weapon_shotgun_constructor() {
     w._init = (void (*)(void * w))weapon_shotgun_init;
     w._spawn_projectile = (void (*)(void * w, vec3_t pos, float yaw, float pitch))weapon_shotgun_spawn_projectile;
     w._init(&w);
-    
+
     ref_entt_t * shotgun = map_ref_entt_from_name("shotgun");
     if(shotgun == NULL)
         fprintf(stderr, "shotgun not found, incoming crash\n");
@@ -90,7 +90,7 @@ weapon_t weapon_shotgun_constructor() {
     uint32_t * uframes = vector_begin(frames);
     w._model->frames = uframes;
     w._model->nv = shotgun->vert_len;
-    
+
     return w;
 }
 
@@ -121,7 +121,7 @@ weapon_t weapon_nailgun_constructor() {
     weapon_t w = weapon_constructor();
     w._init = (void (*)(void * w))weapon_nailgun_init;
     w._init(&w);
-    
+
     ref_entt_t * nailgun = map_ref_entt_from_name("nailgun");
     if(nailgun == NULL)
         fprintf(stderr, "nailgun not found, incoming crash\n");
@@ -131,7 +131,7 @@ weapon_t weapon_nailgun_constructor() {
     uint32_t * uframes = vector_begin(frames);
     w._model->frames = uframes;
     w._model->nv = nailgun->vert_len;
-    
+
     return w;
 }
 

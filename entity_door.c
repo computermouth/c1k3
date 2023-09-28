@@ -16,7 +16,7 @@ void entity_door_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
         p1 = atoi(str_p1);
     else
         p1 = 0;
-    
+
     entity_constructor(e, pos, p1, p2);
 
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_door_init;

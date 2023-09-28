@@ -125,7 +125,7 @@ void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = {
     /* 16 */ entity_torch_constructor,
 };
 
-ref_entt_t * map_ref_entt_from_name(char * name){
+ref_entt_t * map_ref_entt_from_name(char * name) {
     size_t relen = vector_size(map->ref_entities);
     for(size_t i = 0; i < relen; i++) {
         ref_entt_t * re = vector_at(map->ref_entities, i);
@@ -136,7 +136,7 @@ ref_entt_t * map_ref_entt_from_name(char * name){
         if (strncmp(name, re->entity_name, re->name_len) == 0)
             return re;
     }
-    
+
     return NULL;
 }
 
@@ -376,7 +376,7 @@ void mpack_map_parse() {
         mpack_node_t mp_me = mpack_node_array_at(mp_map_entts, i);
         mpack_node_t mp_me_type = mpack_node_map_cstr(mp_me, "type");
         mpack_node_t mp_me_pos = mpack_node_map_cstr(mp_me, "pos");
-        
+
         size_t type_len = mpack_node_strlen(mp_me_type);
         const char * type_name = mpack_node_str(mp_me_type);
         entity_id_t id = map_lookup_entity(type_name, type_len);
