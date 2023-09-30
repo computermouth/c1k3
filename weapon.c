@@ -154,6 +154,16 @@ weapon_t weapon_grenadelauncher_constructor() {
     weapon_t w = weapon_constructor();
     w._init = (void (*)(void * w))weapon_grenadelauncher_init;
     w._init(&w);
+
+    ref_entt_t * grenadelauncher = map_ref_entt_from_name("grenadelauncher");
+    if(grenadelauncher == NULL)
+        fprintf(stderr, "nailgun not found, incoming crash\n");
+
+    w._texture = grenadelauncher->tex_id;
+    vector * frames = grenadelauncher->frames;
+    uint32_t * uframes = vector_begin(frames);
+    w._model->frames = uframes;
+    w._model->nv = grenadelauncher->vert_len;
     return w;
 }
 

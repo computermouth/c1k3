@@ -15,6 +15,12 @@ void entity_pickup_grenadelauncher_constructor(entity_t * e, vec3_t pos, uint8_t
     e->_update = (void (*)(void *))entity_pickup_grenadelauncher_update;
     e->_pickup = (void (*)(void *))entity_pickup_grenadelauncher_pickup;
     e->_init(e, p1, p2);
+
+    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
+    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
+    uint32_t * uframes = vector_begin(frames);
+    e->_model->frames = uframes;
+    e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
 }
 
 void entity_pickup_grenadelauncher_init(entity_t * e, uint8_t p1, uint8_t p2) {

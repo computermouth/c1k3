@@ -218,9 +218,9 @@ void model_quit() {
     if (model_torch.frames)                  free(model_torch.frames);
     // if (model_shotgun.frames)                free(model_shotgun.frames);
     // if (model_nailgun.frames)                free(model_nailgun.frames);
-    if (model_grenadelauncher.frames)        free(model_grenadelauncher.frames);
+    // if (model_grenadelauncher.frames)        free(model_grenadelauncher.frames);
     // if (model_pickup_nailgun.frames)         free(model_pickup_nailgun.frames);
-    if (model_pickup_grenadelauncher.frames) free(model_pickup_grenadelauncher.frames);
+    // if (model_pickup_grenadelauncher.frames) free(model_pickup_grenadelauncher.frames);
     if (model_pickup_box.frames)             free(model_pickup_box.frames);
     if (model_pickup_grenades.frames)        free(model_pickup_grenades.frames);
     if (model_pickup_key.frames)             free(model_pickup_key.frames);
