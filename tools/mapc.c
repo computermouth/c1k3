@@ -849,7 +849,7 @@ skip_negative:
 }
 
 // 270 degrees in radians
-#define DEG270 (3.0 * M_PI / 2.0)
+#define DEG270 (3.0 * 3.14159 / 2.0)
 
 mapc_fpos3_t rotate_on_x(mapc_fpos3_t fp_in){
     float rot_matrix[3][3] = {
