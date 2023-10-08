@@ -101,6 +101,12 @@ void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_
     uint32_t * uframes = vector_begin(frames);
     e->_model->frames = uframes;
     e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
+}
+
+void entity_enemy_grunt_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
+    e->_model = &(model_grunt);
+    e->_texture = 17;
+    e->_health = 40;
 
     e->_state_collection = (enemy_state_collection_t) {
         .num_states = _ENEMY_STATE_NULL,
@@ -113,12 +119,6 @@ void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_
     };
 
     e->_set_state(e, e->_state);
-}
-
-void entity_enemy_grunt_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
-    e->_model = &(model_grunt);
-    e->_texture = 17;
-    e->_health = 40;
 }
 
 void entity_enemy_grunt_attack(entity_t * e) {
