@@ -11,12 +11,10 @@
 void entity_enemy_grunt_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_enemy_grunt_attack(entity_t * e);
 
-// todo, once animations are actually parse-able
 animation_t grunt_animations[] = {
     {   // 0: Idle
         .time = 1,
         .num_frames = 1,
-        // .frames = (uint32_t[]){0, 0},
         .frames_ng = (animation_frame_t[]) {
             {.name = "default"},
         },
@@ -99,9 +97,10 @@ void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_
     );
 
     e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
-    // hack for old models
-    free(e->_model->frames);
-    e->_model->frames = vector_begin(e->_params->entity_generic_params.ref_entt->frames);
+    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
+    uint32_t * uframes = vector_begin(frames);
+    e->_model->frames = uframes;
+    e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
 
     e->_state_collection = (enemy_state_collection_t) {
         .num_states = _ENEMY_STATE_NULL,

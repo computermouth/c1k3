@@ -8,29 +8,51 @@ animation_t hound_animations[] = {
     {   // 0: Idle
         .time = 1,
         .num_frames = 1,
-        .frames = (uint32_t[]){0},
+        // .frames = (uint32_t[]){0, 0},
+        .frames_ng = (animation_frame_t[]) {
+            {.name = "default"},
+        },
     },
     {   // 2: Run
         .time = 0.15f,
         .num_frames = 2,
-        .frames = (uint32_t[]){0,1},
+        .frames_ng = (animation_frame_t[]) {
+            {.name = "run1"},
+            {.name = "run2"},
+        },
     },
     {   // 2: Run
         .time = 0.15f,
         .num_frames = 2,
-        .frames = (uint32_t[]){0,1},
+        .frames_ng = (animation_frame_t[]) {
+            {.name = "run1"},
+            {.name = "run2"},
+        },
     },
     {   // 3: Attack prepare
         .time = 1,
         .num_frames = 1,
-        .frames = (uint32_t[]){0},
+        .frames_ng = (animation_frame_t[]) {
+            {.name = "run1"},
+        },
     },
     {   // 4: Attack
         .time = 0.1f,
         .num_frames = 7,
-        .frames = (uint32_t[]){0,1,1,1,0,0,0},
+        .frames_ng = (animation_frame_t[]) {
+            {.name = "run1"},
+            {.name = "run2"},
+            {.name = "run2"},
+            {.name = "run2"},
+            {.name = "default"},
+            {.name = "default"},
+            {.name = "default"},
+        },
     },
 };
+
+// hack for caching parsed frame names per-map
+static ref_entt_t * last_ref_entt = NULL;
 
 enemy_state_t hound_enemy_states[_ENEMY_STATE_NULL] = {
     {ENEMY_ANIMATION_IDLE,   0, 0.1, _ENEMY_STATE_NULL},
@@ -53,6 +75,20 @@ void entity_enemy_hound_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_
     e->_did_collide_with_entity = (void (*)(void *, void *))entity_enemy_hound_did_collide_with_entity;
     e->_attack = (void (*)(void *))entity_enemy_hound_attack;
     e->_init(e, p1, p2);
+
+    // todo, move everything from here on to grunt_init
+    entity_parse_animation_frames(
+        e->_params->entity_generic_params.ref_entt,
+        hound_animations,
+        sizeof(hound_animations)/sizeof(hound_animations[0]),
+        last_ref_entt
+    );
+
+    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
+    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
+    uint32_t * uframes = vector_begin(frames);
+    e->_model->frames = uframes;
+    e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
 }
 
 void entity_enemy_hound_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
