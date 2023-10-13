@@ -33,14 +33,14 @@ animation_t zombie_animations[] = {
 };
 
 enemy_state_t zombie_enemy_states[_ENEMY_STATE_NULL] = {
-    {ENEMY_ANIMATION_IDLE,   0, 0.1, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_WALK, 0.5, 0.5, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_IDLE,   0, 0.1, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_IDLE,   0, 1.1, ENEMY_STATE_IDLE},
-    {ENEMY_ANIMATION_ATTACK,   0, 0.4, ENEMY_STATE_ATTACK_RECOVER},
-    {ENEMY_ANIMATION_ATTACK_PREPARE,   0, 0.4, ENEMY_STATE_ATTACK_EXEC},
-    {ENEMY_ANIMATION_IDLE,   0, 0.1, ENEMY_STATE_ATTACK_PREPARE},
-    {ENEMY_ANIMATION_IDLE,   0, 0.1, ENEMY_STATE_ATTACK_AIM},
+    [ENEMY_STATE_IDLE]           = {ENEMY_ANIMATION_IDLE,           0.0, 0.1, _ENEMY_STATE_NULL},
+    [ENEMY_STATE_PATROL]         = {ENEMY_ANIMATION_WALK,           0.5, 0.5, _ENEMY_STATE_NULL},
+    [ENEMY_STATE_FOLLOW]         = {ENEMY_ANIMATION_IDLE,           0.0, 0.1, _ENEMY_STATE_NULL},
+    [ENEMY_STATE_ATTACK_RECOVER] = {ENEMY_ANIMATION_IDLE,           0.0, 1.1, ENEMY_STATE_IDLE},
+    [ENEMY_STATE_ATTACK_EXEC]    = {ENEMY_ANIMATION_ATTACK,         0.0, 0.4, ENEMY_STATE_ATTACK_RECOVER},
+    [ENEMY_STATE_ATTACK_PREPARE] = {ENEMY_ANIMATION_ATTACK_PREPARE, 0.0, 0.4, ENEMY_STATE_ATTACK_EXEC},
+    [ENEMY_STATE_ATTACK_AIM]     = {ENEMY_ANIMATION_IDLE,           0.0, 0.1, ENEMY_STATE_ATTACK_PREPARE},
+    [ENEMY_STATE_EVADE]          = {ENEMY_ANIMATION_IDLE,           0.0, 0.1, ENEMY_STATE_ATTACK_AIM},
 };
 
 void entity_enemy_zombie_init(entity_t * e, uint8_t p1, uint8_t p2);
@@ -50,8 +50,8 @@ void entity_enemy_zombie_attack(entity_t * e);
 void entity_enemy_zombie_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
     entity_enemy_constructor(e, pos, p1, p2);
     e->_init = entity_enemy_zombie_init;
-    e->_receive_damage = (void (*)(void *, void *, int32_t))entity_enemy_zombie_receive_damage;
-    e->_attack = (void (*)(void *))entity_enemy_zombie_attack;
+    e->_receive_damage = entity_enemy_zombie_receive_damage;
+    e->_attack = entity_enemy_zombie_attack;
     e->_init(e, p1, p2);
 }
 
@@ -85,5 +85,5 @@ void entity_enemy_zombie_receive_damage(entity_t * e, entity_t * from, int32_t a
 
 void entity_enemy_zombie_attack(entity_t * e) {
     e->_play_sound(e, sfx_enemy_hit);
-    e->_spawn_projectile(e, (void (*)(void *, vec3_t, uint8_t, uint8_t))entity_projectile_gib_constructor, 600, 0, -0.5);
+    e->_spawn_projectile(e, entity_projectile_gib_constructor, 600, 0, -0.5);
 }

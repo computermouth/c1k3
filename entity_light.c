@@ -15,7 +15,7 @@ void entity_light_constructor(entity_t * e, vec3_t pos, uint8_t light, uint8_t c
     entity_constructor(e, pos, light, color);
 
     e->_init = entity_light_init;
-    e->_update = (void (*)(void *))entity_light_update;
+    e->_update = entity_light_update;
 
     // todo, have init take an ep later
     if(e->_params) {

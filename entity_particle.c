@@ -9,7 +9,7 @@ void entity_particle_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p
 
     // todo, these casts kinda suck
     e->_init = entity_particle_init;
-    e->_update = (void (*)(void *))entity_particle_update;
+    e->_update = entity_particle_update;
 
     // todo, kinda goofy paradigm to set the callback, immediately invoke
     // then never call again. could just combine constructor and init I think

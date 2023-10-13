@@ -13,8 +13,8 @@ void entity_pickup_key_pickup(entity_t * e);
 void entity_pickup_key_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
     entity_pickup_constructor(e, pos, p1, p2);
     e->_init = entity_pickup_key_init;
-    e->_update = (void (*)(void *))entity_pickup_key_update;
-    e->_pickup = (void (*)(void *))entity_pickup_key_pickup;
+    e->_update = entity_pickup_key_update;
+    e->_pickup = entity_pickup_key_pickup;
     e->_init(e, p1, p2);
 }
 

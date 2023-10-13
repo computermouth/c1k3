@@ -20,8 +20,8 @@ void entity_door_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     entity_constructor(e, pos, p1, p2);
 
     e->_init = entity_door_init;
-    e->_update = (void (*)(void *))entity_door_update;
-    e->_receive_damage = (void (*)(void * e, void * from, int32_t amount))entity_door_receive_damage;
+    e->_update = entity_door_update;
+    e->_receive_damage = entity_door_receive_damage;
     e->_init(e, p1, p2);
 
     e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;

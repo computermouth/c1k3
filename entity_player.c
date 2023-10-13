@@ -30,9 +30,9 @@ void entity_player_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2)
 
     // todo, these casts kinda suck
     e->_init = entity_player_init;
-    e->_update = (void (*)(void *))entity_player_update;
-    e->_receive_damage = (void (*)(void * e, void * from, int32_t amount))entity_player_receive_damage;
-    e->_kill = (void (*)(void *))entity_player_kill;
+    e->_update = entity_player_update;
+    e->_receive_damage = entity_player_receive_damage;
+    e->_kill = entity_player_kill;
 
     // todo, kinda goofy paradigm to set the callback, immediately invoke
     // then never call again. could just combine constructor and init I think

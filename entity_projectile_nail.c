@@ -16,9 +16,9 @@ void entity_projectile_nail_constructor(entity_t * e, vec3_t pos, uint8_t p1, ui
 
     // todo, these casts kinda suck
     e->_init = entity_projectile_nail_init;
-    e->_update = (void (*)(void *))entity_projectile_nail_update;
-    e->_did_collide = (void (*)(void *, int))entity_projectile_nail_did_collide;
-    e->_did_collide_with_entity = (void (*)(void *, void *))entity_projectile_nail_did_collide_with_entity;
+    e->_update = entity_projectile_nail_update;
+    e->_did_collide = entity_projectile_nail_did_collide;
+    e->_did_collide_with_entity = entity_projectile_nail_did_collide_with_entity;
 
     // todo, kinda goofy paradigm to set the callback, immediately invoke
     // then never call again. could just combine constructor and init I think

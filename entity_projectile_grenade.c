@@ -20,10 +20,10 @@ void entity_projectile_grenade_constructor(entity_t * e, vec3_t pos, uint8_t p1,
 
     // todo, these casts kinda suck
     e->_init = entity_projectile_grenade_init;
-    e->_update = (void (*)(void *))entity_projectile_grenade_update;
-    e->_did_collide = (void (*)(void *, int))entity_projectile_grenade_did_collide;
-    e->_did_collide_with_entity = (void (*)(void *, void *))entity_projectile_grenade_did_collide_with_entity;
-    e->_kill = (void (*)(void *))entity_projectile_grenade_kill;
+    e->_update = entity_projectile_grenade_update;
+    e->_did_collide = entity_projectile_grenade_did_collide;
+    e->_did_collide_with_entity = entity_projectile_grenade_did_collide_with_entity;
+    e->_kill = entity_projectile_grenade_kill;
 
     // todo, kinda goofy paradigm to set the callback, immediately invoke
     // then never call again. could just combine constructor and init I think
