@@ -22,6 +22,7 @@ typedef struct {
     uint32_t tex_id;
     size_t name_len;
     char entity_name[100];
+    vec3_t size; // min/max bounds of vertices
 } ref_entt_t;
 
 // todo, move entity table and init to another file?

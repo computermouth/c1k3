@@ -7,29 +7,54 @@ animation_t ogre_animations[] = {
     {   // 0: Idle
         .time = 1,
         .num_frames = 1,
-        .frames = (uint32_t[]){0},
+        .frames_ng = (animation_frame_t[]) {
+            {.name = "default"},
+        },
     },
     {   // 1: Walk
         .time = 0.80f,
         .num_frames = 4,
-        .frames = (uint32_t[]){1,2,3,4},
+        .frames_ng = (animation_frame_t[]) {
+            {.name = "run_1"},
+            {.name = "run_2"},
+            {.name = "run_3"},
+            {.name = "run_4"},
+        },
     },
     {   // 2: Run
         .time = 0.40f,
         .num_frames = 4,
-        .frames = (uint32_t[]){1,2,3,4},
+        .frames_ng = (animation_frame_t[]) {
+            {.name = "run_1"},
+            {.name = "run_2"},
+            {.name = "run_3"},
+            {.name = "run_4"},
+        },
     },
     {   // 3: Attack prepare
         .time = 0.35f,
         .num_frames = 4,
-        .frames = (uint32_t[]){0,5,5,5},
+        .frames_ng = (animation_frame_t[]) {
+            {.name = "default"},
+            {.name = "shoot"},
+            {.name = "shoot"},
+            {.name = "shoot"},
+        },
     },
     {   // 4: Attack
         .time = 0.35f,
         .num_frames = 4,
-        .frames = (uint32_t[]){5,0,0,0},
+        .frames_ng = (animation_frame_t[]) {
+            {.name = "shoot"},
+            {.name = "default"},
+            {.name = "default"},
+            {.name = "default"},
+        },
     },
 };
+
+// hack for caching parsed frame names per-map
+static ref_entt_t * last_ref_entt = NULL;
 
 void entity_enemy_ogre_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_enemy_ogre_attack(entity_t * e);
@@ -39,6 +64,21 @@ void entity_enemy_ogre_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t
     e->_init = (void (*)(void *, uint8_t, uint8_t))entity_enemy_ogre_init;
     e->_attack = (void (*)(void *))entity_enemy_ogre_attack;
     e->_init(e, p1, p2);
+
+    // todo, move everything from here on to grunt_init
+    entity_parse_animation_frames(
+        e->_params->entity_generic_params.ref_entt,
+        ogre_animations,
+        sizeof(ogre_animations)/sizeof(ogre_animations[0]),
+        last_ref_entt
+    );
+
+    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
+    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
+    uint32_t * uframes = vector_begin(frames);
+    e->_model->frames = uframes;
+    e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
+    e->s = e->_params->entity_generic_params.ref_entt->size;
 }
 
 void entity_enemy_ogre_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
@@ -53,6 +93,8 @@ void entity_enemy_ogre_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
         .animations = ogre_animations,
         .num_animations = sizeof(ogre_animations)/sizeof(ogre_animations[0]),
     };
+
+    e->_set_state(e, e->_state);
 }
 
 void entity_enemy_ogre_attack(entity_t * e) {

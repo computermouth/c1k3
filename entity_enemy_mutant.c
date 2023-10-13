@@ -90,6 +90,8 @@ void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8
     };
 
     e->_set_state(e, e->_STATE_IDLE);
+    e->s = e->_params->entity_generic_params.ref_entt->size;
+    fprintf(stderr, "mut sz: {%f,%f,%f}\n", e->s.x, e->s.y, e->s.z);
 }
 
 void entity_enemy_mutant_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {

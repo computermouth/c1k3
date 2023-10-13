@@ -89,6 +89,7 @@ void entity_enemy_hound_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_
     uint32_t * uframes = vector_begin(frames);
     e->_model->frames = uframes;
     e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
+    e->s = e->_params->entity_generic_params.ref_entt->size;
 }
 
 void entity_enemy_hound_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
@@ -114,7 +115,7 @@ void entity_enemy_hound_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
         .num_animations = sizeof(hound_animations)/sizeof(hound_animations[0]),
     };
 
-    e->_set_state(e, ENEMY_STATE_IDLE);
+    e->_set_state(e, e->_state);
 }
 
 void entity_enemy_hound_did_collide_with_entity(entity_t * e, entity_t * other) {

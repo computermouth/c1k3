@@ -8,6 +8,7 @@
 #include "game.h"
 #include "map.h"
 #include "data.h"
+#include "math.h"
 #include "model.h"
 #include "render.h"
 #include "entity.h"
@@ -284,6 +285,8 @@ void mpack_map_parse() {
             v[vi] = mpack_node_float(mpack_node_array_at(v_arr, vi));
 
         // frames
+        vec3_t min_size = { 0 };
+        vec3_t max_size = { 0 };
         mpack_node_t frame_arr = mpack_node_map_cstr(entt_map, "anim_frames");
         size_t frame_arr_len = mpack_node_array_length(frame_arr);
         if (frame_arr_len != frame_name_len)
@@ -298,8 +301,15 @@ void mpack_map_parse() {
                 (*frames)[fi][vi][0] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 0));
                 (*frames)[fi][vi][1] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 1));
                 (*frames)[fi][vi][2] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 2));
+                if((*frames)[fi][vi][0] < min_size.x) min_size.x = (*frames)[fi][vi][0];
+                if((*frames)[fi][vi][1] < min_size.y) min_size.y = (*frames)[fi][vi][1];
+                if((*frames)[fi][vi][2] < min_size.z) min_size.z = (*frames)[fi][vi][2];
+                if((*frames)[fi][vi][0] > max_size.x) max_size.x = (*frames)[fi][vi][0];
+                if((*frames)[fi][vi][1] > max_size.y) max_size.y = (*frames)[fi][vi][1];
+                if((*frames)[fi][vi][2] > max_size.z) max_size.z = (*frames)[fi][vi][2];
             }
         }
+        tmp_entt.size = vec3_mul(vec3_sub(max_size, min_size),vec3(32,16,32));
         tmp_entt.frame_len = frame_arr_len;
         tmp_entt.frames = model_load_ng(frames, frame_arr_len, ulen, u, v);
         free(u);

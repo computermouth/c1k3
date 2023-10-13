@@ -64,17 +64,6 @@ animation_t grunt_animations[] = {
 // hack for caching parsed frame names per-map
 static ref_entt_t * last_ref_entt = NULL;
 
-enemy_state_t grunt_enemy_states[_ENEMY_STATE_NULL] = {
-    {ENEMY_ANIMATION_IDLE,   0, 0.1, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_WALK, 0.5, 0.5, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_RUN,   1, 0.3, _ENEMY_STATE_NULL},
-    {ENEMY_ANIMATION_IDLE,   0, 0.1, ENEMY_STATE_FOLLOW},
-    {ENEMY_ANIMATION_ATTACK,   0, 0.4, ENEMY_STATE_ATTACK_RECOVER},
-    {ENEMY_ANIMATION_ATTACK_PREPARE,   0, 0.4, ENEMY_STATE_ATTACK_EXEC},
-    {ENEMY_ANIMATION_IDLE,   0, 0.1, ENEMY_STATE_ATTACK_PREPARE},
-    {ENEMY_ANIMATION_RUN,   1, 0.8, ENEMY_STATE_ATTACK_AIM},
-};
-
 void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
 
     char * str_p1 = entity_param_lookup("patrol", e->_params->entity_generic_params.extras);
@@ -101,17 +90,13 @@ void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_
     uint32_t * uframes = vector_begin(frames);
     e->_model->frames = uframes;
     e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
+    e->s = e->_params->entity_generic_params.ref_entt->size;
 }
 
 void entity_enemy_grunt_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
     e->_model = &(model_grunt);
     e->_texture = 17;
     e->_health = 40;
-
-    e->_state_collection = (enemy_state_collection_t) {
-        .num_states = _ENEMY_STATE_NULL,
-        .states = grunt_enemy_states
-    };
 
     e->_animation_collection = (animation_collection_t) {
         .animations = grunt_animations,
