@@ -14,7 +14,7 @@ void entity_projectile_shell_constructor(entity_t * e, vec3_t pos, uint8_t p1, u
     entity_constructor(e, pos, p1, p2);
 
     // todo, these casts kinda suck
-    e->_init = (void (*)(void *, uint8_t, uint8_t))entity_projectile_shell_init;
+    e->_init = entity_projectile_shell_init;
     e->_update = (void (*)(void *))entity_projectile_shell_update;
     e->_did_collide = (void (*)(void *, int))entity_projectile_shell_did_collide;
     e->_did_collide_with_entity = (void (*)(void *, void *))entity_projectile_shell_did_collide_with_entity;

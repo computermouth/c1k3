@@ -73,8 +73,8 @@ void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_
         p1 = 0;
 
     entity_enemy_constructor(e, pos, p1, p2);
-    e->_init = (void (*)(void *, uint8_t, uint8_t))entity_enemy_grunt_init;
-    e->_attack = (void (*)(void *))entity_enemy_grunt_attack;
+    e->_init = entity_enemy_grunt_init;
+    e->_attack = entity_enemy_grunt_attack;
     e->_init(e, p1, p2);
 
     // todo, move everything from here on to grunt_init
@@ -115,7 +115,7 @@ void entity_enemy_grunt_attack(entity_t * e) {
     for (int32_t i = 0; i < 3; i++) {
         e->_spawn_projectile(
             e,
-            (void (*)(void *, vec3_t, uint8_t, uint8_t))entity_projectile_shell_constructor, 10000,
+            entity_projectile_shell_constructor, 10000,
             randf() * 0.08 - 0.04, randf() * 0.08 - 0.04
         );
     }

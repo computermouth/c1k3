@@ -22,7 +22,7 @@ void entity_torch_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) 
     entity_constructor(e, pos, p1, p2);
 
     // todo, these casts kinda suck
-    e->_init = (void (*)(void *, uint8_t, uint8_t))entity_torch_init;
+    e->_init = entity_torch_init;
     e->_update = (void (*)(void *))entity_torch_update;
 
     // todo, kinda goofy paradigm to set the callback, immediately invoke

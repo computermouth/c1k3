@@ -71,9 +71,9 @@ void entity_enemy_hound_attack(entity_t * e);
 
 void entity_enemy_hound_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
     entity_enemy_constructor(e, pos, p1, p2);
-    e->_init = (void (*)(void *, uint8_t, uint8_t))entity_enemy_hound_init;
-    e->_did_collide_with_entity = (void (*)(void *, void *))entity_enemy_hound_did_collide_with_entity;
-    e->_attack = (void (*)(void *))entity_enemy_hound_attack;
+    e->_init = entity_enemy_hound_init;
+    e->_did_collide_with_entity = entity_enemy_hound_did_collide_with_entity;
+    e->_attack = entity_enemy_hound_attack;
     e->_init(e, p1, p2);
 
     // todo, move everything from here on to grunt_init

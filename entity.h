@@ -70,7 +70,7 @@ typedef struct {
     animation_t * animations;
 } animation_collection_t;
 
-typedef struct {
+typedef struct entity_t {
     vec3_t a;
     vec3_t v;
     vec3_t p;
@@ -140,24 +140,22 @@ typedef struct {
     float _stepped_up_at;
 
     // first param is actually entity_t *
-    void (*_init)(void * e, uint8_t p1, uint8_t p2);
-    void (*_update)(void * e);
-    void (*_update_physics)(void * e);
-    bool (*_collides)(void * e, vec3_t p);
-    void (*_did_collide)(void * e, int axis);
-    void (*_did_collide_with_entity)(void * e, void * other);
-    void (*_draw_model)(void * e);
-    void (*_spawn_particles)(void * e, int amount, int speed, model_t * model, int texture, float lifetime);
-    void (*_set_state)(void * e, uint32_t state);
-    void * (*_spawn_projectile)(void * e, void (*func)(void *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset);
-    void (*_receive_damage)(void * e, void * from, int32_t amount);
-    void (*_play_sound)(void * e, Mix_Chunk * sound);
-    void (*_kill)(void * e);
-    void (*_pickup)(void * e);
-    void (*_attack)(void * e);
-
+    void (*_init)(struct entity_t * e, uint8_t p1, uint8_t p2);
+    void (*_update)(struct entity_t * e);
+    void (*_update_physics)(struct entity_t * e);
+    bool (*_collides)(struct entity_t * e, vec3_t p);
+    void (*_did_collide)(struct entity_t * e, int axis);
+    void (*_did_collide_with_entity)(struct entity_t * e, struct entity_t * other);
+    void (*_draw_model)(struct entity_t * e);
+    void (*_spawn_particles)(struct entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime);
+    void (*_set_state)(struct entity_t * e, uint32_t state);
+    struct entity_t * (*_spawn_projectile)(struct entity_t * e, void (*func)(struct entity_t *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset);
+    void (*_receive_damage)(struct entity_t * e, struct entity_t * from, int32_t amount);
+    void (*_play_sound)(struct entity_t * e, Mix_Chunk * sound);
+    void (*_kill)(struct entity_t * e);
+    void (*_pickup)(struct entity_t * e);
+    void (*_attack)(struct entity_t * e);
 } entity_t;
-
 
 int64_t entity_frame_from_name(char * needle, char (*haystack)[][100], size_t len);
 char * entity_param_lookup(char * key, vector * v);

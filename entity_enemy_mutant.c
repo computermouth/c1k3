@@ -50,8 +50,8 @@ model_t model_mutant = { 0 };
 void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
 
     entity_enemy_constructor(e, pos, p1, p2);
-    e->_init = (void (*)(void *, uint8_t, uint8_t))entity_enemy_mutant_init;
-    e->_attack = (void (*)(void *))entity_enemy_mutant_attack;
+    e->_init = entity_enemy_mutant_init;
+    e->_attack = entity_enemy_mutant_attack;
     e->_init(e, p1, p2);
 
     // todo, move everything from here on to mutant_init

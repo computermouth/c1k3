@@ -93,21 +93,21 @@ void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_STATE_EVADE = -1;
 
     // todo, rename, f_init?
-    e->_init = (void (*)(void *, uint8_t, uint8_t))entity_init;
-    e->_update = (void (*)(void *))entity_update;
-    e->_update_physics = (void (*)(void *))entity_update_physics;
-    e->_collides = (bool (*)(void * e, vec3_t p))entity_collides;
-    e->_did_collide = (void (*)(void * e, int axis))entity_did_collide;
-    e->_did_collide_with_entity = (void (*)(void * e, void * other))entity_did_collide_with_entity;
-    e->_draw_model = (void (*)(void * e))entity_draw_model;
-    e->_spawn_particles = (void (*)(void * e, int amount, int speed, model_t * model, int texture, float lifetime))entity_spawn_particles;
-    e->_receive_damage = (void (*)(void * e, void * from, int32_t amount))entity_receive_damage;
-    e->_play_sound = (void (*)(void * e, Mix_Chunk * sound))entity_play_sound;
-    e->_kill = (void (*)(void * e))entity_kill;
-    e->_pickup = (void (*)(void * e))entity_pickup;
-    e->_set_state = (void (*)(void * e, uint32_t state))entity_set_state;
-    e->_spawn_projectile = (void * (*)(void * e, void (*)(void *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset))entity_pickup;
-    e->_attack = (void (*)(void * e))entity_attack;
+    e->_init = entity_init;
+    e->_update = entity_update;
+    e->_update_physics = entity_update_physics;
+    e->_collides = entity_collides;
+    e->_did_collide = entity_did_collide;
+    e->_did_collide_with_entity = entity_did_collide_with_entity;
+    e->_draw_model = entity_draw_model;
+    e->_spawn_particles = entity_spawn_particles;
+    e->_receive_damage = entity_receive_damage;
+    e->_play_sound = entity_play_sound;
+    e->_kill = entity_kill;
+    e->_pickup = entity_pickup;
+    e->_set_state = entity_set_state;
+    e->_spawn_projectile = entity_spawn_projectile;
+    e->_attack = entity_attack;
 
     entity_init(e, 0, 0);
 }

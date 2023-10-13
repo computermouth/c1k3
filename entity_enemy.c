@@ -76,13 +76,13 @@ void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_STATE_NULL              = _ENEMY_STATE_NULL;
 
     // todo, these casts kinda suck
-    e->_init = (void (*)(void *, uint8_t, uint8_t))entity_enemy_init;
-    e->_set_state = (void (*)(void * e, uint32_t state))entity_enemy_set_state;
-    e->_update = (void (*)(void *))entity_enemy_update;
-    e->_spawn_projectile = (void * (*)(void * e, void (*)(void *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset))entity_enemy_spawn_projectile;
-    e->_receive_damage = (void (*)(void * e, void * from, int32_t amount))entity_enemy_receive_damage;
-    e->_kill = (void (*)(void *))entity_enemy_kill;
-    e->_did_collide = (void (*)(void * e, int axis))entity_enemy_did_collide;
+    e->_init = entity_enemy_init;
+    e->_set_state = entity_enemy_set_state;
+    e->_update = entity_enemy_update;
+    e->_spawn_projectile = entity_enemy_spawn_projectile;
+    e->_receive_damage = entity_enemy_receive_damage;
+    e->_kill = entity_enemy_kill;
+    e->_did_collide = entity_enemy_did_collide;
 
     // todo, kinda goofy paradigm to set the callback, immediately invoke
     // then never call again. could just combine constructor and init I think
