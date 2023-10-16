@@ -69,6 +69,9 @@ mapc_verts_t get_verts_from_mesh(cgltf_mesh * mesh) {
         vector_push(out_v.anim_names, &(mesh->target_names[i]));
     }
 
+    size_t pc = mesh->primitives_count;
+    if (mesh->primitives_count > 1)
+        fprintf(stderr, "W: '%s' primitives > 1 -- %zu", mesh->name, pc);
     cgltf_primitive prim = mesh->primitives[0];
 
     // Find the index of the POSITION, TEXCOORD_0(uv) attributes, and the index accessor

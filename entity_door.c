@@ -25,8 +25,6 @@ void entity_door_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_init(e, p1, p2);
 
     e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
-    // hack for old models
-    // free(e->_model->frames);
     e->_model->frames = vector_begin(e->_params->entity_generic_params.ref_entt->frames);
 }
 
