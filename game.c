@@ -141,6 +141,40 @@ entity_t * game_spawn (void (*init)(entity_t *, vec3_t, uint8_t, uint8_t), vec3_
     return e;
 }
 
+// todo, fix this import
+typedef void (*constfunc)(entity_t *, vec3_t, uint8_t, uint8_t);
+extern constfunc map_constfunc_from_eid(entity_id_t eid);
+
+entity_t * game_spawn_ng (entity_params_t * ep) {
+
+        void (*constructor)(entity_t *, vec3_t, uint8_t, uint8_t) = map_constfunc_from_eid(ep->id);
+        // todo, spawn the things with parameters
+        if(ep->id >= __ENTITY_ID_END) {
+            fprintf(stderr, "E: unimp -- %d\n", ep->id);
+            return NULL;
+        }
+        
+        entity_t * e = NULL;
+        
+        if(ep->id == ENTITY_ID_LIGHT) {
+            e = game_spawn(
+                constructor,
+                ep->entity_light_params.position, 0, 0, ep);
+        } else if(ep->id == ENTITY_ID_PLAYER) {
+            e = game_spawn(
+                constructor,
+                ep->entity_player_params.position, 0, 0, ep);
+        } else {
+            e = game_spawn(
+                constructor,
+                ep->entity_generic_params.position, 0, 0, ep);
+            // todo
+            // free kv
+        }
+
+    return e;
+}
+
 void game_run(float time_now) {
 
     time_now *= 0.001f;

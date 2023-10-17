@@ -155,6 +155,11 @@ void game_load() {
         0.5,0.1,0.1
     });
 
+    tmp_mod = vector_at(model_data, 2);
+    model_plasma = model_load(tmp_mod->data, (vec3_t) {
+        0.5,0.1,0.1
+    });
+
     // Take some parts from the grunt model and build individual giblet models
     // from it. Arms and legs and stuff...
     tmp_mod = vector_at(model_data, 1);

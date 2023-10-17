@@ -247,6 +247,28 @@ entity_t * entity_enemy_spawn_projectile(entity_t * e, void (*func)(entity_t *, 
     return projectile;
 }
 
+entity_t * entity_enemy_spawn_projectile_ng(entity_t * e, entity_id_t eid, float speed, float yaw_offset, float pitch_offset) {
+    
+    entity_params_t ep = map_entt_params_from_eid(eid);
+    ep.entity_generic_params.position = e->p;
+    
+    entity_t * projectile = game_spawn_ng(&ep);
+    projectile->_check_against = ENTITY_GROUP_PLAYER;
+    projectile->_yaw = e->_yaw + PI/2.0f;
+
+    // shitty hack for dead player
+    float pitch = atan2f(e->p.y, e->p.x) + pitch_offset;
+    if (game_entity_player)
+        pitch = atan2f(e->p.y - game_entity_player->p.y, vec3_dist(e->p, game_entity_player->p)) + pitch_offset;
+
+    projectile->v = vec3_rotate_yaw_pitch(
+                        vec3(0, 0, speed),
+                        e->_yaw + yaw_offset,
+                        pitch
+                    );
+    return projectile;
+}
+
 void entity_enemy_receive_damage(entity_t * e, entity_t * from, int32_t amount) {
     entity_receive_damage(e, from, amount);
     e->_play_sound(e, sfx_enemy_hit);

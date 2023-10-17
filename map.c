@@ -24,6 +24,10 @@
 #include "entity_pickup_health.h"
 #include "entity_pickup_nails.h"
 #include "entity_pickup_grenades.h"
+#include "entity_projectile_grenade.h"
+#include "entity_projectile_nail.h"
+#include "entity_projectile_plasma.h"
+#include "entity_projectile_shell.h"
 #include "entity_barrel.h"
 #include "entity_light.h"
 #include "entity_trigger_level.h"
@@ -40,69 +44,87 @@ vector * map_data = NULL;
 typedef struct {
     char * entity_string;
     void (*constructor_func)(entity_t *, vec3_t, uint8_t, uint8_t);
-} entity_table_t;
+} map_entity_table_t;
 
-entity_table_t entity_table[__ENTITY_ID_END] = { 0 };
+map_entity_table_t map_entity_table[__ENTITY_ID_END] = { 0 };
 
 void map_init() {
     // populate entity_table for map parsing
-    entity_table[ENTITY_ID_PLAYER] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_PLAYER] = (map_entity_table_t) {
         "player", entity_player_constructor
     };
-    entity_table[ENTITY_ID_ENEMY_GRUNT] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_ENEMY_GRUNT] = (map_entity_table_t) {
         "grunt", entity_enemy_grunt_constructor
     };
-    entity_table[ENTITY_ID_ENEMY_MUTANT] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_ENEMY_MUTANT] = (map_entity_table_t) {
         "mutant", entity_enemy_mutant_constructor
     };
-    entity_table[ENTITY_ID_ENEMY_ENFORCER] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_ENEMY_ENFORCER] = (map_entity_table_t) {
         "enforcer", entity_enemy_enforcer_constructor,
     };
-    entity_table[ENTITY_ID_ENEMY_OGRE] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_ENEMY_OGRE] = (map_entity_table_t) {
         "ogre", entity_enemy_ogre_constructor
     };
-    entity_table[ENTITY_ID_ENEMY_ZOMBIE] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_ENEMY_ZOMBIE] = (map_entity_table_t) {
         "zombie", entity_enemy_zombie_constructor
     };
-    entity_table[ENTITY_ID_ENEMY_HOUND] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_ENEMY_HOUND] = (map_entity_table_t) {
         "hound", entity_enemy_hound_constructor
     };
-    entity_table[ENTITY_ID_PICKUP_NAILGUN] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_PICKUP_NAILGUN] = (map_entity_table_t) {
         "nailgun", entity_pickup_nailgun_constructor
     };
-    entity_table[ENTITY_ID_PICKUP_SHOTGUN] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_PICKUP_SHOTGUN] = (map_entity_table_t) {
         "shotgun", NULL
     };
-    entity_table[ENTITY_ID_PICKUP_GRENADELAUNCHER] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_PICKUP_GRENADELAUNCHER] = (map_entity_table_t) {
         "grenadelauncher", entity_pickup_grenadelauncher_constructor
     };
-    entity_table[ENTITY_ID_PICKUP_HEALTH] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_PICKUP_HEALTH] = (map_entity_table_t) {
         "health", entity_pickup_health_constructor
     };
-    entity_table[ENTITY_ID_PICKUP_NAILS] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_PICKUP_NAILS] = (map_entity_table_t) {
         "nails", entity_pickup_nails_constructor
     };
-    entity_table[ENTITY_ID_PICKUP_GRENADES] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_PICKUP_KEY] = (map_entity_table_t) {
         "key", entity_pickup_key_constructor
     };
-    entity_table[ENTITY_ID_PICKUP_KEY] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_PICKUP_GRENADES] = (map_entity_table_t) {
         "grenades", entity_pickup_grenades_constructor
     };
-    entity_table[ENTITY_ID_BARREL] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_PROJECTILE_GRENADE] = (map_entity_table_t) {
+        "projectile_grenade", entity_projectile_grenade_constructor
+    };
+    map_entity_table[ENTITY_ID_PROJECTILE_NAIL] = (map_entity_table_t) {
+        "projectile_nail", entity_projectile_nail_constructor
+    };
+    // plasma is just a fancy nail
+    map_entity_table[ENTITY_ID_PROJECTILE_PLASMA] = (map_entity_table_t) {
+        "projectile_plasma", entity_projectile_plasma_constructor
+    };
+    map_entity_table[ENTITY_ID_PROJECTILE_SHELL] = (map_entity_table_t) {
+        "projectile_slug", entity_projectile_shell_constructor
+    };
+    map_entity_table[ENTITY_ID_BARREL] = (map_entity_table_t) {
         "barrel", entity_barrel_constructor
     };
-    entity_table[ENTITY_ID_LIGHT] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_LIGHT] = (map_entity_table_t) {
         "light", entity_light_constructor
     };
-    entity_table[ENTITY_ID_TRIGGER_LEVEL] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_TRIGGER_LEVEL] = (map_entity_table_t) {
         "trigger_levelchange", entity_trigger_level_constructor
     };
-    entity_table[ENTITY_ID_DOOR] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_DOOR] = (map_entity_table_t) {
         "door", entity_door_constructor
     };
-    entity_table[ENTITY_ID_TORCH] = (entity_table_t) {
+    map_entity_table[ENTITY_ID_TORCH] = (map_entity_table_t) {
         "torch", entity_torch_constructor
     };
+}
+
+typedef void (*constfunc)(entity_t *, vec3_t, uint8_t, uint8_t);
+constfunc map_constfunc_from_eid(entity_id_t eid){
+    return map_entity_table[eid].constructor_func;
 }
 
 // todo, remove once levels have been reproduced
@@ -126,6 +148,28 @@ void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = {
     /* 16 */ entity_torch_constructor,
 };
 
+ref_entt_t * map_ref_entt_from_eid(entity_id_t eid) {
+    if(eid < 0 || eid > __ENTITY_ID_END){
+        fprintf(stderr, "eid not found: %d\n", eid);
+        return NULL;
+    }
+    return vector_at(map->ref_entities, eid);
+}
+
+entity_params_t map_entt_params_from_eid(entity_id_t eid){
+    entity_params_t ep = { 0 };
+    if(eid < 0 || eid > __ENTITY_ID_END){
+        fprintf(stderr, "eid not found: %d\n", eid);
+        return ep;
+    }
+    
+    ref_entt_t * re = map_ref_entt_from_eid(eid);
+    ep.id = eid;
+    ep.entity_generic_params.ref_entt = re;
+    
+    return ep;
+}
+
 ref_entt_t * map_ref_entt_from_name(char * name) {
     size_t relen = vector_size(map->ref_entities);
     for(size_t i = 0; i < relen; i++) {
@@ -143,7 +187,7 @@ ref_entt_t * map_ref_entt_from_name(char * name) {
 
 uint32_t map_lookup_entity(const char * type_name, size_t len) {
     for(uint32_t i = 0; i < __ENTITY_ID_END; i++) {
-        if (strncmp(type_name, entity_table[i].entity_string, len) == 0)
+        if (strncmp(type_name, map_entity_table[i].entity_string, len) == 0)
             return i;
     }
     fprintf(stderr, "E: failed to id entity %s -- skipping\n", type_name);
@@ -570,39 +614,17 @@ void map_load (map_t * m) {
 map_load_ng:
     for (uint32_t i = 0; i < map->e_size; i++) {
         entity_params_t * ep = vector_at(map->map_entities, i);
-        void (*func)(entity_t *, vec3_t, uint8_t, uint8_t) = entity_table[ep->id].constructor_func;
-        // todo, spawn the things with parameters
-        if(ep->id == __ENTITY_ID_END) {
-            fprintf(stderr, "E: unimp\n");
-            continue;
-        }
-        if(ep->id == ENTITY_ID_LIGHT) {
-            game_spawn(
-                func,
-            (vec3_t) {
-                .x = ep->entity_light_params.position.x * 32,
-                .y = ep->entity_light_params.position.y * 16,
-                .z = ep->entity_light_params.position.z * 32
-            }, 0, 0, ep);
-        } else if(ep->id == ENTITY_ID_PLAYER) {
-            game_spawn(
-                func,
-            (vec3_t) {
-                .x = ep->entity_player_params.position.x * 32,
-                .y = ep->entity_player_params.position.y * 16,
-                .z = ep->entity_player_params.position.z * 32
-            }, 0, 0, ep);
-        } else {
-            game_spawn(
-                func,
-            (vec3_t) {
-                .x = ep->entity_generic_params.position.x * 32,
-                .y = ep->entity_generic_params.position.y * 16,
-                .z = ep->entity_generic_params.position.z * 32
-            }, 0, 0, ep);
-            // todo
-            // free kv
-        }
+        vec3_t * pos = &ep->entity_generic_params.position;
+        if (ep->id == ENTITY_ID_PLAYER)
+            pos = &ep->entity_player_params.position;
+        if (ep->id == ENTITY_ID_LIGHT)
+            pos = &ep->entity_light_params.position;
+        
+        pos->x *= 32;
+        pos->y *= 16;
+        pos->z *= 32;
+        
+        game_spawn_ng(ep);
     }
 
 }

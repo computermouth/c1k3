@@ -1,8 +1,10 @@
 
+#include "entity.h"
 #include "entity_enemy.h"
 #include "entity_projectile_plasma.h"
 
 #include "audio.h"
+#include "map.h"
 
 void entity_enemy_enforcer_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_enemy_enforcer_attack(entity_t * e);
@@ -72,6 +74,7 @@ void entity_enemy_enforcer_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint
     entity_enemy_constructor(e, pos, p1, p2);
     e->_init = entity_enemy_enforcer_init;
     e->_attack = entity_enemy_enforcer_attack;
+    e->_spawn_projectile_ng = entity_enemy_spawn_projectile_ng;
     e->_init(e, p1, p2);
 
     // todo, move everything from here on to grunt_init
@@ -104,5 +107,6 @@ void entity_enemy_enforcer_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
 
 void entity_enemy_enforcer_attack(entity_t * e) {
     e->_play_sound(e, sfx_plasma_shoot);
-    e->_spawn_projectile(e, entity_projectile_plasma_constructor, 800, 0, 0);
+    // e->_spawn_projectile(e, entity_projectile_plasma_constructor, 800, 0, 0);
+    e->_spawn_projectile_ng(e, ENTITY_ID_PROJECTILE_PLASMA, 20, 0, 0);
 }

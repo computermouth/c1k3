@@ -51,6 +51,7 @@ extern model_t model_door;
 // Projectiles
 extern model_t model_grenade;
 extern model_t model_nail; // aka. nail
+extern model_t model_plasma; // aka. nail
 
 void model_parse();
 model_t model_load(uint8_t * data, vec3_t scale);

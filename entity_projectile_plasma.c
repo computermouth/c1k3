@@ -24,11 +24,18 @@ void entity_projectile_plasma_constructor(entity_t * e, vec3_t pos, uint8_t p1, 
     // todo, kinda goofy paradigm to set the callback, immediately invoke
     // then never call again. could just combine constructor and init I think
     e->_init(e, p1, p2);
+
+    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
+    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
+    uint32_t * uframes = vector_begin(frames);
+    e->_model->frames = uframes;
+    e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
+    e->s = e->_params->entity_generic_params.ref_entt->size;
 }
 
 void entity_projectile_plasma_init(entity_t * e, uint8_t p1, uint8_t p2) {
-    e->_texture = 21;
-    e->_model = &model_nail;
+    // e->_texture = 21;
+    e->_model = &model_plasma;
     e->_gravity = 0;
     e->_expires = true;
     e->_die_at = game_time + 3;
@@ -36,6 +43,7 @@ void entity_projectile_plasma_init(entity_t * e, uint8_t p1, uint8_t p2) {
 
 void entity_projectile_plasma_update(entity_t * e) {
     e->_update_physics(e);
+    e->_yaw += 5.0 * game_tick;
     e->_draw_model(e);
     r_push_light(e->p, 5, 255, 128, 0);
 }

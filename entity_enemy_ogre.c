@@ -1,7 +1,9 @@
 
+#include "entity.h"
 #include "entity_enemy.h"
 #include "entity_projectile_grenade.h"
 #include "audio.h"
+#include "map.h"
 
 animation_t ogre_animations[] = {
     {   // 0: Idle
@@ -63,6 +65,7 @@ void entity_enemy_ogre_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t
     entity_enemy_constructor(e, pos, p1, p2);
     e->_init = entity_enemy_ogre_init;
     e->_attack = entity_enemy_ogre_attack;
+    e->_spawn_projectile_ng = entity_enemy_spawn_projectile_ng;
     e->_init(e, p1, p2);
 
     // todo, move everything from here on to grunt_init
@@ -99,6 +102,7 @@ void entity_enemy_ogre_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
 
 void entity_enemy_ogre_attack(entity_t * e) {
     e->_play_sound(e, sfx_grenade_shoot);
-    entity_t * t = e->_spawn_projectile(e, entity_projectile_grenade_constructor, 600, 0, -0.4);
+    // entity_t * t = e->_spawn_projectile(e, entity_projectile_grenade_constructor, 600, 0, -0.4);
+    entity_t * t = e->_spawn_projectile_ng(e, ENTITY_ID_PROJECTILE_GRENADE, 600, 0, -0.4);
     t->_damage = 40;
 }

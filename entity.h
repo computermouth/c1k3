@@ -150,6 +150,7 @@ typedef struct entity_t {
     void (*_spawn_particles)(struct entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime);
     void (*_set_state)(struct entity_t * e, uint32_t state);
     struct entity_t * (*_spawn_projectile)(struct entity_t * e, void (*func)(struct entity_t *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset);
+    struct entity_t * (*_spawn_projectile_ng)(struct entity_t * e, entity_id_t eid, float speed, float yaw_offset, float pitch_offset);
     void (*_receive_damage)(struct entity_t * e, struct entity_t * from, int32_t amount);
     void (*_play_sound)(struct entity_t * e, Mix_Chunk * sound);
     void (*_kill)(struct entity_t * e);
@@ -176,5 +177,6 @@ void entity_pickup(entity_t * e);
 void entity_set_state(entity_t * e, uint32_t state);
 void entity_attack(entity_t * e);
 entity_t * entity_spawn_projectile(entity_t * e, void (*func)(entity_t *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset);
+entity_t * entity_enemy_spawn_projectile_ng(entity_t * e, entity_id_t eid, float speed, float yaw_offset, float pitch_offset);
 
 #endif

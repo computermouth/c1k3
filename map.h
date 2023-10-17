@@ -41,6 +41,10 @@ typedef enum {
     ENTITY_ID_PICKUP_NAILS,
     ENTITY_ID_PICKUP_GRENADES,
     ENTITY_ID_PICKUP_KEY,
+    ENTITY_ID_PROJECTILE_GRENADE,
+    ENTITY_ID_PROJECTILE_NAIL,
+    ENTITY_ID_PROJECTILE_PLASMA,
+    ENTITY_ID_PROJECTILE_SHELL,
     ENTITY_ID_BARREL,
     ENTITY_ID_LIGHT,
     ENTITY_ID_TRIGGER_LEVEL,
@@ -105,5 +109,7 @@ void map_draw();
 bool map_trace(vec3_t a, vec3_t b);
 void map_quit();
 ref_entt_t * map_ref_entt_from_name(char * name);
+ref_entt_t * map_ref_entt_from_eid(entity_id_t eid);
+entity_params_t map_entt_params_from_eid(entity_id_t eid);
 
 #endif

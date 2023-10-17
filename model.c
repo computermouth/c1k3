@@ -41,6 +41,7 @@ model_t model_door = {0};
 // Projectiles
 model_t model_grenade = {0};
 model_t model_nail = {0}; // aka. nail
+model_t model_plasma = {0}; // aka. nail
 
 void model_parse() {
 
