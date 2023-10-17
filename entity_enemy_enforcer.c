@@ -108,5 +108,5 @@ void entity_enemy_enforcer_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
 void entity_enemy_enforcer_attack(entity_t * e) {
     e->_play_sound(e, sfx_plasma_shoot);
     // e->_spawn_projectile(e, entity_projectile_plasma_constructor, 800, 0, 0);
-    e->_spawn_projectile_ng(e, ENTITY_ID_PROJECTILE_PLASMA, 20, 0, 0);
+    e->_spawn_projectile_ng(e, ENTITY_ID_PROJECTILE_PLASMA, 800, 0, 0);
 }

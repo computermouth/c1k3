@@ -22,8 +22,7 @@ typedef struct {
     vec3_t _projectile_offset;
     uint32_t _ammo;
     Mix_Chunk * _sound;
-    // todo, rename to projectile_constructor or something
-    void (*_projectile_type)(void *, vec3_t, uint8_t, uint8_t);
+    entity_id_t _projectile_type_ng;
     float _projectile_speed;
     uint32_t _texture;
     model_t * _model;

@@ -40,10 +40,9 @@ void weapon_shoot(weapon_t * w, vec3_t pos, float yaw, float pitch) {
 }
 
 void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
-    entity_t * projectile =
-        game_spawn(
-            (void (*)(entity_t *, vec3_t, uint8_t, uint8_t))w->_projectile_type,
-            vec3_add(
+        
+    entity_params_t ep = map_entt_params_from_eid(w->_projectile_type_ng);
+    ep.entity_generic_params.position =              vec3_add(
                 pos,
                 vec3_add(
                     vec3(0, 12, 0),
@@ -52,11 +51,10 @@ void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
                         yaw, pitch
                     )
                 )
-            ),
-            0,
-            0, NULL
-        );
-
+            );
+    
+    entity_t * projectile = game_spawn_ng(&ep);
+    
     projectile->v = vec3_rotate_yaw_pitch(
                         vec3(0, 0, w->_projectile_speed),
                         yaw, pitch
@@ -100,7 +98,7 @@ void weapon_shotgun_init(weapon_t * w) {
     w->_sound = sfx_shotgun_shoot;
     w->_needs_ammo = 0;
     w->_reload = 0.9f;
-    w->_projectile_type = (void (*)(void * e, vec3_t pos, uint8_t p1, uint8_t p2))entity_projectile_shell_constructor;
+    w->_projectile_type_ng = ENTITY_ID_PROJECTILE_SHELL;
     w->_projectile_speed = 10000;
 }
 
@@ -141,7 +139,7 @@ void weapon_nailgun_init(weapon_t * w) {
     w->_sound = sfx_nailgun_shoot;
     w->_ammo = 100;
     w->_reload = 0.09;
-    w->_projectile_type = (void (*)(void * e, vec3_t pos, uint8_t p1, uint8_t p2))entity_projectile_nail_constructor;
+    w->_projectile_type_ng = ENTITY_ID_PROJECTILE_NAIL;
     w->_projectile_speed = 1300;
     w->_projectile_offset = vec3(6,0,8);
 }
@@ -173,6 +171,6 @@ void weapon_grenadelauncher_init(weapon_t * w) {
     w->_sound = sfx_grenade_shoot;
     w->_ammo = 10;
     w->_reload = 0.650;
-    w->_projectile_type = (void (*)(void * e, vec3_t pos, uint8_t p1, uint8_t p2))entity_projectile_grenade_constructor;
+    w->_projectile_type_ng = ENTITY_ID_PROJECTILE_GRENADE;
     w->_projectile_speed = 900;
 }
