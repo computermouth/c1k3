@@ -123,7 +123,7 @@ void map_init() {
 }
 
 typedef void (*constfunc)(entity_t *, vec3_t, uint8_t, uint8_t);
-constfunc map_constfunc_from_eid(entity_id_t eid){
+constfunc map_constfunc_from_eid(entity_id_t eid) {
     return map_entity_table[eid].constructor_func;
 }
 
@@ -149,24 +149,24 @@ void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = {
 };
 
 ref_entt_t * map_ref_entt_from_eid(entity_id_t eid) {
-    if(eid < 0 || eid > __ENTITY_ID_END){
+    if(eid < 0 || eid > __ENTITY_ID_END) {
         fprintf(stderr, "eid not found: %d\n", eid);
         return NULL;
     }
     return vector_at(map->ref_entities, eid);
 }
 
-entity_params_t map_entt_params_from_eid(entity_id_t eid){
+entity_params_t map_entt_params_from_eid(entity_id_t eid) {
     entity_params_t ep = { 0 };
-    if(eid < 0 || eid > __ENTITY_ID_END){
+    if(eid < 0 || eid > __ENTITY_ID_END) {
         fprintf(stderr, "eid not found: %d\n", eid);
         return ep;
     }
-    
+
     ref_entt_t * re = map_ref_entt_from_eid(eid);
     ep.id = eid;
     ep.entity_generic_params.ref_entt = re;
-    
+
     return ep;
 }
 
@@ -619,11 +619,11 @@ map_load_ng:
             pos = &ep->entity_player_params.position;
         if (ep->id == ENTITY_ID_LIGHT)
             pos = &ep->entity_light_params.position;
-        
+
         pos->x *= 32;
         pos->y *= 16;
         pos->z *= 32;
-        
+
         game_spawn_ng(ep);
     }
 

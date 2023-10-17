@@ -48,7 +48,7 @@ void entity_projectile_grenade_init(entity_t * e, uint8_t p1, uint8_t p2) {
 
 void entity_projectile_grenade_update(entity_t * e) {
     entity_update_physics(e);
-    
+
     // roll em
     e->_yaw += (fabs(e->v.x) + fabs(e->v.y) + fabs(e->v.z)) * .02 * game_tick;
     e->_pitch += (fabs(e->v.x) + fabs(e->v.y) + fabs(e->v.z)) * .02 * game_tick;

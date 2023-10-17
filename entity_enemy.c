@@ -248,10 +248,10 @@ entity_t * entity_enemy_spawn_projectile(entity_t * e, void (*func)(entity_t *, 
 }
 
 entity_t * entity_enemy_spawn_projectile_ng(entity_t * e, entity_id_t eid, float speed, float yaw_offset, float pitch_offset) {
-    
+
     entity_params_t ep = map_entt_params_from_eid(eid);
     ep.entity_generic_params.position = e->p;
-    
+
     entity_t * projectile = game_spawn_ng(&ep);
     projectile->_check_against = ENTITY_GROUP_PLAYER;
     projectile->_yaw = e->_yaw + PI/2.0f;

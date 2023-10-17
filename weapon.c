@@ -40,7 +40,7 @@ void weapon_shoot(weapon_t * w, vec3_t pos, float yaw, float pitch) {
 }
 
 void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
-        
+
     entity_params_t ep = map_entt_params_from_eid(w->_projectile_type_ng);
     ep.entity_generic_params.position =              vec3_add(
                 pos,
@@ -52,9 +52,9 @@ void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
                     )
                 )
             );
-    
+
     entity_t * projectile = game_spawn_ng(&ep);
-    
+
     projectile->v = vec3_rotate_yaw_pitch(
                         vec3(0, 0, w->_projectile_speed),
                         yaw, pitch
