@@ -42,16 +42,16 @@ void weapon_shoot(weapon_t * w, vec3_t pos, float yaw, float pitch) {
 void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
 
     entity_params_t ep = map_entt_params_from_eid(w->_projectile_type_ng);
-    ep.entity_generic_params.position =              vec3_add(
-                pos,
-                vec3_add(
-                    vec3(0, 12, 0),
-                    vec3_rotate_yaw_pitch(
-                        w->_projectile_offset,
-                        yaw, pitch
-                    )
-                )
-            );
+    ep.entity_generic_params.position = vec3_add(
+                                            pos,
+                                            vec3_add(
+                                                    vec3(0, 12, 0),
+                                                    vec3_rotate_yaw_pitch(
+                                                            w->_projectile_offset,
+                                                            yaw, pitch
+                                                    )
+                                            )
+                                        );
 
     entity_t * projectile = game_spawn_ng(&ep);
 
@@ -61,7 +61,7 @@ void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
                     );
 
     projectile->_yaw = yaw - PI / 2.0f;
-    projectile->_pitch = -pitch;
+    projectile->_pitch = -pitch + PI / 2.0f;
     projectile->_check_against = ENTITY_GROUP_ENEMY;
 
     // Alternate left/right fire for next projectile (nailgun)
@@ -103,7 +103,6 @@ void weapon_shotgun_init(weapon_t * w) {
 }
 
 void weapon_shotgun_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
-    // todo, validate this works
     SDL_AddTimer(200, audio_schedule, sfx_shotgun_reload);
     SDL_AddTimer(350, audio_schedule, sfx_shotgun_reload);
     for (uint32_t i = 0; i < 8; i++) {
