@@ -2,6 +2,7 @@
 #include "entity_projectile_shell.h"
 #include "entity.h"
 #include "game.h"
+#include "map.h"
 #include "math.h"
 #include "entity_light.h"
 
@@ -19,6 +20,9 @@ void entity_projectile_shell_constructor(entity_t * e, vec3_t pos, uint8_t p1, u
     e->_did_collide = entity_projectile_shell_did_collide;
     e->_did_collide_with_entity = entity_projectile_shell_did_collide_with_entity;
 
+    /* shells are invis 
+    *  so no model setup */
+    
     // todo, kinda goofy paradigm to set the callback, immediately invoke
     // then never call again. could just combine constructor and init I think
     e->_init(e, p1, p2);
@@ -36,7 +40,8 @@ void entity_projectile_shell_update(entity_t * e) {
 
 void entity_projectile_shell_did_collide(entity_t * e, int axis) {
     e->_kill(e);
-    e->_spawn_particles(e, 2, 80, &model_explosion, 4, 0.4);
+    // e->_spawn_particles(e, 2, 80, &model_explosion, 4, 0.4);
+    e->_spawn_particles_ng(e, 2, 80, ENTITY_ID_PARTICLE_SLUG, 0.4);
     // todo, change parameter types to float, fuck it
     // entity_t * tmp_light = game_spawn(entity_light_constructor, e->p, 0.5, 0xff);
     entity_t * tmp_light = game_spawn(entity_light_constructor, e->p, 1, 0xff, NULL);

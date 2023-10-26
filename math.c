@@ -90,6 +90,12 @@ vec3_t vec3_mulf(vec3_t a, float b) {
     };
 }
 
+vec3_t vec3_divf(vec3_t a, float b) {
+    return (vec3_t) {
+        a.x / b, a.y / b, a.z / b
+    };
+}
+
 vec3_t vec3_cross(vec3_t a, vec3_t b) {
     return (vec3_t) {
         a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x

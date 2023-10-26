@@ -28,6 +28,7 @@
 #include "entity_projectile_nail.h"
 #include "entity_projectile_plasma.h"
 #include "entity_projectile_shell.h"
+#include "entity_particle.h"
 #include "entity_barrel.h"
 #include "entity_light.h"
 #include "entity_trigger_level.h"
@@ -103,7 +104,10 @@ void map_init() {
         "projectile_plasma", entity_projectile_plasma_constructor
     };
     map_entity_table[ENTITY_ID_PROJECTILE_SHELL] = (map_entity_table_t) {
-        "projectile_slug", entity_projectile_shell_constructor
+        "", entity_projectile_shell_constructor
+    };
+    map_entity_table[ENTITY_ID_PARTICLE_SLUG] = (map_entity_table_t) {
+        "particle_slug", entity_particle_constructor
     };
     map_entity_table[ENTITY_ID_BARREL] = (map_entity_table_t) {
         "barrel", entity_barrel_constructor

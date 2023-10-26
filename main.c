@@ -65,100 +65,100 @@ void game_load() {
         0.3,0.6,0.3
     });
 
-    tmp_mod = vector_at(model_data, 1);
-    model_grunt = model_load(tmp_mod->data, (vec3_t) {
-        2.5,2.2,2.5
-    });
+    // tmp_mod = vector_at(model_data, 1);
+    // model_grunt = model_load(tmp_mod->data, (vec3_t) {
+    //     2.5,2.2,2.5
+    // });
 
-    tmp_mod = vector_at(model_data, 1);
-    model_enforcer = model_load(tmp_mod->data, (vec3_t) {
-        3,2.7,3
-    });
+    // tmp_mod = vector_at(model_data, 1);
+    // model_enforcer = model_load(tmp_mod->data, (vec3_t) {
+    //     3,2.7,3
+    // });
 
     tmp_mod = vector_at(model_data, 1);
     model_zombie = model_load(tmp_mod->data, (vec3_t) {
         1.5,2,1.5
     });
 
-    tmp_mod = vector_at(model_data, 1);
-    model_ogre = model_load(tmp_mod->data, (vec3_t) {
-        4,3,4
-    });
+    // tmp_mod = vector_at(model_data, 1);
+    // model_ogre = model_load(tmp_mod->data, (vec3_t) {
+    //     4,3,4
+    // });
 
-    tmp_mod = vector_at(model_data, 4);
-    model_hound = model_load(tmp_mod->data, (vec3_t) {
-        2.5,2.5,2.5
-    });
+    // tmp_mod = vector_at(model_data, 4);
+    // model_hound = model_load(tmp_mod->data, (vec3_t) {
+    //     2.5,2.5,2.5
+    // });
 
-    tmp_mod = vector_at(model_data, 2);
-    model_barrel = model_load(tmp_mod->data, (vec3_t) {
-        2, 2, 2
-    });
+    // tmp_mod = vector_at(model_data, 2);
+    // model_barrel = model_load(tmp_mod->data, (vec3_t) {
+    //     2, 2, 2
+    // });
 
     tmp_mod = vector_at(model_data, 7);
     model_torch = model_load(tmp_mod->data, (vec3_t) {
         0.6,1,0.6
     });
 
-    tmp_mod = vector_at(model_data, 6);
-    model_pickup_nailgun = model_load(tmp_mod->data, (vec3_t) {
-        1, 1, 1
-    });
+    // tmp_mod = vector_at(model_data, 6);
+    // model_pickup_nailgun = model_load(tmp_mod->data, (vec3_t) {
+    //     1, 1, 1
+    // });
 
-    tmp_mod = vector_at(model_data, 2);
-    model_pickup_grenadelauncher = model_load(tmp_mod->data, (vec3_t) {
-        1, 0.5, 0.5
-    });
+    // tmp_mod = vector_at(model_data, 2);
+    // model_pickup_grenadelauncher = model_load(tmp_mod->data, (vec3_t) {
+    //     1, 0.5, 0.5
+    // });
 
     tmp_mod = vector_at(model_data, 5);
     model_pickup_box = model_load(tmp_mod->data, (vec3_t) {
         0.7, 0.7, 0.7
     });
 
-    tmp_mod = vector_at(model_data, 5);
-    model_pickup_grenades = model_load(tmp_mod->data, (vec3_t) {
-        0.5, 1, 0.5
-    });
+    // tmp_mod = vector_at(model_data, 5);
+    // model_pickup_grenades = model_load(tmp_mod->data, (vec3_t) {
+    //     0.5, 1, 0.5
+    // });
 
     tmp_mod = vector_at(model_data, 5);
     model_pickup_key = model_load(tmp_mod->data, (vec3_t) {
         0.1, 0.7, 0.1
     });
 
-    tmp_mod = vector_at(model_data, 5);
-    model_door = model_load(tmp_mod->data, (vec3_t) {
-        5, 5, 0.5
-    });
+    // tmp_mod = vector_at(model_data, 5);
+    // model_door = model_load(tmp_mod->data, (vec3_t) {
+    //     5, 5, 0.5
+    // });
 
-    tmp_mod = vector_at(model_data, 2);
-    model_shotgun = model_load(tmp_mod->data, (vec3_t) {
-        1,0.2,0.2
-    });
+    // tmp_mod = vector_at(model_data, 2);
+    // model_shotgun = model_load(tmp_mod->data, (vec3_t) {
+    //     1,0.2,0.2
+    // });
 
-    tmp_mod = vector_at(model_data, 2);
-    model_grenadelauncher = model_load(tmp_mod->data, (vec3_t) {
-        0.7,0.4,0.4
-    });
+    // tmp_mod = vector_at(model_data, 2);
+    // model_grenadelauncher = model_load(tmp_mod->data, (vec3_t) {
+    //     0.7,0.4,0.4
+    // });
 
-    tmp_mod = vector_at(model_data, 6);
-    model_nailgun = model_load(tmp_mod->data, (vec3_t) {
-        0.7,0.7,0.7
-    });
+    // tmp_mod = vector_at(model_data, 6);
+    // model_nailgun = model_load(tmp_mod->data, (vec3_t) {
+    //     0.7,0.7,0.7
+    // });
 
-    tmp_mod = vector_at(model_data, 2);
-    model_grenade = model_load(tmp_mod->data, (vec3_t) {
-        0.3,0.3,0.3
-    });
+    // tmp_mod = vector_at(model_data, 2);
+    // model_grenade = model_load(tmp_mod->data, (vec3_t) {
+    //     0.3,0.3,0.3
+    // });
 
-    tmp_mod = vector_at(model_data, 2);
-    model_nail = model_load(tmp_mod->data, (vec3_t) {
-        0.5,0.1,0.1
-    });
+    // tmp_mod = vector_at(model_data, 2);
+    // model_nail = model_load(tmp_mod->data, (vec3_t) {
+    //     0.5,0.1,0.1
+    // });
 
-    tmp_mod = vector_at(model_data, 2);
-    model_plasma = model_load(tmp_mod->data, (vec3_t) {
-        0.5,0.1,0.1
-    });
+    // tmp_mod = vector_at(model_data, 2);
+    // model_plasma = model_load(tmp_mod->data, (vec3_t) {
+    //     0.5,0.1,0.1
+    // });
 
     // Take some parts from the grunt model and build individual giblet models
     // from it. Arms and legs and stuff...

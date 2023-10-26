@@ -237,14 +237,7 @@ void entity_player_update(entity_t * e) {
 
     text_push_surface(hud.hlth_surface);
     text_push_surface(hud.ammo_surface);
-    /*
-    		// todo, text
-    		h.textContent = this._health|0;
-    		a.textContent = weapon._needs_ammo ? weapon._ammo : '∞';
 
-    		// Debug: a light around the player
-    		// r_push_light(vec3_add(this.p, vec3(0,64,0)), 10, 255, 192, 32);
-    */
 }
 
 void entity_player_receive_damage(entity_t * e, entity_t * from, int32_t amount) {
@@ -260,8 +253,6 @@ uint32_t entity_player_reset_level(uint32_t interval, void *param) {
 
 void entity_player_kill(entity_t * e) {
     entity_kill(e);
-    // todo
-    // h.textContent = this._health|0;
 
     // timed_surfaces free at the end of their timer
     text_surface_t * died_text = text_create_surface(

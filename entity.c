@@ -101,6 +101,7 @@ void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_did_collide_with_entity = entity_did_collide_with_entity;
     e->_draw_model = entity_draw_model;
     e->_spawn_particles = entity_spawn_particles;
+    e->_spawn_particles_ng = entity_spawn_particles_ng;
     e->_receive_damage = entity_receive_damage;
     e->_play_sound = entity_play_sound;
     e->_kill = entity_kill;
@@ -307,9 +308,36 @@ void entity_draw_model(entity_t * e) {
 
 void entity_spawn_particles(entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime) {
     for (uint32_t i = 0; i < amount; i++) {
-        entity_t * particle = game_spawn((void (*)(entity_t *, vec3_t, uint8_t, uint8_t))entity_particle_constructor, e->p, 0, 0, NULL);
+        
+        vec3_t move_dist = vec3_mulf(e->v, game_tick);
+        vec3_t tickdist = vec3_divf(move_dist, 16.0f);
+        
+        entity_t * particle = game_spawn((void (*)(entity_t *, vec3_t, uint8_t, uint8_t))entity_particle_constructor, vec3_sub(e->p, tickdist), 0, 0, NULL);
         particle->_model = model;
         particle->_texture = texture;
+        particle->_expires = true;
+        particle->_die_at = game_time + lifetime + randf() * lifetime * 0.2;
+        particle->v = vec3(
+                          (randf() - 0.5) * speed,
+                          randf() * speed,
+                          (randf() - 0.5) * speed
+                      );
+    }
+}
+
+void entity_spawn_particles_ng(entity_t * e, int amount, int speed, entity_id_t eid, float lifetime){
+    
+    entity_params_t ep = map_entt_params_from_eid(eid);
+    
+    // scooch back 1/16th, so the particles aren't
+    // just stuck in a wall
+    vec3_t move_dist = vec3_mulf(e->v, game_tick);
+    vec3_t tickdist = vec3_divf(move_dist, 16.0f);
+    
+    ep.entity_generic_params.position = vec3_sub(e->p, tickdist);
+    
+    for (uint32_t i = 0; i < amount; i++) {
+        entity_t * particle = game_spawn_ng(&ep);
         particle->_expires = true;
         particle->_die_at = game_time + lifetime + randf() * lifetime * 0.2;
         particle->v = vec3(
