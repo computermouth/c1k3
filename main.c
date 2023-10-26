@@ -50,15 +50,15 @@ void game_load() {
         1.0f,1.0f,1.0f
     });
 
-    tmp_mod = vector_at(model_data, 0);
-    model_explosion = model_load(tmp_mod->data, (vec3_t) {
-        0.1,0.1,0.1
-    });
+    // tmp_mod = vector_at(model_data, 0);
+    // model_explosion = model_load(tmp_mod->data, (vec3_t) {
+    //     0.1,0.1,0.1
+    // });
 
-    tmp_mod = vector_at(model_data, 0);
-    model_blood = model_load(tmp_mod->data, (vec3_t) {
-        0.1,0.2,0.1
-    });
+    // tmp_mod = vector_at(model_data, 0);
+    // model_blood = model_load(tmp_mod->data, (vec3_t) {
+    //     0.1,0.2,0.1
+    // });
 
     tmp_mod = vector_at(model_data, 0);
     model_gib = model_load(tmp_mod->data, (vec3_t) {

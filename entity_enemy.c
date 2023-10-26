@@ -279,7 +279,8 @@ void entity_enemy_receive_damage(entity_t * e, entity_t * from, int32_t amount) 
         e->_set_state(e, ENEMY_STATE_FOLLOW);
     }
 
-    e->_spawn_particles(e, 2, 200, &(model_blood), 18, 0.5);
+    // e->_spawn_particles(e, 2, 200, &(model_blood), 18, 0.5);
+    e->_spawn_particles_ng(e, 2, 200, ENTITY_ID_PARTICLE_BLOOD, 0.5);
 }
 
 void entity_enemy_kill(entity_t * e) {
