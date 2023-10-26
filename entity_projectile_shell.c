@@ -20,9 +20,9 @@ void entity_projectile_shell_constructor(entity_t * e, vec3_t pos, uint8_t p1, u
     e->_did_collide = entity_projectile_shell_did_collide;
     e->_did_collide_with_entity = entity_projectile_shell_did_collide_with_entity;
 
-    /* shells are invis 
+    /* shells are invis
     *  so no model setup */
-    
+
     // todo, kinda goofy paradigm to set the callback, immediately invoke
     // then never call again. could just combine constructor and init I think
     e->_init(e, p1, p2);

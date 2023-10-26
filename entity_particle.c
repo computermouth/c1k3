@@ -20,9 +20,9 @@ void entity_particle_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p
     // todo, kinda goofy paradigm to set the callback, immediately invoke
     // then never call again. could just combine constructor and init I think
     e->_init(e, p1, p2);
-    
+
     // todo, remove once all the _ng's are implemented
-    if ( e->_params != NULL && e->_params->entity_generic_params.ref_entt != NULL ){
+    if ( e->_params != NULL && e->_params->entity_generic_params.ref_entt != NULL ) {
         e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
         vector * frames = e->_params->entity_generic_params.ref_entt->frames;
         uint32_t * uframes = vector_begin(frames);
@@ -31,7 +31,7 @@ void entity_particle_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p
         e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
         e->s = e->_params->entity_generic_params.ref_entt->size;
     }
-    
+
 }
 
 void entity_particle_init(entity_t * e, uint8_t p1, uint8_t p2) {

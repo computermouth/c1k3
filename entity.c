@@ -308,10 +308,10 @@ void entity_draw_model(entity_t * e) {
 
 void entity_spawn_particles(entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime) {
     for (uint32_t i = 0; i < amount; i++) {
-        
+
         vec3_t move_dist = vec3_mulf(e->v, game_tick);
         vec3_t tickdist = vec3_divf(move_dist, 16.0f);
-        
+
         entity_t * particle = game_spawn((void (*)(entity_t *, vec3_t, uint8_t, uint8_t))entity_particle_constructor, vec3_sub(e->p, tickdist), 0, 0, NULL);
         particle->_model = model;
         particle->_texture = texture;
@@ -325,17 +325,17 @@ void entity_spawn_particles(entity_t * e, int amount, int speed, model_t * model
     }
 }
 
-void entity_spawn_particles_ng(entity_t * e, int amount, int speed, entity_id_t eid, float lifetime){
-    
+void entity_spawn_particles_ng(entity_t * e, int amount, int speed, entity_id_t eid, float lifetime) {
+
     entity_params_t ep = map_entt_params_from_eid(eid);
-    
+
     // scooch back 1/16th, so the particles aren't
     // just stuck in a wall
     vec3_t move_dist = vec3_mulf(e->v, game_tick);
     vec3_t tickdist = vec3_divf(move_dist, 16.0f);
-    
+
     ep.entity_generic_params.position = vec3_sub(e->p, tickdist);
-    
+
     for (uint32_t i = 0; i < amount; i++) {
         entity_t * particle = game_spawn_ng(&ep);
         particle->_expires = true;
