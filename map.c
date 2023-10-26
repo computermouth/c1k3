@@ -112,6 +112,9 @@ void map_init() {
     map_entity_table[ENTITY_ID_PARTICLE_BLOOD] = (map_entity_table_t) {
         "particle_blood", entity_particle_constructor
     };
+    map_entity_table[ENTITY_ID_PROJECTILE_GIB] = (map_entity_table_t) {
+        "particle_gib", entity_particle_constructor
+    };
     map_entity_table[ENTITY_ID_BARREL] = (map_entity_table_t) {
         "barrel", entity_barrel_constructor
     };

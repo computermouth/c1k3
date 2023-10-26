@@ -1,7 +1,6 @@
 
 #include <math.h>
 
-#include "entity_projectile_gib.h"
 #include "entity.h"
 #include "game.h"
 #include "math.h"
