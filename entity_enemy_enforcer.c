@@ -74,7 +74,6 @@ void entity_enemy_enforcer_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint
     entity_enemy_constructor(e, pos, p1, p2);
     e->_init = entity_enemy_enforcer_init;
     e->_attack = entity_enemy_enforcer_attack;
-    e->_spawn_projectile_ng = entity_enemy_spawn_projectile_ng;
     e->_init(e, p1, p2);
 
     // todo, move everything from here on to grunt_init

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "entity_projectile_gib.h"
 #include "game.h"
 #include "map.h"
 #include "data.h"
@@ -106,14 +107,14 @@ void map_init() {
     map_entity_table[ENTITY_ID_PROJECTILE_SHELL] = (map_entity_table_t) {
         "", entity_projectile_shell_constructor
     };
+    map_entity_table[ENTITY_ID_PROJECTILE_GIB] = (map_entity_table_t) {
+        "projectile_gib", entity_projectile_gib_constructor
+    };
     map_entity_table[ENTITY_ID_PARTICLE_SLUG] = (map_entity_table_t) {
         "particle_slug", entity_particle_constructor
     };
     map_entity_table[ENTITY_ID_PARTICLE_BLOOD] = (map_entity_table_t) {
         "particle_blood", entity_particle_constructor
-    };
-    map_entity_table[ENTITY_ID_PROJECTILE_GIB] = (map_entity_table_t) {
-        "particle_gib", entity_particle_constructor
     };
     map_entity_table[ENTITY_ID_BARREL] = (map_entity_table_t) {
         "barrel", entity_barrel_constructor
@@ -230,14 +231,7 @@ vector * map_get_entity_kv(mpack_node_t n) {
     return ep;
 }
 
-void mpack_map_parse() {
-
-    // pass in via args
-    // const char * data = (char *)data_map3;
-    // const size_t data_len = data_map3_len;
-
-    const char * data = (char *)data_map1;
-    const size_t data_len = data_map1_len;
+void mpack_map_parse(const char * data, const size_t data_len) {
 
     // push empty map, get pointer back
     map_t * tmp_map = vector_push(map_data, &(map_t) {
@@ -521,8 +515,9 @@ void mpack_map_parse() {
 void map_parse() {
 
     map_data = vector_init(sizeof(map_t));
-
-    mpack_map_parse();
+    
+    // todo, be smarter
+    mpack_map_parse((char *)data_map1, data_map1_len);
 
     const uint8_t * data = data_maps;
 

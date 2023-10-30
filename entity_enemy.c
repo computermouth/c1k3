@@ -80,6 +80,7 @@ void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_set_state = entity_enemy_set_state;
     e->_update = entity_enemy_update;
     e->_spawn_projectile = entity_enemy_spawn_projectile;
+    e->_spawn_projectile_ng = entity_enemy_spawn_projectile_ng;
     e->_receive_damage = entity_enemy_receive_damage;
     e->_kill = entity_enemy_kill;
     e->_did_collide = entity_enemy_did_collide;

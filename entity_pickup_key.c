@@ -16,6 +16,12 @@ void entity_pickup_key_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t
     e->_update = entity_pickup_key_update;
     e->_pickup = entity_pickup_key_pickup;
     e->_init(e, p1, p2);
+
+    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
+    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
+    uint32_t * uframes = vector_begin(frames);
+    e->_model->frames = uframes;
+    e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
 }
 
 void entity_pickup_key_init(entity_t * e, uint8_t p1, uint8_t p2) {

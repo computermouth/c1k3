@@ -22,6 +22,13 @@ void entity_projectile_gib_constructor(entity_t * e, vec3_t pos, uint8_t p1, uin
     // todo, kinda goofy paradigm to set the callback, immediately invoke
     // then never call again. could just combine constructor and init I think
     e->_init(e, p1, p2);
+
+    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
+    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
+    uint32_t * uframes = vector_begin(frames);
+    e->_model->frames = uframes;
+    e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
+    e->s = e->_params->entity_generic_params.ref_entt->size;
 }
 
 void entity_projectile_gib_init(entity_t * e, uint8_t p1, uint8_t p2) {

@@ -8,9 +8,9 @@
 #include "map.h"
 #include "render.h"
 
-uint32_t torch_anim_frames[] = {0,1,2,1,2,0,0,1,2};
+uint32_t torch_anim_frames[] = {0,1,2,1,2,0,0,1,2,1,2,1,2,0};
 animation_t torch_animation = {
-    .time = 0.5,
+    .time = 0.25,
     .frames = torch_anim_frames,
     .num_frames = sizeof(torch_anim_frames)/sizeof(torch_anim_frames[0]),
 };
@@ -28,6 +28,12 @@ void entity_torch_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) 
     // todo, kinda goofy paradigm to set the callback, immediately invoke
     // then never call again. could just combine constructor and init I think
     e->_init(e, p1, p2);
+
+    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
+    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
+    uint32_t * uframes = vector_begin(frames);
+    e->_model->frames = uframes;
+    e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
 }
 
 void entity_torch_init(entity_t * e, uint8_t p1, uint8_t p2) {

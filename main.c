@@ -31,6 +31,9 @@ void game_load() {
     // Load map & model containers
     map_parse();
     model_parse();
+    
+    // todo, parse all maps? or parse first map??
+    // mpack_map_parse((char *)data_map1, data_map1_len);
 
     // Create models. Many models share the same geometry just with different
     // sizes and textures.
@@ -44,121 +47,6 @@ void game_load() {
     // 7: torch
 
     model_t * tmp_mod = NULL;
-
-    tmp_mod = vector_at(model_data, 3);
-    model_q = model_load(tmp_mod->data, (vec3_t) {
-        1.0f,1.0f,1.0f
-    });
-
-    // tmp_mod = vector_at(model_data, 0);
-    // model_explosion = model_load(tmp_mod->data, (vec3_t) {
-    //     0.1,0.1,0.1
-    // });
-
-    // tmp_mod = vector_at(model_data, 0);
-    // model_blood = model_load(tmp_mod->data, (vec3_t) {
-    //     0.1,0.2,0.1
-    // });
-
-    tmp_mod = vector_at(model_data, 0);
-    model_gib = model_load(tmp_mod->data, (vec3_t) {
-        0.3,0.6,0.3
-    });
-
-    // tmp_mod = vector_at(model_data, 1);
-    // model_grunt = model_load(tmp_mod->data, (vec3_t) {
-    //     2.5,2.2,2.5
-    // });
-
-    // tmp_mod = vector_at(model_data, 1);
-    // model_enforcer = model_load(tmp_mod->data, (vec3_t) {
-    //     3,2.7,3
-    // });
-
-    tmp_mod = vector_at(model_data, 1);
-    model_zombie = model_load(tmp_mod->data, (vec3_t) {
-        1.5,2,1.5
-    });
-
-    // tmp_mod = vector_at(model_data, 1);
-    // model_ogre = model_load(tmp_mod->data, (vec3_t) {
-    //     4,3,4
-    // });
-
-    // tmp_mod = vector_at(model_data, 4);
-    // model_hound = model_load(tmp_mod->data, (vec3_t) {
-    //     2.5,2.5,2.5
-    // });
-
-    // tmp_mod = vector_at(model_data, 2);
-    // model_barrel = model_load(tmp_mod->data, (vec3_t) {
-    //     2, 2, 2
-    // });
-
-    tmp_mod = vector_at(model_data, 7);
-    model_torch = model_load(tmp_mod->data, (vec3_t) {
-        0.6,1,0.6
-    });
-
-    // tmp_mod = vector_at(model_data, 6);
-    // model_pickup_nailgun = model_load(tmp_mod->data, (vec3_t) {
-    //     1, 1, 1
-    // });
-
-    // tmp_mod = vector_at(model_data, 2);
-    // model_pickup_grenadelauncher = model_load(tmp_mod->data, (vec3_t) {
-    //     1, 0.5, 0.5
-    // });
-
-    tmp_mod = vector_at(model_data, 5);
-    model_pickup_box = model_load(tmp_mod->data, (vec3_t) {
-        0.7, 0.7, 0.7
-    });
-
-    // tmp_mod = vector_at(model_data, 5);
-    // model_pickup_grenades = model_load(tmp_mod->data, (vec3_t) {
-    //     0.5, 1, 0.5
-    // });
-
-    tmp_mod = vector_at(model_data, 5);
-    model_pickup_key = model_load(tmp_mod->data, (vec3_t) {
-        0.1, 0.7, 0.1
-    });
-
-    // tmp_mod = vector_at(model_data, 5);
-    // model_door = model_load(tmp_mod->data, (vec3_t) {
-    //     5, 5, 0.5
-    // });
-
-    // tmp_mod = vector_at(model_data, 2);
-    // model_shotgun = model_load(tmp_mod->data, (vec3_t) {
-    //     1,0.2,0.2
-    // });
-
-    // tmp_mod = vector_at(model_data, 2);
-    // model_grenadelauncher = model_load(tmp_mod->data, (vec3_t) {
-    //     0.7,0.4,0.4
-    // });
-
-    // tmp_mod = vector_at(model_data, 6);
-    // model_nailgun = model_load(tmp_mod->data, (vec3_t) {
-    //     0.7,0.7,0.7
-    // });
-
-    // tmp_mod = vector_at(model_data, 2);
-    // model_grenade = model_load(tmp_mod->data, (vec3_t) {
-    //     0.3,0.3,0.3
-    // });
-
-    // tmp_mod = vector_at(model_data, 2);
-    // model_nail = model_load(tmp_mod->data, (vec3_t) {
-    //     0.5,0.1,0.1
-    // });
-
-    // tmp_mod = vector_at(model_data, 2);
-    // model_plasma = model_load(tmp_mod->data, (vec3_t) {
-    //     0.5,0.1,0.1
-    // });
 
     // Take some parts from the grunt model and build individual giblet models
     // from it. Arms and legs and stuff...
@@ -199,17 +87,19 @@ void menu_run(float time_now) {
     }
 
     r_prepare_frame(0.0f, 0.0f, 0.0f);
-
-    r_draw((draw_call_t) {
-        .pos = vec3(0,0,0),
-        .yaw = 0,
-        .pitch = 0,
-        .texture = 1,
-        .f1 = model_q.frames[0],
-        .f2 = model_q.frames[0],
-        .mix = 0,
-        .num_verts = model_q.nv
-    });
+    
+    // ref_entt_t * re = map_ref_entt_from_eid(ENTITY_ID_TORCH);
+    // uint32_t * uframes = vector_begin(re->frames);
+    // r_draw((draw_call_t) {
+    //     .pos = vec3(0,0,0),
+    //     .yaw = 0,
+    //     .pitch = 0,
+    //     .texture = 1,
+    //     .f1 = uframes[0],
+    //     .f2 = uframes[0],
+    //     .mix = 0,
+    //     .num_verts = re->vert_len
+    // });
 
     r_push_light(
         // +/-200
