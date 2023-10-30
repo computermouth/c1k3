@@ -56,7 +56,7 @@ void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8
 void entity_enemy_mutant_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
     e->_health = 40;
     e->_speed = 0;
-    
+
     e->_STATE_IDLE              = ENEMY_STATE_IDLE;
     e->_STATE_PATROL            = ENEMY_STATE_IDLE;
     e->_STATE_FOLLOW            = ENEMY_STATE_IDLE;

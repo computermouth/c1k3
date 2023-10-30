@@ -27,7 +27,7 @@ void entity_projectile_gib_init(entity_t * e, uint8_t p1, uint8_t p2) {
 
     e->_yaw = randf();
     e->_pitch = randf();
-    
+
     entity_set_model(e);
 }
 

@@ -106,7 +106,7 @@ void entity_enemy_hound_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
         sizeof(hound_animations)/sizeof(hound_animations[0]),
         last_ref_entt
     );
-    
+
     entity_set_model(e);
 }
 

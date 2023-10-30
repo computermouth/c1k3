@@ -10,6 +10,7 @@
 #include "entity_light.h"
 #include "entity_player.h"
 #include "game.h"
+#include "map.h"
 #include "math.h"
 #include "input.h"
 #include "render.h"
@@ -178,7 +179,23 @@ void entity_player_update(entity_t * e) {
         }
         else {
             weapon->_shoot(weapon, e->p, e->_yaw, e->_pitch);
-            entity_t * tmp_light = game_spawn(entity_light_constructor, e->p, 10, 0xff, NULL);
+
+            typedef struct {
+                vec3_t position;
+                uint8_t rgba[4];
+            } entity_light_params_t;
+
+            entity_params_t l = {
+                .id = ENTITY_ID_LIGHT,
+                .entity_light_params = {
+                    .position = e->p,
+                    .rgba[0] = 0xff,
+                    .rgba[1] = 0xff,
+                    .rgba[2] = 0xff,
+                    .rgba[3] = 0x0a,
+                },
+            };
+            entity_t * tmp_light = game_spawn_ng(&l);
             tmp_light->_expires = game_time + 0.1;
             tmp_light->_die_at = game_time + 0.1;
         }

@@ -70,7 +70,21 @@ void entity_projectile_grenade_kill(entity_t * e) {
     entity_kill(e);
     e->_play_sound(e, sfx_grenade_explode);
     e->_spawn_particles(e, 2, 800, ENTITY_ID_PARTICLE_SLUG, 1);
-    entity_t * tmplight = game_spawn(entity_light_constructor, vec3_add(e->p, vec3(0,16,0)), 250, 0x08f, NULL);
+
+
+
+    entity_params_t l = {
+        .id = ENTITY_ID_LIGHT,
+        .entity_light_params = {
+            .position = vec3_add(e->p, vec3(0,16,0)),
+            .rgba[0] = 0xE0,
+            .rgba[1] = 0x60,
+            .rgba[2] = 0x80,
+            .rgba[3] = 0xFF,
+        },
+    };
+    entity_t * tmplight = game_spawn_ng(&l);
+
     tmplight->_expires = true;
     tmplight->_die_at = game_time + 0.2;
 }

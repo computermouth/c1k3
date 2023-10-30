@@ -82,7 +82,7 @@ void entity_enemy_ogre_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
         sizeof(ogre_animations)/sizeof(ogre_animations[0]),
         last_ref_entt
     );
-    
+
     e->_animation_collection = (animation_collection_t) {
         .animations = ogre_animations,
         .num_animations = sizeof(ogre_animations)/sizeof(ogre_animations[0]),

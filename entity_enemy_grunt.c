@@ -86,7 +86,7 @@ void entity_enemy_grunt_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
         sizeof(grunt_animations)/sizeof(grunt_animations[0]),
         last_ref_entt
     );
-    
+
     entity_set_model(e);
 
     e->_animation_collection = (animation_collection_t) {
@@ -99,7 +99,20 @@ void entity_enemy_grunt_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
 
 void entity_enemy_grunt_attack(entity_t * e) {
     e->_play_sound(e, sfx_shotgun_shoot);
-    entity_t * tmplight = game_spawn(entity_light_constructor, vec3_add(e->p, vec3(0,30,0)), 10, 0xff, NULL);
+
+
+    entity_params_t l = {
+        .id = ENTITY_ID_LIGHT,
+        .entity_light_params = {
+            .position = vec3_add(e->p, vec3(0,30,0)),
+            .rgba[0] = 0xff,
+            .rgba[1] = 0xff,
+            .rgba[2] = 0xff,
+            .rgba[3] = 0x0a,
+        },
+    };
+    entity_t * tmplight = game_spawn_ng(&l);
+
     tmplight->_expires = true;
     tmplight->_die_at = game_time + 0.1;
 

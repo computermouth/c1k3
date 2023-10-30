@@ -16,7 +16,7 @@ void entity_particle_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p
 void entity_particle_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_bounciness = 0.5f;
     e->f = 0.1f;
-    
+
     entity_set_model(e);
 }
 

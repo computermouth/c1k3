@@ -35,15 +35,20 @@ void entity_light_constructor(entity_t * e, vec3_t pos, uint8_t light, uint8_t c
 }
 
 void entity_light_init(entity_t * e, uint8_t light, uint8_t color) {
-    e->_light = light;
+    e->_light = e->_params->entity_light_params.rgba[3];
     e->_spawn_time = game_time;
     if (light == 1)
         e->_flicker = true;
     if (!color) // todo, real log
         printf("e: no color\n");
-    e->_color[0] = ((color & 0x7) << 5);
-    e->_color[1] = ((color & 0x1c) << 3);
-    e->_color[2] = (color & 0xc0);
+
+    e->_color[0] = e->_params->entity_light_params.rgba[0];
+    e->_color[1] = e->_params->entity_light_params.rgba[1];
+    e->_color[2] = e->_params->entity_light_params.rgba[2];
+
+    e->_color[0] -= e->_color[0] % 16;
+    e->_color[1] -= e->_color[1] % 16;
+    e->_color[2] -= e->_color[2] % 16;
 }
 
 void entity_light_update(entity_t * e) {

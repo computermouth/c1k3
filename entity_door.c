@@ -38,7 +38,7 @@ void entity_door_init(entity_t * e, uint8_t texture, uint8_t dir) {
     // Map 1 only has one door and it needs a key. Should be a flag
     // in the entity data instead :/
     e->_needs_key = (game_map_index == 1);
-    
+
     entity_set_model(e);
 }
 

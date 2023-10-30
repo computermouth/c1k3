@@ -54,7 +54,7 @@ void entity_torch_init(entity_t * e, uint8_t p1, uint8_t p2) {
     }
 
     e->_light = 0;
-    
+
     entity_set_model(e);
 }
 

@@ -91,7 +91,7 @@ void entity_enemy_enforcer_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
         .animations = enforcer_animations,
         .num_animations = sizeof(enforcer_animations)/sizeof(enforcer_animations[0]),
     };
-    
+
     entity_set_model(e);
 }
 

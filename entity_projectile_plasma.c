@@ -26,7 +26,7 @@ void entity_projectile_plasma_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_gravity = 0;
     e->_expires = true;
     e->_die_at = game_time + 3;
-    
+
     entity_set_model(e);
 }
 
@@ -41,9 +41,21 @@ void entity_projectile_plasma_did_collide(entity_t * e, int axis) {
     e->_kill(e);
     e->_play_sound(e, sfx_nailgun_hit);
     e->_spawn_particles(e, 2, 80, ENTITY_ID_PARTICLE_SLUG, 0.4);
-    entity_t * tmp_light = game_spawn(entity_light_constructor, vec3_add(e->p, vec3(0,10,0)), 5, 0xf5, NULL);
-    tmp_light->_expires = true;
-    tmp_light->_die_at = game_time + 0.1;
+
+    entity_params_t l = {
+        .id = ENTITY_ID_LIGHT,
+        .entity_light_params = {
+            .position = vec3_add(e->p, vec3(0,10,0)),
+            .rgba[0] = 0xff,
+            .rgba[1] = 0xff,
+            .rgba[2] = 0xff,
+            .rgba[3] = 0x05,
+        },
+    };
+    entity_t * tmplight = game_spawn_ng(&l);
+
+    tmplight->_expires = true;
+    tmplight->_die_at = game_time + 0.1;
 }
 
 void entity_projectile_plasma_did_collide_with_entity(entity_t * e, entity_t * other) {

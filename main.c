@@ -31,7 +31,7 @@ void game_load() {
     // Load map & model containers
     map_parse();
     model_parse();
-    
+
     // todo, parse all maps? or parse first map??
     // mpack_map_parse((char *)data_map1, data_map1_len);
 
@@ -75,7 +75,7 @@ void menu_run(float time_now) {
     }
 
     r_prepare_frame(0.0f, 0.0f, 0.0f);
-    
+
     // ref_entt_t * re = map_ref_entt_from_eid(ENTITY_ID_TORCH);
     // uint32_t * uframes = vector_begin(re->frames);
     // r_draw((draw_call_t) {
