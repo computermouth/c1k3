@@ -73,30 +73,21 @@ void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_
         p1 = 0;
 
     entity_enemy_constructor(e, pos, p1, p2);
-    e->_init = entity_enemy_grunt_init;
     e->_attack = entity_enemy_grunt_attack;
-    e->_init(e, p1, p2);
+    entity_enemy_grunt_init(e, p1, p2);
+}
 
-    // todo, move everything from here on to grunt_init
+void entity_enemy_grunt_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
+    e->_health = 40;
+
     entity_parse_animation_frames(
         e->_params->entity_generic_params.ref_entt,
         grunt_animations,
         sizeof(grunt_animations)/sizeof(grunt_animations[0]),
         last_ref_entt
     );
-
-    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
-    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
-    uint32_t * uframes = vector_begin(frames);
-    e->_model.frames = uframes;
-    e->_model.nv = e->_params->entity_generic_params.ref_entt->vert_len;
-    e->s = e->_params->entity_generic_params.ref_entt->size;
-}
-
-void entity_enemy_grunt_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
-    // e->_model = &(model_grunt);
-    e->_texture = 17;
-    e->_health = 40;
+    
+    entity_set_model(e);
 
     e->_animation_collection = (animation_collection_t) {
         .animations = grunt_animations,

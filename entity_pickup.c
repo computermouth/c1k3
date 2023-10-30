@@ -7,15 +7,13 @@ void entity_pickup_update(entity_t * e);
 
 void entity_pickup_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
     entity_constructor(e, pos, p1, p2);
-    e->_init = entity_pickup_init;
     e->_update = entity_pickup_update;
-    e->_init(e, p1, p2);
+    entity_pickup_init(e, p1, p2);
 }
 
 void entity_pickup_init(entity_t * e, uint8_t p1, uint8_t p2) {
-    // e->_model = &model_pickup_box;
+    // todo, investigate size here
     e->s = vec3(12,12,12);
-    e->_yaw += PI / 2.0f;
 }
 
 void entity_pickup_update(entity_t * e) {

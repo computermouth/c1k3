@@ -71,30 +71,12 @@ void entity_enemy_hound_attack(entity_t * e);
 
 void entity_enemy_hound_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
     entity_enemy_constructor(e, pos, p1, p2);
-    e->_init = entity_enemy_hound_init;
     e->_did_collide_with_entity = entity_enemy_hound_did_collide_with_entity;
     e->_attack = entity_enemy_hound_attack;
-    e->_init(e, p1, p2);
-
-    // todo, move everything from here on to grunt_init
-    entity_parse_animation_frames(
-        e->_params->entity_generic_params.ref_entt,
-        hound_animations,
-        sizeof(hound_animations)/sizeof(hound_animations[0]),
-        last_ref_entt
-    );
-
-    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
-    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
-    uint32_t * uframes = vector_begin(frames);
-    e->_model.frames = uframes;
-    e->_model.nv = e->_params->entity_generic_params.ref_entt->vert_len;
-    e->s = e->_params->entity_generic_params.ref_entt->size;
+    entity_enemy_hound_init(e, p1, p2);
 }
 
 void entity_enemy_hound_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
-    // e->_model = &(model_hound);
-    e->_texture = 22;
     e->_health = 25;
     e->_check_against = ENTITY_GROUP_PLAYER;
 
@@ -104,6 +86,8 @@ void entity_enemy_hound_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
     e->_evade_distance = 64;
     e->_attack_chance = 0.7;
     e->_speed = 256;
+
+    e->_set_state(e, e->_state);
 
     e->_state_collection = (enemy_state_collection_t) {
         .num_states = _ENEMY_STATE_NULL,
@@ -115,7 +99,15 @@ void entity_enemy_hound_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
         .num_animations = sizeof(hound_animations)/sizeof(hound_animations[0]),
     };
 
-    e->_set_state(e, e->_state);
+    // todo, move everything from here on to grunt_init
+    entity_parse_animation_frames(
+        e->_params->entity_generic_params.ref_entt,
+        hound_animations,
+        sizeof(hound_animations)/sizeof(hound_animations[0]),
+        last_ref_entt
+    );
+    
+    entity_set_model(e);
 }
 
 void entity_enemy_hound_did_collide_with_entity(entity_t * e, entity_t * other) {

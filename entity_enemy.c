@@ -75,7 +75,6 @@ void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_STATE_EVADE             = ENEMY_STATE_EVADE;
     e->_STATE_NULL              = _ENEMY_STATE_NULL;
 
-    // todo, these casts kinda suck
     e->_init = entity_enemy_init;
     e->_set_state = entity_enemy_set_state;
     e->_update = entity_enemy_update;
@@ -85,9 +84,7 @@ void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_kill = entity_enemy_kill;
     e->_did_collide = entity_enemy_did_collide;
 
-    // todo, kinda goofy paradigm to set the callback, immediately invoke
-    // then never call again. could just combine constructor and init I think
-    e->_init(e, p1, p2);
+    entity_enemy_init(e, p1, p2);
 }
 
 void entity_enemy_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {

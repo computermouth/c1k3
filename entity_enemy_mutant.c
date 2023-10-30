@@ -48,19 +48,15 @@ enemy_state_t mutant_enemy_states[_ENEMY_STATE_NULL] = {
 model_t model_mutant = { 0 };
 
 void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-
     entity_enemy_constructor(e, pos, p1, p2);
-    e->_init = entity_enemy_mutant_init;
     e->_attack = entity_enemy_mutant_attack;
-    e->_init(e, p1, p2);
+    entity_enemy_mutant_init(e, p1, p2);
+}
 
-    // todo, move everything from here on to mutant_init
-    entity_parse_animation_frames(
-        e->_params->entity_generic_params.ref_entt,
-        mutant_animations,
-        sizeof(mutant_animations)/sizeof(mutant_animations[0]),
-        last_ref_entt
-    );
+void entity_enemy_mutant_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
+    e->_health = 40;
+    e->_speed = 0;
+    
     e->_STATE_IDLE              = ENEMY_STATE_IDLE;
     e->_STATE_PATROL            = ENEMY_STATE_IDLE;
     e->_STATE_FOLLOW            = ENEMY_STATE_IDLE;
@@ -71,13 +67,16 @@ void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8
     e->_STATE_EVADE             = ENEMY_STATE_IDLE;
     e->_STATE_NULL              = _ENEMY_STATE_NULL;
 
-    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
-    entity_generic_params_t egp = e->_params->entity_generic_params;
-    ref_entt_t * re = egp.ref_entt;
-    vector * frames = re->frames;
-    uint32_t * uframes = vector_begin(frames);
-    e->_model.frames = uframes;
-    e->_model.nv = re->vert_len;
+    e->_set_state(e, e->_STATE_IDLE);
+
+    entity_parse_animation_frames(
+        e->_params->entity_generic_params.ref_entt,
+        mutant_animations,
+        sizeof(mutant_animations)/sizeof(mutant_animations[0]),
+        last_ref_entt
+    );
+
+    entity_set_model(e);
 
     e->_state_collection = (enemy_state_collection_t) {
         .num_states = _ENEMY_STATE_NULL,
@@ -88,16 +87,6 @@ void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8
         .animations = mutant_animations,
         .num_animations = sizeof(mutant_animations)/sizeof(mutant_animations[0]),
     };
-
-    e->_set_state(e, e->_STATE_IDLE);
-    e->s = e->_params->entity_generic_params.ref_entt->size;
-    fprintf(stderr, "mut sz: {%f,%f,%f}\n", e->s.x, e->s.y, e->s.z);
-}
-
-void entity_enemy_mutant_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
-    e->_health = 40;
-    e->_speed = 0;
-    // e->_model = &model_mutant;
 }
 
 void entity_enemy_mutant_attack(entity_t * e) {}

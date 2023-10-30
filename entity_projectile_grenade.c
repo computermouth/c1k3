@@ -17,32 +17,19 @@ void entity_projectile_grenade_kill(entity_t * e);
 void entity_projectile_grenade_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
     entity_constructor(e, pos, p1, p2);
 
-    e->_init = entity_projectile_grenade_init;
     e->_update = entity_projectile_grenade_update;
     e->_did_collide = entity_projectile_grenade_did_collide;
     e->_did_collide_with_entity = entity_projectile_grenade_did_collide_with_entity;
     e->_kill = entity_projectile_grenade_kill;
-    e->_init(e, p1, p2);
-
-    // todo, remove when weapons use spawn_projectile_ng
-    if (! e->_params)
-        return;
-
-    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
-    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
-    uint32_t * uframes = vector_begin(frames);
-    e->_model.frames = uframes;
-    e->_model.nv = e->_params->entity_generic_params.ref_entt->vert_len;
-    e->s = e->_params->entity_generic_params.ref_entt->size;
+    entity_projectile_grenade_init(e, p1, p2);
 }
 
 void entity_projectile_grenade_init(entity_t * e, uint8_t p1, uint8_t p2) {
-    e->_texture = 8;
-    // e->_model = &model_grenade;
     e->_expires = true;
     e->_die_at = game_time + 2;
     e->_bounciness = 0.5;
     e->_damage = 120;
+    entity_set_model(e);
 }
 
 void entity_projectile_grenade_update(entity_t * e) {

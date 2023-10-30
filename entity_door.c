@@ -19,20 +19,12 @@ void entity_door_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
 
     entity_constructor(e, pos, p1, p2);
 
-    e->_init = entity_door_init;
     e->_update = entity_door_update;
     e->_receive_damage = entity_door_receive_damage;
-    e->_init(e, p1, p2);
-
-    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
-    e->_model.frames = vector_begin(e->_params->entity_generic_params.ref_entt->frames);
-    e->_model.nv = e->_params->entity_generic_params.ref_entt->vert_len;
-    e->s = e->_params->entity_generic_params.ref_entt->size;
+    entity_door_init(e, p1, p2);
 }
 
 void entity_door_init(entity_t * e, uint8_t texture, uint8_t dir) {
-    // e->_model = &model_door;
-    e->_texture = texture;
     e->_health = 10;
     e->s = vec3(64, 64, 64);
     e->_start_pos = vec3_clone(e->p);
@@ -46,6 +38,8 @@ void entity_door_init(entity_t * e, uint8_t texture, uint8_t dir) {
     // Map 1 only has one door and it needs a key. Should be a flag
     // in the entity data instead :/
     e->_needs_key = (game_map_index == 1);
+    
+    entity_set_model(e);
 }
 
 float door_text_time = 0.0f;

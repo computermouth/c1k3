@@ -16,18 +16,10 @@ void entity_barrel_update(entity_t * e);
 void entity_barrel_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     entity_constructor(e, pos, p1, p2);
 
-    e->_init = entity_barrel_init;
     e->_kill = entity_barrel_kill;
     e->_update = entity_barrel_update;
 
-    e->_init(e, p1, p2);
-
-    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
-    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
-    uint32_t * uframes = vector_begin(frames);
-    e->_model.frames = uframes;
-    e->_model.nv = e->_params->entity_generic_params.ref_entt->vert_len;
-    e->s = e->_params->entity_generic_params.ref_entt->size;
+    entity_barrel_init(e, p1, p2);
 }
 
 void entity_barrel_update(entity_t * e) {
@@ -36,12 +28,10 @@ void entity_barrel_update(entity_t * e) {
 }
 
 void entity_barrel_init(entity_t * e, uint8_t p1, uint8_t p2) {
-    // e->_model = &model_barrel;
-    e->_texture = 21;
-    // e->_pitch = PI/2.0f;
     e->_health = 10;
-    e->s = vec3(8, 32, 8);
     e->_group = ENTITY_GROUP_ENEMY;
+    
+    entity_set_model(e);
 }
 
 void entity_barrel_kill(entity_t * e) {

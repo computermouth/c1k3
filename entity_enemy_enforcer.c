@@ -72,11 +72,14 @@ vec3_t entity_get_size(model_t * model) {
 
 void entity_enemy_enforcer_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     entity_enemy_constructor(e, pos, p1, p2);
-    e->_init = entity_enemy_enforcer_init;
     e->_attack = entity_enemy_enforcer_attack;
-    e->_init(e, p1, p2);
+    entity_enemy_enforcer_init(e, p1, p2);
+}
 
-    // todo, move everything from here on to grunt_init
+void entity_enemy_enforcer_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
+    e->_health = 80;
+    e->s = vec3(14,44,14);
+
     entity_parse_animation_frames(
         e->_params->entity_generic_params.ref_entt,
         enforcer_animations,
@@ -84,28 +87,15 @@ void entity_enemy_enforcer_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint
         last_ref_entt
     );
 
-    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
-    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
-    uint32_t * uframes = vector_begin(frames);
-    e->_model.frames = uframes;
-    e->_model.nv = e->_params->entity_generic_params.ref_entt->vert_len;
-    e->s = e->_params->entity_generic_params.ref_entt->size;
-}
-
-void entity_enemy_enforcer_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
-    // e->_model = &(model_enforcer);
-    e->_texture = 19;
-    e->_health = 80;
-    e->s = vec3(14,44,14);
-
     e->_animation_collection = (animation_collection_t) {
         .animations = enforcer_animations,
         .num_animations = sizeof(enforcer_animations)/sizeof(enforcer_animations[0]),
     };
+    
+    entity_set_model(e);
 }
 
 void entity_enemy_enforcer_attack(entity_t * e) {
     e->_play_sound(e, sfx_plasma_shoot);
-    // e->_spawn_projectile(e, entity_projectile_plasma_constructor, 800, 0, 0);
     e->_spawn_projectile_ng(e, ENTITY_ID_PROJECTILE_PLASMA, 800, 0, 0);
 }

@@ -14,30 +14,19 @@ void entity_projectile_nail_did_collide_with_entity(entity_t * e, entity_t * oth
 void entity_projectile_nail_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
     entity_constructor(e, pos, p1, p2);
 
-    // todo, these casts kinda suck
-    e->_init = entity_projectile_nail_init;
     e->_update = entity_projectile_nail_update;
     e->_did_collide = entity_projectile_nail_did_collide;
     e->_did_collide_with_entity = entity_projectile_nail_did_collide_with_entity;
 
-    // todo, kinda goofy paradigm to set the callback, immediately invoke
-    // then never call again. could just combine constructor and init I think
-    e->_init(e, p1, p2);
-
-    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
-    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
-    uint32_t * uframes = vector_begin(frames);
-    e->_model.frames = uframes;
-    e->_model.nv = e->_params->entity_generic_params.ref_entt->vert_len;
-    e->s = e->_params->entity_generic_params.ref_entt->size;
+    entity_projectile_nail_init(e, p1, p2);
 }
 
 void entity_projectile_nail_init(entity_t * e, uint8_t p1, uint8_t p2) {
-    e->_texture = 2;
-    // e->_model = &model_nail;
     e->_gravity = 0;
     e->_expires = true;
     e->_die_at = game_time + 3;
+    
+    entity_set_model(e);
 }
 
 void entity_projectile_nail_update(entity_t * e) {

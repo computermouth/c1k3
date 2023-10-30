@@ -11,21 +11,13 @@ void entity_pickup_grenadelauncher_pickup(entity_t * e);
 
 void entity_pickup_grenadelauncher_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
     entity_pickup_constructor(e, pos, p1, p2);
-    e->_init = entity_pickup_grenadelauncher_init;
     e->_update = entity_pickup_grenadelauncher_update;
     e->_pickup = entity_pickup_grenadelauncher_pickup;
-    e->_init(e, p1, p2);
-
-    e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
-    vector * frames = e->_params->entity_generic_params.ref_entt->frames;
-    e->_model.frames = vector_begin(frames);
-    e->_model.nv = e->_params->entity_generic_params.ref_entt->vert_len;
-    e->s = e->_params->entity_generic_params.ref_entt->size;
+    entity_pickup_grenadelauncher_init(e, p1, p2);
 }
 
 void entity_pickup_grenadelauncher_init(entity_t * e, uint8_t p1, uint8_t p2) {
-    e->_texture = 21;
-    // e->_model = &model_pickup_grenadelauncher;
+    entity_set_model(e);
 }
 
 void entity_pickup_grenadelauncher_update(entity_t * e) {
