@@ -106,7 +106,7 @@ void entity_enemy_grunt_attack(entity_t * e) {
     for (int32_t i = 0; i < 3; i++) {
         e->_spawn_projectile(
             e,
-            entity_projectile_shell_constructor, 10000,
+            ENTITY_ID_PROJECTILE_SHELL, 10000,
             randf() * 0.08 - 0.04, randf() * 0.08 - 0.04
         );
     }

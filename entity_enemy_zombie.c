@@ -114,5 +114,5 @@ void entity_enemy_zombie_receive_damage(entity_t * e, entity_t * from, int32_t a
 
 void entity_enemy_zombie_attack(entity_t * e) {
     e->_play_sound(e, sfx_enemy_hit);
-    e->_spawn_projectile_ng(e, ENTITY_ID_PROJECTILE_GIB, 600, 0, -0.5);
+    e->_spawn_projectile(e, ENTITY_ID_PROJECTILE_GIB, 600, 0, -0.5);
 }

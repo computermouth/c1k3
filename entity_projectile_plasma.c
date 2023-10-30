@@ -40,8 +40,7 @@ void entity_projectile_plasma_update(entity_t * e) {
 void entity_projectile_plasma_did_collide(entity_t * e, int axis) {
     e->_kill(e);
     e->_play_sound(e, sfx_nailgun_hit);
-    // e->_spawn_particles(e, 2, 80, &model_explosion, 8, 0.4);
-    e->_spawn_particles_ng(e, 2, 80, ENTITY_ID_PARTICLE_SLUG, 0.4);
+    e->_spawn_particles(e, 2, 80, ENTITY_ID_PARTICLE_SLUG, 0.4);
     entity_t * tmp_light = game_spawn(entity_light_constructor, vec3_add(e->p, vec3(0,10,0)), 5, 0xf5, NULL);
     tmp_light->_expires = true;
     tmp_light->_die_at = game_time + 0.1;

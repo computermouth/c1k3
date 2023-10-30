@@ -55,7 +55,7 @@ enemy_state_t default_enemy_states[_ENEMY_STATE_NULL] = {
 void entity_enemy_init(entity_t * e, uint8_t p1, uint8_t p2);
 void entity_enemy_set_state(entity_t * e, uint32_t state);
 void entity_enemy_update(entity_t * e);
-entity_t * entity_enemy_spawn_projectile(entity_t * e, void (*func)(entity_t *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset);
+entity_t * entity_enemy_spawn_projectile(entity_t * e, entity_id_t eid, float speed, float yaw_offset, float pitch_offset);
 void entity_enemy_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 void entity_enemy_kill(entity_t * e);
 void entity_enemy_did_collide(entity_t * e, int axis);
@@ -79,7 +79,6 @@ void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_set_state = entity_enemy_set_state;
     e->_update = entity_enemy_update;
     e->_spawn_projectile = entity_enemy_spawn_projectile;
-    e->_spawn_projectile_ng = entity_enemy_spawn_projectile_ng;
     e->_receive_damage = entity_enemy_receive_damage;
     e->_kill = entity_enemy_kill;
     e->_did_collide = entity_enemy_did_collide;
@@ -227,25 +226,7 @@ void entity_enemy_update(entity_t * e) {
     e->_draw_model(e);
 }
 
-entity_t * entity_enemy_spawn_projectile(entity_t * e, void (*func)(entity_t *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset) {
-    entity_t * projectile = game_spawn(func, e->p, 0, 0, NULL);
-    projectile->_check_against = ENTITY_GROUP_PLAYER;
-    projectile->_yaw = e->_yaw + PI/2.0f;
-
-    // shitty hack for dead player
-    float pitch = atan2f(e->p.y, e->p.x) + pitch_offset;
-    if (game_entity_player)
-        pitch = atan2f(e->p.y - game_entity_player->p.y, vec3_dist(e->p, game_entity_player->p)) + pitch_offset;
-
-    projectile->v = vec3_rotate_yaw_pitch(
-                        vec3(0, 0, speed),
-                        e->_yaw + yaw_offset,
-                        pitch
-                    );
-    return projectile;
-}
-
-entity_t * entity_enemy_spawn_projectile_ng(entity_t * e, entity_id_t eid, float speed, float yaw_offset, float pitch_offset) {
+entity_t * entity_enemy_spawn_projectile(entity_t * e, entity_id_t eid, float speed, float yaw_offset, float pitch_offset) {
 
     entity_params_t ep = map_entt_params_from_eid(eid);
     ep.entity_generic_params.position = e->p;
@@ -277,15 +258,14 @@ void entity_enemy_receive_damage(entity_t * e, entity_t * from, int32_t amount) 
         e->_set_state(e, ENEMY_STATE_FOLLOW);
     }
 
-    // e->_spawn_particles(e, 2, 200, &(model_blood), 18, 0.5);
-    e->_spawn_particles_ng(e, 2, 200, ENTITY_ID_PARTICLE_BLOOD, 0.5);
+    e->_spawn_particles(e, 2, 200, ENTITY_ID_PARTICLE_BLOOD, 0.5);
 }
 
 void entity_enemy_kill(entity_t * e) {
     entity_kill(e);
 
     for (uint32_t i = ENTITY_ID_GIBS000; i <= ENTITY_ID_GIBS006; i++) {
-        e->_spawn_particles_ng(e, 2, 300, i, 1);
+        e->_spawn_particles(e, 2, 300, i, 1);
     }
     e->_play_sound(e, sfx_enemy_gib);
     game_entities_enemies_pop(&e);

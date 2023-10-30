@@ -51,7 +51,7 @@ void entity_barrel_kill(entity_t * e) {
 
     // todo, barrelgib
     for (uint32_t i = ENTITY_ID_GIBS000; i <= ENTITY_ID_GIBS006; i++) {
-        e->_spawn_particles_ng(e, 2, 600, i, 1);
+        e->_spawn_particles(e, 2, 600, i, 1);
     }
 
     entity_t * tmp_light = game_spawn(entity_light_constructor, vec3_add(e->p, vec3(0,16,0)), 250, 0x08f, NULL);

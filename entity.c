@@ -110,7 +110,6 @@ void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_did_collide_with_entity = entity_did_collide_with_entity;
     e->_draw_model = entity_draw_model;
     e->_spawn_particles = entity_spawn_particles;
-    e->_spawn_particles_ng = entity_spawn_particles_ng;
     e->_receive_damage = entity_receive_damage;
     e->_play_sound = entity_play_sound;
     e->_kill = entity_kill;
@@ -313,26 +312,7 @@ void entity_draw_model(entity_t * e) {
     r_draw(call);
 }
 
-void entity_spawn_particles(entity_t * e, int amount, int speed, model_t model, int texture, float lifetime) {
-    for (uint32_t i = 0; i < amount; i++) {
-
-        vec3_t move_dist = vec3_mulf(e->v, game_tick);
-        vec3_t tickdist = vec3_divf(move_dist, 16.0f);
-
-        entity_t * particle = game_spawn((void (*)(entity_t *, vec3_t, uint8_t, uint8_t))entity_particle_constructor, vec3_sub(e->p, tickdist), 0, 0, NULL);
-        particle->_model = model;
-        particle->_texture = texture;
-        particle->_expires = true;
-        particle->_die_at = game_time + lifetime + randf() * lifetime * 0.2;
-        particle->v = vec3(
-                          (randf() - 0.5) * speed,
-                          randf() * speed,
-                          (randf() - 0.5) * speed
-                      );
-    }
-}
-
-void entity_spawn_particles_ng(entity_t * e, int amount, int speed, entity_id_t eid, float lifetime) {
+void entity_spawn_particles(entity_t * e, int amount, int speed, entity_id_t eid, float lifetime) {
 
     entity_params_t ep = map_entt_params_from_eid(eid);
 
@@ -377,6 +357,6 @@ void entity_kill(entity_t * e) {
 void entity_pickup(entity_t * e) {}
 void entity_set_state(entity_t * e, uint32_t state) {}
 void entity_attack(entity_t * e) {}
-entity_t * entity_spawn_projectile(entity_t * e, void (*func)(entity_t *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset) {
+entity_t * entity_spawn_projectile(entity_t * e, entity_id_t eid, float speed, float yaw_offset, float pitch_offset) {
     return NULL;
 }

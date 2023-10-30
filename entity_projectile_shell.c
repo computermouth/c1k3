@@ -40,10 +40,7 @@ void entity_projectile_shell_update(entity_t * e) {
 
 void entity_projectile_shell_did_collide(entity_t * e, int axis) {
     e->_kill(e);
-    // e->_spawn_particles(e, 2, 80, &model_explosion, 4, 0.4);
-    e->_spawn_particles_ng(e, 2, 80, ENTITY_ID_PARTICLE_SLUG, 0.4);
-    // todo, change parameter types to float, fuck it
-    // entity_t * tmp_light = game_spawn(entity_light_constructor, e->p, 0.5, 0xff);
+    e->_spawn_particles(e, 2, 80, ENTITY_ID_PARTICLE_SLUG, 0.4);
     entity_t * tmp_light = game_spawn(entity_light_constructor, e->p, 1, 0xff, NULL);
     tmp_light->_expires = true;
     tmp_light->_die_at = game_time + 0.1;
