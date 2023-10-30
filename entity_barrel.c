@@ -25,8 +25,8 @@ void entity_barrel_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) 
     e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
     vector * frames = e->_params->entity_generic_params.ref_entt->frames;
     uint32_t * uframes = vector_begin(frames);
-    e->_model->frames = uframes;
-    e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
+    e->_model.frames = uframes;
+    e->_model.nv = e->_params->entity_generic_params.ref_entt->vert_len;
     e->s = e->_params->entity_generic_params.ref_entt->size;
 }
 
@@ -36,7 +36,7 @@ void entity_barrel_update(entity_t * e) {
 }
 
 void entity_barrel_init(entity_t * e, uint8_t p1, uint8_t p2) {
-    e->_model = &model_barrel;
+    // e->_model = &model_barrel;
     e->_texture = 21;
     // e->_pitch = PI/2.0f;
     e->_health = 10;
@@ -59,11 +59,11 @@ void entity_barrel_kill(entity_t * e) {
     entity_kill(e);
     e->_play_sound(e, sfx_grenade_explode);
 
-    len = vector_size(model_gib_pieces);
-    for (uint32_t i = 0; i < len; i++) {
-        model_t * m = vector_at(model_gib_pieces, i);
-        e->_spawn_particles(e, 2, 600, m, 21, 1);
+    // todo, barrelgib
+    for (uint32_t i = ENTITY_ID_GIBS000; i <= ENTITY_ID_GIBS006; i++) {
+        e->_spawn_particles_ng(e, 2, 600, i, 1);
     }
+
     entity_t * tmp_light = game_spawn(entity_light_constructor, vec3_add(e->p, vec3(0,16,0)), 250, 0x08f, NULL);
     tmp_light->_expires = true;
     tmp_light->_die_at = game_time + 0.2;

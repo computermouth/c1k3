@@ -76,8 +76,8 @@ void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8
     ref_entt_t * re = egp.ref_entt;
     vector * frames = re->frames;
     uint32_t * uframes = vector_begin(frames);
-    e->_model->frames = uframes;
-    e->_model->nv = re->vert_len;
+    e->_model.frames = uframes;
+    e->_model.nv = re->vert_len;
 
     e->_state_collection = (enemy_state_collection_t) {
         .num_states = _ENEMY_STATE_NULL,
@@ -97,7 +97,7 @@ void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8
 void entity_enemy_mutant_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
     e->_health = 40;
     e->_speed = 0;
-    e->_model = &model_mutant;
+    // e->_model = &model_mutant;
 }
 
 void entity_enemy_mutant_attack(entity_t * e) {}

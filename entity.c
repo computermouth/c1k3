@@ -117,9 +117,7 @@ void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
 void entity_init(entity_t * e, uint8_t p1, uint8_t p2) {}
 
 void entity_update(entity_t * e) {
-    if (e->_model) {
-        e->_draw_model(e);
-    }
+    e->_draw_model(e);
 }
 
 void entity_update_physics(entity_t * e) {
@@ -298,15 +296,15 @@ void entity_draw_model(entity_t * e) {
         .yaw = e->_yaw,
         .pitch = e->_pitch,
         .texture = e->_texture,
-        .f1 = e->_model->frames[frame_cur],
-        .f2 = e->_model->frames[frame_next],
+        .f1 = e->_model.frames[frame_cur],
+        .f2 = e->_model.frames[frame_next],
         .mix = mix,
-        .num_verts = e->_model->nv
+        .num_verts = e->_model.nv
     };
     r_draw(call);
 }
 
-void entity_spawn_particles(entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime) {
+void entity_spawn_particles(entity_t * e, int amount, int speed, model_t model, int texture, float lifetime) {
     for (uint32_t i = 0; i < amount; i++) {
 
         vec3_t move_dist = vec3_mulf(e->v, game_tick);

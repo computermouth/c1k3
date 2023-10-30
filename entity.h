@@ -77,7 +77,7 @@ typedef struct entity_t {
     vec3_t s;
     float f; // friction?
 
-    model_t * _model;
+    model_t _model;
     animation_collection_t _animation_collection;
     animation_t * _anim;
     float _anim_time;
@@ -147,7 +147,7 @@ typedef struct entity_t {
     void (*_did_collide)(struct entity_t * e, int axis);
     void (*_did_collide_with_entity)(struct entity_t * e, struct entity_t * other);
     void (*_draw_model)(struct entity_t * e);
-    void (*_spawn_particles)(struct entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime);
+    void (*_spawn_particles)(struct entity_t * e, int amount, int speed, model_t model, int texture, float lifetime);
     void (*_spawn_particles_ng)(struct entity_t * e, int amount, int speed, entity_id_t eid, float lifetime);
     void (*_set_state)(struct entity_t * e, uint32_t state);
     struct entity_t * (*_spawn_projectile)(struct entity_t * e, void (*func)(struct entity_t *, vec3_t, uint8_t, uint8_t), float speed, float yaw_offset, float pitch_offset);
@@ -170,7 +170,7 @@ bool entity_collides(entity_t * e, vec3_t p);
 void entity_did_collide(entity_t * e, int axis); // todo, axis should probably be an enum
 void entity_did_collide_with_entity(entity_t * e, entity_t * other);
 void entity_draw_model(entity_t * e);
-void entity_spawn_particles(entity_t * e, int amount, int speed, model_t * model, int texture, float lifetime);
+void entity_spawn_particles(entity_t * e, int amount, int speed, model_t model, int texture, float lifetime);
 void entity_spawn_particles_ng(entity_t * e, int amount, int speed, entity_id_t eid, float lifetime);
 void entity_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 void entity_play_sound(entity_t * e, Mix_Chunk * sound);

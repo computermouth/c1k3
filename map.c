@@ -131,6 +131,27 @@ void map_init() {
     map_entity_table[ENTITY_ID_TORCH] = (map_entity_table_t) {
         "torch", entity_torch_constructor
     };
+    map_entity_table[ENTITY_ID_GIBS000] = (map_entity_table_t) {
+        "gibs.000", entity_particle_constructor
+    };
+    map_entity_table[ENTITY_ID_GIBS001] = (map_entity_table_t) {
+        "gibs.001", entity_particle_constructor
+    };
+    map_entity_table[ENTITY_ID_GIBS002] = (map_entity_table_t) {
+        "gibs.002", entity_particle_constructor
+    };
+    map_entity_table[ENTITY_ID_GIBS003] = (map_entity_table_t) {
+        "gibs.003", entity_particle_constructor
+    };
+    map_entity_table[ENTITY_ID_GIBS004] = (map_entity_table_t) {
+        "gibs.004", entity_particle_constructor
+    };
+    map_entity_table[ENTITY_ID_GIBS005] = (map_entity_table_t) {
+        "gibs.005", entity_particle_constructor
+    };
+    map_entity_table[ENTITY_ID_GIBS006] = (map_entity_table_t) {
+        "gibs.006", entity_particle_constructor
+    };
 }
 
 typedef void (*constfunc)(entity_t *, vec3_t, uint8_t, uint8_t);
@@ -515,7 +536,7 @@ void mpack_map_parse(const char * data, const size_t data_len) {
 void map_parse() {
 
     map_data = vector_init(sizeof(map_t));
-    
+
     // todo, be smarter
     mpack_map_parse((char *)data_map1, data_map1_len);
 

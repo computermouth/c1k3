@@ -26,9 +26,8 @@ void entity_particle_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p
         e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
         vector * frames = e->_params->entity_generic_params.ref_entt->frames;
         uint32_t * uframes = vector_begin(frames);
-        e->_model = &empty;
-        e->_model->frames = uframes;
-        e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
+        e->_model.frames = uframes;
+        e->_model.nv = e->_params->entity_generic_params.ref_entt->vert_len;
         e->s = e->_params->entity_generic_params.ref_entt->size;
     }
 

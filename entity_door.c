@@ -25,13 +25,13 @@ void entity_door_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_init(e, p1, p2);
 
     e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
-    e->_model->frames = vector_begin(e->_params->entity_generic_params.ref_entt->frames);
-    e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
+    e->_model.frames = vector_begin(e->_params->entity_generic_params.ref_entt->frames);
+    e->_model.nv = e->_params->entity_generic_params.ref_entt->vert_len;
     e->s = e->_params->entity_generic_params.ref_entt->size;
 }
 
 void entity_door_init(entity_t * e, uint8_t texture, uint8_t dir) {
-    e->_model = &model_door;
+    // e->_model = &model_door;
     e->_texture = texture;
     e->_health = 10;
     e->s = vec3(64, 64, 64);

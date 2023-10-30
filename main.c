@@ -46,18 +46,6 @@ void game_load() {
     // 6: nailgun
     // 7: torch
 
-    model_t * tmp_mod = NULL;
-
-    // Take some parts from the grunt model and build individual giblet models
-    // from it. Arms and legs and stuff...
-    tmp_mod = vector_at(model_data, 1);
-    for (uint32_t i = 0; i < 204; i+=34) {
-        model_t m = model_load(tmp_mod->data, vec3(2,1,2));
-        m.frames[0] += i;
-        m.nv = 34;
-        vector_push(model_gib_pieces, &m);
-    }
-
     r_submit_buffer();
 
     audio_init();

@@ -13,7 +13,7 @@ void entity_pickup_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2)
 }
 
 void entity_pickup_init(entity_t * e, uint8_t p1, uint8_t p2) {
-    e->_model = &model_pickup_box;
+    // e->_model = &model_pickup_box;
     e->s = vec3(12,12,12);
     e->_yaw += PI / 2.0f;
 }

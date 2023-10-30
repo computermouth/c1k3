@@ -287,10 +287,8 @@ void entity_enemy_receive_damage(entity_t * e, entity_t * from, int32_t amount) 
 void entity_enemy_kill(entity_t * e) {
     entity_kill(e);
 
-    uint32_t len = vector_size(model_gib_pieces);
-    for (uint32_t i = 0; i < len; i++) {
-        model_t * m = vector_at(model_gib_pieces, i);
-        e->_spawn_particles(e, 2, 300, m, 18, 1);
+    for (uint32_t i = ENTITY_ID_GIBS000; i <= ENTITY_ID_GIBS006; i++) {
+        e->_spawn_particles_ng(e, 2, 300, i, 1);
     }
     e->_play_sound(e, sfx_enemy_gib);
     game_entities_enemies_pop(&e);

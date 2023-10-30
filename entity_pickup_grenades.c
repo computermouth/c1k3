@@ -16,14 +16,14 @@ void entity_pickup_grenades_constructor(entity_t * e, vec3_t pos, uint8_t p1, ui
 
     e->_texture = e->_params->entity_generic_params.ref_entt->tex_id;
     vector * frames = e->_params->entity_generic_params.ref_entt->frames;
-    uint32_t * uframes = vector_begin(frames);
-    e->_model->frames = uframes;
-    e->_model->nv = e->_params->entity_generic_params.ref_entt->vert_len;
+    // uint32_t * uframes = 
+    e->_model.frames = vector_begin(frames);
+    e->_model.nv = e->_params->entity_generic_params.ref_entt->vert_len;
 }
 
 void entity_pickup_grenades_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_texture = 25;
-    e->_model = &model_pickup_grenades;
+    // e->_model = &model_pickup_grenades;
 }
 
 void entity_pickup_grenades_pickup(entity_t * e) {
