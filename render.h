@@ -34,6 +34,11 @@ typedef struct {
     uint32_t height;
 } meta_tex_t;
 
+typedef struct {
+    uint8_t * data;
+    uint64_t len;
+} png_bin_t;
+
 // to free on quit
 extern vector * r_draw_calls;
 extern vector * r_textures;

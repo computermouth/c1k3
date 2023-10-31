@@ -25,12 +25,8 @@ void game_load() {
     r_init();
     map_init();
 
-    for(int i = 0; i < data_textures_len; i++)
-        r_create_texture(data_textures[i]);
-
     // Load map & model containers
     map_parse();
-    model_parse();
 
     // todo, parse all maps? or parse first map??
     // mpack_map_parse((char *)data_map1, data_map1_len);

@@ -16,6 +16,15 @@ void weapon_init(weapon_t * w);
 void weapon_shoot(weapon_t * w, vec3_t pos, float yaw, float pitch);
 void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch);
 
+void weapon_set_model(weapon_t * w, entity_id_t eid) {
+    
+    entity_params_t ep = map_entt_params_from_eid(eid);
+    
+    w->_texture = ep.entity_generic_params.ref_entt->tex_id;
+    w->_model.frames = vector_begin(ep.entity_generic_params.ref_entt->frames);
+    w->_model.nv = ep.entity_generic_params.ref_entt->vert_len;
+}
+
 weapon_t weapon_constructor() {
     weapon_t w = {0};
     w._found = true;
@@ -79,27 +88,17 @@ weapon_t weapon_shotgun_constructor() {
     w._spawn_projectile = (void (*)(void * w, vec3_t pos, float yaw, float pitch))weapon_shotgun_spawn_projectile;
     w._init(&w);
 
-    ref_entt_t * shotgun = map_ref_entt_from_name("shotgun");
-    if(shotgun == NULL)
-        fprintf(stderr, "shotgun not found, incoming crash\n");
-
-    w._texture = shotgun->tex_id;
-    vector * frames = shotgun->frames;
-    uint32_t * uframes = vector_begin(frames);
-    w._model->frames = uframes;
-    w._model->nv = shotgun->vert_len;
-
     return w;
 }
 
 void weapon_shotgun_init(weapon_t * w) {
-    w->_texture = 7;
-    w->_model = &model_shotgun;
     w->_sound = sfx_shotgun_shoot;
     w->_needs_ammo = 0;
     w->_reload = 0.9f;
     w->_projectile_type_ng = ENTITY_ID_PROJECTILE_SHELL;
     w->_projectile_speed = 10000;
+    
+    weapon_set_model(w, ENTITY_ID_PICKUP_SHOTGUN);
 }
 
 void weapon_shotgun_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
@@ -119,28 +118,18 @@ weapon_t weapon_nailgun_constructor() {
     w._init = (void (*)(void * w))weapon_nailgun_init;
     w._init(&w);
 
-    ref_entt_t * nailgun = map_ref_entt_from_name("nailgun");
-    if(nailgun == NULL)
-        fprintf(stderr, "nailgun not found, incoming crash\n");
-
-    w._texture = nailgun->tex_id;
-    vector * frames = nailgun->frames;
-    uint32_t * uframes = vector_begin(frames);
-    w._model->frames = uframes;
-    w._model->nv = nailgun->vert_len;
-
     return w;
 }
 
 void weapon_nailgun_init(weapon_t * w) {
-    w->_texture = 4;
-    w->_model = &model_nailgun;
     w->_sound = sfx_nailgun_shoot;
     w->_ammo = 100;
     w->_reload = 0.09;
     w->_projectile_type_ng = ENTITY_ID_PROJECTILE_NAIL;
     w->_projectile_speed = 1300;
     w->_projectile_offset = vec3(6,0,8);
+    
+    weapon_set_model(w, ENTITY_ID_PICKUP_NAILGUN);
 }
 
 // GRENADE LAUNCHER ====================================================================
@@ -152,24 +141,15 @@ weapon_t weapon_grenadelauncher_constructor() {
     w._init = (void (*)(void * w))weapon_grenadelauncher_init;
     w._init(&w);
 
-    ref_entt_t * grenadelauncher = map_ref_entt_from_name("grenadelauncher");
-    if(grenadelauncher == NULL)
-        fprintf(stderr, "nailgun not found, incoming crash\n");
-
-    w._texture = grenadelauncher->tex_id;
-    vector * frames = grenadelauncher->frames;
-    uint32_t * uframes = vector_begin(frames);
-    w._model->frames = uframes;
-    w._model->nv = grenadelauncher->vert_len;
     return w;
 }
 
 void weapon_grenadelauncher_init(weapon_t * w) {
-    w->_texture = 21;
-    w->_model = &model_grenadelauncher;
     w->_sound = sfx_grenade_shoot;
     w->_ammo = 10;
     w->_reload = 0.650;
     w->_projectile_type_ng = ENTITY_ID_PROJECTILE_GRENADE;
     w->_projectile_speed = 900;
+    
+    weapon_set_model(w, ENTITY_ID_PICKUP_GRENADELAUNCHER);
 }

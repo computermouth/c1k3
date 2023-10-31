@@ -25,7 +25,7 @@ typedef struct {
     entity_id_t _projectile_type_ng;
     float _projectile_speed;
     uint32_t _texture;
-    model_t * _model;
+    model_t _model;
     float _reload;
     void (*_init)(void * w);
     void (*_shoot)(void * w, vec3_t pos, float yaw, float pitch);

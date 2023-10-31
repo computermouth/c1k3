@@ -234,10 +234,10 @@ void entity_player_update(entity_t * e) {
         .yaw = e->_yaw + PI / 2.0f,
         .pitch = e->_pitch,
         .texture = weapon->_texture,
-        .f1 = weapon->_model->frames[0],
-        .f2 = weapon->_model->frames[0],
+        .f1 = weapon->_model.frames[0],
+        .f2 = weapon->_model.frames[0],
         .mix = 0,
-        .num_verts = weapon->_model->nv
+        .num_verts = weapon->_model.nv
     };
 
     r_draw(d);
