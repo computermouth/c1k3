@@ -159,27 +159,6 @@ constfunc map_constfunc_from_eid(entity_id_t eid) {
     return map_entity_table[eid].constructor_func;
 }
 
-// todo, remove once levels have been reproduced
-void (*spawn_class[])(entity_t *, vec3_t, uint8_t, uint8_t) = {
-    /* 00 */ entity_player_constructor,
-    /* 01 */ entity_enemy_grunt_constructor,
-    /* 02 */ entity_enemy_enforcer_constructor,
-    /* 03 */ entity_enemy_ogre_constructor,
-    /* 04 */ entity_enemy_zombie_constructor,
-    /* 05 */ entity_enemy_hound_constructor,
-    /* 06 */ entity_pickup_nailgun_constructor,
-    /* 07 */ entity_pickup_grenadelauncher_constructor,
-    /* 08 */ entity_pickup_health_constructor,
-    /* 09 */ entity_pickup_nails_constructor,
-    /* 10 */ entity_pickup_grenades_constructor,
-    /* 11 */ entity_barrel_constructor,
-    /* 12 */ entity_light_constructor,
-    /* 13 */ entity_trigger_level_constructor,
-    /* 14 */ entity_door_constructor,
-    /* 15 */ entity_pickup_key_constructor,
-    /* 16 */ entity_torch_constructor,
-};
-
 ref_entt_t * map_ref_entt_from_eid(entity_id_t eid) {
     if(eid < 0 || eid > __ENTITY_ID_END) {
         fprintf(stderr, "eid not found: %d\n", eid);
@@ -241,8 +220,6 @@ vector * map_get_entity_kv(mpack_node_t n) {
         mpack_node_t v = mpack_node_map_value_at(n, i);
         if(mpack_node_type(k) != mpack_type_str || mpack_node_type(v) != mpack_type_str)
             return NULL;
-        size_t klen = mpack_node_strlen(k);
-        size_t vlen = mpack_node_strlen(v);
         entity_extra_params_t tmpx = { 0 };
         strncpy(tmpx.k, mpack_node_str(k), mpack_node_strlen(k));
         strncpy(tmpx.v, mpack_node_str(v), mpack_node_strlen(v));
@@ -363,10 +340,8 @@ void mpack_map_parse(const char * data, const size_t data_len) {
         float (*frames)[frame_arr_len][tmp_entt.vert_len][3] = calloc(1, sizeof(*frames));
         for(size_t fi = 0; fi < frame_arr_len; fi++) {
             mpack_node_t frame_vert_arr = mpack_node_array_at(frame_arr, fi);
-            size_t fva_len = mpack_node_array_length(frame_vert_arr);
             for (size_t vi = 0; vi < tmp_entt.vert_len; vi++) {
                 mpack_node_t frame_vert_xyz_arr = mpack_node_array_at(frame_vert_arr, vi);
-                size_t fvax_len = mpack_node_array_length(frame_vert_xyz_arr);
                 (*frames)[fi][vi][0] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 0));
                 (*frames)[fi][vi][1] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 1));
                 (*frames)[fi][vi][2] = mpack_node_float(mpack_node_array_at(frame_vert_xyz_arr, 2));
