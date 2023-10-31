@@ -539,118 +539,27 @@ void map_parse() {
 
     // todo, be smarter
     mpack_map_parse((char *)data_map1, data_map1_len);
-
-    const uint8_t * data = data_maps;
-
-    for(uint32_t i = 0; i < data_maps_len;) {
-
-        // push empty map, get pointer back
-        map_t * tmp_map = vector_push(map_data, &(map_t) {
-            0
-        });
-
-        uint32_t blocks_size = data[i] | (data[i+1] << 8);
-        i += 2;
-        // uint32_t blocks_size = data[i++] | (data[i++] << 8);
-        uint8_t * b = (uint8_t *)&data[i];
-        i += blocks_size;
-        uint8_t cm[((map_size * map_size * map_size) >> 3) * sizeof(uint8_t)] = {0};
-
-        vector * blocks = vector_init(sizeof(block_t));
-        uint32_t t = 0;
-
-        for(uint32_t j = 0; j < blocks_size;) {
-            if(b[j] == 255) {
-                j++;
-                t = b[j++];
-            }
-            uint32_t x = b[j++];
-            uint32_t y = b[j++];
-            uint32_t z = b[j++];
-            uint32_t sx = b[j++];
-            uint32_t sy = b[j++];
-            uint32_t sz = b[j++];
-
-            vector_push(blocks, &(block_t) {
-                .t = t,
-                .b = r_push_block(x << 5, y << 4, z << 5, sx << 5, sy << 4, sz << 5, t),
-            });
-
-            // The collision map is a bitmap; 8 x blocks per byte
-            for (uint32_t cz = z; cz < z + sz; cz++) {
-                for (uint32_t cy = y; cy < y + sy; cy++) {
-                    for (uint32_t cx = x; cx < x + sx; cx++) {
-                        cm[
-                            (
-                                cz * map_size * map_size +
-                                cy * map_size +
-                                cx
-                            ) >> 3
-                        ] |= 1 << (cx & 7);
-                    }
-                }
-            }
-        }
-        // Slice of entity data; we parse it when we actually spawn
-        // the entities in map_init()
-        uint32_t num_entities = data[i] | (data[i+1] << 8);
-        i += 2;
-        // uint32_t num_entities = data[i++] | (data[i++] << 8);
-        uint8_t * e = (uint8_t *)(data + i);
-        uint32_t e_size = num_entities * 6;
-        i += e_size;
-
-        // set map
-        memcpy(tmp_map->cm, cm, ((map_size * map_size * map_size) >> 3) * sizeof(uint8_t));
-        tmp_map->e = e;
-        tmp_map->e_size = e_size;
-        tmp_map->blocks = blocks;
-    }
-
+    mpack_map_parse((char *)data_map3, data_map3_len);
 }
 
 void map_load (map_t * m) {
     // todo, should this just be an index into a global map_collection_t?
     map = m;
 
-    if (map->map_entities != NULL)
-        goto map_load_ng;
-    for (uint32_t i = 0; i < map->e_size;) {
-        void (*func)(entity_t *, vec3_t, uint8_t, uint8_t) = spawn_class[map->e[i++]];
-        int x = m->e[i++] * 32;
-        int y = m->e[i++] * 16;
-        int z = m->e[i++] * 32;
-        uint8_t p1 = m->e[i++];
-        uint8_t p2 = m->e[i++];
-        if (func == NULL)
-            continue;
-        game_spawn(
-            func,
-        (vec3_t) {
-            .x = x, .y = y, .z = z
-        },
-        p1,
-        p2,
-        NULL
-        );
-    }
-    // exit if old maps were used
-    return;
-
-map_load_ng:
     for (uint32_t i = 0; i < map->e_size; i++) {
-        entity_params_t * ep = vector_at(map->map_entities, i);
-        vec3_t * pos = &ep->entity_generic_params.position;
-        if (ep->id == ENTITY_ID_PLAYER)
-            pos = &ep->entity_player_params.position;
-        if (ep->id == ENTITY_ID_LIGHT)
-            pos = &ep->entity_light_params.position;
+        entity_params_t * ref_ep = vector_at(map->map_entities, i);
+        entity_params_t ep = *ref_ep;
+        vec3_t * pos = &ep.entity_generic_params.position;
+        if (ep.id == ENTITY_ID_PLAYER)
+            pos = &ep.entity_player_params.position;
+        if (ep.id == ENTITY_ID_LIGHT)
+            pos = &ep.entity_light_params.position;
 
         pos->x *= 32;
         pos->y *= 16;
         pos->z *= 32;
 
-        game_spawn_ng(ep);
+        game_spawn_ng(&ep);
     }
 
 }

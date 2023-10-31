@@ -112,7 +112,8 @@ void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2) {
     e->_weapon_index = 0;
 
     // Map 1 needs some rotation of the starting look-at direction
-    e->_yaw += game_map_index * PI;
+    // e->_yaw += game_map_index * PI;
+    
     e->_bob = 0;
 
     game_entity_player = e;

@@ -63,17 +63,8 @@ const uint32_t data_sfx_shotgun_reload_len = audio_sfx_shotgun_reload_ogg_len;
 const uint8_t * data_sfx_shotgun_shoot = audio_sfx_shotgun_shoot_ogg;
 const uint32_t data_sfx_shotgun_shoot_len = audio_sfx_shotgun_shoot_ogg_len;
 
-// const uint8_t * data_song = file_example_OOG_1MG_ogg;
-// const uint32_t data_song_len = file_example_OOG_1MG_ogg_len;
-
 const uint8_t * data_song = audio_song_ogg;
 const uint32_t data_song_len = audio_song_ogg_len;
-
-#include "maps.h"
-// #include "assets/testmap/testmap.h"
-
-const uint8_t * data_maps = maps;
-const uint32_t data_maps_len = maps_len;
 
 #include "map1.h"
 
