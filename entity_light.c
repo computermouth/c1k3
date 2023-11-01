@@ -8,39 +8,22 @@
 #include "math.h"
 #include "render.h"
 
-void entity_light_init(entity_t * e, uint8_t light, uint8_t color);
+void entity_light_init(entity_t * e);
 void entity_light_update(entity_t * e);
 
-void entity_light_constructor(entity_t * e, vec3_t pos, uint8_t light, uint8_t color) {
-    entity_constructor(e, pos, light, color);
+void entity_light_constructor(entity_t * e, vec3_t pos) {
+    entity_constructor(e, pos);
 
-    e->_init = entity_light_init;
     e->_update = entity_light_update;
 
-    // todo, have init take an ep later
-    if(e->_params) {
-        union {
-            struct {
-                uint8_t r: 3;
-                uint8_t g: 3;
-                uint8_t b: 2;
-            } rgb;
-            uint8_t v;
-        } rgb8 = { .rgb = { e->_params->entity_light_params.rgba[0] >> 5, e->_params->entity_light_params.rgba[1] >> 5, e->_params->entity_light_params.rgba[2] >> 6 } };
-        color = rgb8.v;
-        light = e->_params->entity_light_params.rgba[3];
-    }
-
-    e->_init(e, light, color);
+    entity_light_init(e);
 }
 
-void entity_light_init(entity_t * e, uint8_t light, uint8_t color) {
+void entity_light_init(entity_t * e) {
     e->_light = e->_params->entity_light_params.rgba[3];
     e->_spawn_time = game_time;
-    if (light == 1)
+    if (e->_light == 1)
         e->_flicker = true;
-    if (!color) // todo, real log
-        printf("e: no color\n");
 
     e->_color[0] = e->_params->entity_light_params.rgba[0];
     e->_color[1] = e->_params->entity_light_params.rgba[1];
@@ -49,6 +32,9 @@ void entity_light_init(entity_t * e, uint8_t light, uint8_t color) {
     e->_color[0] -= e->_color[0] % 16;
     e->_color[1] -= e->_color[1] % 16;
     e->_color[2] -= e->_color[2] % 16;
+
+    if (!e->_color[0] && !e->_color[1] && !e->_color[2]) // todo, real log
+        printf("e: no color\n");
 }
 
 void entity_light_update(entity_t * e) {

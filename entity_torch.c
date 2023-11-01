@@ -15,18 +15,18 @@ animation_t torch_animation = {
     .num_frames = sizeof(torch_anim_frames)/sizeof(torch_anim_frames[0]),
 };
 
-void entity_torch_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_torch_init(entity_t * e);
 void entity_torch_update(entity_t * e);
 
-void entity_torch_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_constructor(e, pos, p1, p2);
+void entity_torch_constructor(entity_t * e, vec3_t pos) {
+    entity_constructor(e, pos);
 
     e->_update = entity_torch_update;
 
-    entity_torch_init(e, p1, p2);
+    entity_torch_init(e);
 }
 
-void entity_torch_init(entity_t * e, uint8_t p1, uint8_t p2) {
+void entity_torch_init(entity_t * e) {
 
     e->_anim = &torch_animation;
 

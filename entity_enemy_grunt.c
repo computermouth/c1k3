@@ -8,7 +8,7 @@
 #include "map.h"
 #include "vector.h"
 
-void entity_enemy_grunt_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_enemy_grunt_init(entity_t * e);
 void entity_enemy_grunt_attack(entity_t * e);
 
 animation_t grunt_animations[] = {
@@ -64,27 +64,26 @@ animation_t grunt_animations[] = {
 // hack for caching parsed frame names per-map
 static ref_entt_t * last_ref_entt = NULL;
 
-void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
+void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos) {
 
     char * str_p1 = entity_param_lookup("patrol", e->_params->entity_generic_params.extras);
+    uint8_t patrol = 0;
     if (str_p1)
-        p1 = atoi(str_p1);
-    else
-        p1 = 0;
+        patrol = atoi(str_p1);
 
-    entity_enemy_constructor(e, pos, p1, p2);
+    entity_enemy_constructor(e, pos, patrol);
     e->_attack = entity_enemy_grunt_attack;
-    entity_enemy_grunt_init(e, p1, p2);
+    entity_enemy_grunt_init(e);
 }
 
-void entity_enemy_grunt_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
+void entity_enemy_grunt_init(entity_t * e) {
     e->_health = 40;
 
     entity_parse_animation_frames(
         e->_params->entity_generic_params.ref_entt,
         grunt_animations,
         sizeof(grunt_animations)/sizeof(grunt_animations[0]),
-        last_ref_entt
+        &last_ref_entt
     );
 
     entity_set_model(e);

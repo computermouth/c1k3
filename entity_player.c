@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 
 #include <stdbool.h>
+#define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -20,24 +21,25 @@
 #include "input.h"
 #include "audio.h"
 
-void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_player_init(entity_t * e);
 void entity_player_update(entity_t * e);
 void entity_player_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 void entity_player_kill(entity_t * e);
 
-void entity_player_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
+void entity_player_constructor(entity_t * e, vec3_t pos) {
 
-    entity_constructor(e, pos, p1, p2);
+    entity_constructor(e, pos);
 
-    // todo, these casts kinda suck
-    e->_init = entity_player_init;
+    // todo, parameter for spawn face direction
+    //
+    // Map 1 needs some rotation of the starting look-at direction
+    // e->_yaw += game_map_index * PI;
+
     e->_update = entity_player_update;
     e->_receive_damage = entity_player_receive_damage;
     e->_kill = entity_player_kill;
 
-    // todo, kinda goofy paradigm to set the callback, immediately invoke
-    // then never call again. could just combine constructor and init I think
-    e->_init(e, p1, p2);
+    entity_player_init(e);
 }
 
 typedef struct {
@@ -88,7 +90,7 @@ void entity_player_hud_update_ammo(int32_t new_ammo) {
     hud.ammo_surface->y = INTERNAL_H  - (hud.ammo_surface->h * 2);
 }
 
-void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2) {
+void entity_player_init(entity_t * e) {
 
     e->s = vec3(12,24,12);
     e->f = 10;
@@ -111,9 +113,6 @@ void entity_player_init(entity_t * e, uint8_t p1, uint8_t p2) {
     };
     e->_weapon_index = 0;
 
-    // Map 1 needs some rotation of the starting look-at direction
-    // e->_yaw += game_map_index * PI;
-    
     e->_bob = 0;
 
     game_entity_player = e;

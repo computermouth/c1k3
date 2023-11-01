@@ -5,26 +5,27 @@
 #include "text.h"
 #include "render.h"
 
-void entity_door_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_door_init(entity_t * e, uint8_t dir);
 void entity_door_update(entity_t * e);
 void entity_door_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 
-void entity_door_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
+void entity_door_constructor(entity_t *e, vec3_t pos) {
 
-    char * str_p1 = entity_param_lookup("dir", e->_params->entity_generic_params.extras);
-    if (str_p1)
-        p1 = atoi(str_p1);
-    else
-        p1 = 0;
-
-    entity_constructor(e, pos, p1, p2);
+    entity_constructor(e, pos);
 
     e->_update = entity_door_update;
     e->_receive_damage = entity_door_receive_damage;
-    entity_door_init(e, p1, p2);
+
+    // todo, also set needs_key via params
+    char * str_p1 = entity_param_lookup("dir", e->_params->entity_generic_params.extras);
+    uint8_t dir = 0;
+    if (str_p1)
+        dir = atoi(str_p1);
+
+    entity_door_init(e, dir);
 }
 
-void entity_door_init(entity_t * e, uint8_t texture, uint8_t dir) {
+void entity_door_init(entity_t * e,uint8_t dir) {
     e->_health = 10;
     e->s = vec3(64, 64, 64);
     e->_start_pos = vec3_clone(e->p);

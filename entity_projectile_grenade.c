@@ -8,23 +8,23 @@
 #include "entity_light.h"
 #include "audio.h"
 
-void entity_projectile_grenade_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_projectile_grenade_init(entity_t * e);
 void entity_projectile_grenade_update(entity_t * e);
 void entity_projectile_grenade_did_collide(entity_t * e, int axis);
 void entity_projectile_grenade_did_collide_with_entity(entity_t * e, entity_t * other);
 void entity_projectile_grenade_kill(entity_t * e);
 
-void entity_projectile_grenade_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_constructor(e, pos, p1, p2);
+void entity_projectile_grenade_constructor(entity_t * e, vec3_t pos) {
+    entity_constructor(e, pos);
 
     e->_update = entity_projectile_grenade_update;
     e->_did_collide = entity_projectile_grenade_did_collide;
     e->_did_collide_with_entity = entity_projectile_grenade_did_collide_with_entity;
     e->_kill = entity_projectile_grenade_kill;
-    entity_projectile_grenade_init(e, p1, p2);
+    entity_projectile_grenade_init(e);
 }
 
-void entity_projectile_grenade_init(entity_t * e, uint8_t p1, uint8_t p2) {
+void entity_projectile_grenade_init(entity_t * e) {
     e->_expires = true;
     e->_die_at = game_time + 2;
     e->_bounciness = 0.5;

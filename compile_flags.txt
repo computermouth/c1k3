@@ -24,3 +24,4 @@
 -I/usr/include/libpng16
 -Os
 -flto
+-std=c11

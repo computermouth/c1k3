@@ -45,7 +45,7 @@ vector * map_data = NULL;
 
 typedef struct {
     char * entity_string;
-    void (*constructor_func)(entity_t *, vec3_t, uint8_t, uint8_t);
+    void (*constructor_func)(entity_t *, vec3_t);
 } map_entity_table_t;
 
 map_entity_table_t map_entity_table[__ENTITY_ID_END] = { 0 };
@@ -154,7 +154,7 @@ void map_init() {
     };
 }
 
-typedef void (*constfunc)(entity_t *, vec3_t, uint8_t, uint8_t);
+typedef void (*constfunc)(entity_t *, vec3_t);
 constfunc map_constfunc_from_eid(entity_id_t eid) {
     return map_entity_table[eid].constructor_func;
 }
@@ -446,10 +446,6 @@ void mpack_map_parse(const char * data, const size_t data_len) {
         mpack_node_t mp_ml_rgba = { 0 };
         if(mpack_node_map_contains_cstr(mp_me, "color"))
             mp_ml_rgba = mpack_node_map_cstr(mp_me, "color");
-        // normal-entt-only param
-        mpack_node_t mp_ml_tex_id = { 0 };
-        if(mpack_node_map_contains_cstr(mp_me, "tex_id"))
-            mp_ml_tex_id = mpack_node_map_cstr(mp_me, "tex_id");
         // normal-entt-only param
         mpack_node_t mp_ml_extras = { 0 };
         if(mpack_node_map_contains_cstr(mp_me, "param"))

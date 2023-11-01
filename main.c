@@ -160,7 +160,7 @@ int main(int argc, char* argv[]) {
 
     time(&t);
     int oldtime = t;
-    int newtime = t;
+    int newtime;
     int frames = 0;
 
     while (1) {
@@ -209,7 +209,6 @@ int main(int argc, char* argv[]) {
         while ( strcmp((serror = SDL_GetError()), "") ) {
             fprintf(stderr, "sdlerror: %s\n", serror);
             SDL_ClearError();
-            serror = SDL_GetError();
         }
 
         GLenum gerror = GL_NO_ERROR;

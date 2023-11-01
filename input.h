@@ -3,6 +3,7 @@
 #define INPUT_H
 
 #include <stdbool.h>
+#include <SDL2/SDL.h>
 
 typedef enum {
     _KEY_NULL,

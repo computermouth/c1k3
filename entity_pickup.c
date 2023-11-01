@@ -2,16 +2,16 @@
 #include "entity_pickup.h"
 #include "game.h"
 
-void entity_pickup_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_pickup_init(entity_t * e);
 void entity_pickup_update(entity_t * e);
 
-void entity_pickup_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_constructor(e, pos, p1, p2);
+void entity_pickup_constructor(entity_t * e, vec3_t pos) {
+    entity_constructor(e, pos);
     e->_update = entity_pickup_update;
-    entity_pickup_init(e, p1, p2);
+    entity_pickup_init(e);
 }
 
-void entity_pickup_init(entity_t * e, uint8_t p1, uint8_t p2) {
+void entity_pickup_init(entity_t * e) {
     // todo, investigate size here
     e->s = vec3(12,12,12);
 }

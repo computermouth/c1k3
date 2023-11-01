@@ -52,7 +52,7 @@ enemy_state_t default_enemy_states[_ENEMY_STATE_NULL] = {
     [ENEMY_STATE_EVADE]          = {ENEMY_ANIMATION_RUN,            1.0, 0.8, ENEMY_STATE_ATTACK_AIM},
 };
 
-void entity_enemy_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_enemy_init(entity_t * e, uint8_t patrol);
 void entity_enemy_set_state(entity_t * e, uint32_t state);
 void entity_enemy_update(entity_t * e);
 entity_t * entity_enemy_spawn_projectile(entity_t * e, entity_id_t eid, float speed, float yaw_offset, float pitch_offset);
@@ -60,9 +60,9 @@ void entity_enemy_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 void entity_enemy_kill(entity_t * e);
 void entity_enemy_did_collide(entity_t * e, int axis);
 
-void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
+void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t patrol) {
 
-    entity_constructor(e, pos, p1, p2);
+    entity_constructor(e, pos);
 
     // todo, still hate this
     e->_STATE_IDLE              = ENEMY_STATE_IDLE;
@@ -75,7 +75,6 @@ void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_STATE_EVADE             = ENEMY_STATE_EVADE;
     e->_STATE_NULL              = _ENEMY_STATE_NULL;
 
-    e->_init = entity_enemy_init;
     e->_set_state = entity_enemy_set_state;
     e->_update = entity_enemy_update;
     e->_spawn_projectile = entity_enemy_spawn_projectile;
@@ -83,10 +82,10 @@ void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_kill = entity_enemy_kill;
     e->_did_collide = entity_enemy_did_collide;
 
-    entity_enemy_init(e, p1, p2);
+    entity_enemy_init(e, patrol);
 }
 
-void entity_enemy_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
+void entity_enemy_init(entity_t * e, uint8_t patrol_dir) {
     // todo, check patrol_dir
 
     e->_state_collection = (enemy_state_collection_t) {

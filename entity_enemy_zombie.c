@@ -68,18 +68,18 @@ enemy_state_t zombie_enemy_states[_ENEMY_STATE_NULL] = {
     [ENEMY_STATE_EVADE]          = {ENEMY_ANIMATION_IDLE,           0.0, 0.1, ENEMY_STATE_ATTACK_AIM},
 };
 
-void entity_enemy_zombie_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_enemy_zombie_init(entity_t * e);
 void entity_enemy_zombie_receive_damage(entity_t * e, entity_t *from, int32_t amount);
 void entity_enemy_zombie_attack(entity_t * e);
 
-void entity_enemy_zombie_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_enemy_constructor(e, pos, p1, p2);
+void entity_enemy_zombie_constructor(entity_t * e, vec3_t pos) {
+    entity_enemy_constructor(e, pos, 0);
     e->_receive_damage = entity_enemy_zombie_receive_damage;
     e->_attack = entity_enemy_zombie_attack;
-    entity_enemy_zombie_init(e, p1, p2);
+    entity_enemy_zombie_init(e);
 }
 
-void entity_enemy_zombie_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
+void entity_enemy_zombie_init(entity_t * e) {
     e->_speed = 0;
     e->_attack_distance = 350;
     e->_health = 60;
@@ -95,7 +95,7 @@ void entity_enemy_zombie_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
         e->_params->entity_generic_params.ref_entt,
         zombie_animations,
         sizeof(zombie_animations)/sizeof(zombie_animations[0]),
-        last_ref_entt
+        &last_ref_entt
     );
 
     e->_animation_collection = (animation_collection_t) {

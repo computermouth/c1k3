@@ -47,9 +47,9 @@ char * entity_param_lookup(char * key, vector * v) {
     return NULL;
 }
 
-void entity_parse_animation_frames(ref_entt_t * curr_entt, animation_t * animations, size_t anim_len, ref_entt_t * last_entt) {
+void entity_parse_animation_frames(ref_entt_t * curr_entt, animation_t * animations, size_t anim_len, ref_entt_t ** last_entt) {
     // already cached
-    if(curr_entt == last_entt)
+    if(curr_entt == *last_entt)
         return;
 
     for(size_t i = 0; i < anim_len; i++) {
@@ -65,7 +65,7 @@ void entity_parse_animation_frames(ref_entt_t * curr_entt, animation_t * animati
         }
     }
 
-    last_entt = curr_entt;
+    *last_entt = curr_entt;
 }
 
 void entity_set_model(entity_t * e) {
@@ -77,7 +77,7 @@ void entity_set_model(entity_t * e) {
     e->s = e->_params->entity_generic_params.ref_entt->size;
 }
 
-void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
+void entity_constructor(entity_t *e, vec3_t pos) {
 
     e->p = pos;
     e->s = (vec3_t) {
@@ -118,11 +118,11 @@ void entity_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
     e->_spawn_projectile = entity_spawn_projectile;
     e->_attack = entity_attack;
 
-    entity_init(e, 0, 0);
+    entity_init(e);
 }
 
 // only to do something dynamic to every entity
-void entity_init(entity_t * e, uint8_t p1, uint8_t p2) {}
+void entity_init(entity_t * e) {}
 
 void entity_update(entity_t * e) {
     e->_draw_model(e);

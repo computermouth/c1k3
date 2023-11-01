@@ -6,7 +6,7 @@
 #include "audio.h"
 #include "map.h"
 
-void entity_enemy_enforcer_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_enemy_enforcer_init(entity_t * e);
 void entity_enemy_enforcer_attack(entity_t * e);
 
 animation_t enforcer_animations[] = {
@@ -70,13 +70,19 @@ vec3_t entity_get_size(model_t * model) {
     return size;
 }
 
-void entity_enemy_enforcer_constructor(entity_t *e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_enemy_constructor(e, pos, p1, p2);
+void entity_enemy_enforcer_constructor(entity_t *e, vec3_t pos) {
+
+    char * str_p1 = entity_param_lookup("patrol", e->_params->entity_generic_params.extras);
+    uint8_t patrol = 0;
+    if (str_p1)
+        patrol = atoi(str_p1);
+
+    entity_enemy_constructor(e, pos, patrol);
     e->_attack = entity_enemy_enforcer_attack;
-    entity_enemy_enforcer_init(e, p1, p2);
+    entity_enemy_enforcer_init(e);
 }
 
-void entity_enemy_enforcer_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
+void entity_enemy_enforcer_init(entity_t * e) {
     e->_health = 80;
     e->s = vec3(14,44,14);
 
@@ -84,7 +90,7 @@ void entity_enemy_enforcer_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
         e->_params->entity_generic_params.ref_entt,
         enforcer_animations,
         sizeof(enforcer_animations)/sizeof(enforcer_animations[0]),
-        last_ref_entt
+        &last_ref_entt
     );
 
     e->_animation_collection = (animation_collection_t) {

@@ -17,9 +17,9 @@ void weapon_shoot(weapon_t * w, vec3_t pos, float yaw, float pitch);
 void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch);
 
 void weapon_set_model(weapon_t * w, entity_id_t eid) {
-    
+
     entity_params_t ep = map_entt_params_from_eid(eid);
-    
+
     w->_texture = ep.entity_generic_params.ref_entt->tex_id;
     w->_model.frames = vector_begin(ep.entity_generic_params.ref_entt->frames);
     w->_model.nv = ep.entity_generic_params.ref_entt->vert_len;
@@ -38,7 +38,9 @@ weapon_t weapon_constructor() {
     return w;
 }
 
-void weapon_init(weapon_t * w) {}
+void weapon_init(weapon_t * w) {
+    w = w; /*noop*/
+}
 
 void weapon_shoot(weapon_t * w, vec3_t pos, float yaw, float pitch) {
     if (w->_needs_ammo)
@@ -97,7 +99,7 @@ void weapon_shotgun_init(weapon_t * w) {
     w->_reload = 0.9f;
     w->_projectile_type_ng = ENTITY_ID_PROJECTILE_SHELL;
     w->_projectile_speed = 10000;
-    
+
     weapon_set_model(w, ENTITY_ID_PICKUP_SHOTGUN);
 }
 
@@ -128,7 +130,7 @@ void weapon_nailgun_init(weapon_t * w) {
     w->_projectile_type_ng = ENTITY_ID_PROJECTILE_NAIL;
     w->_projectile_speed = 1300;
     w->_projectile_offset = vec3(6,0,8);
-    
+
     weapon_set_model(w, ENTITY_ID_PICKUP_NAILGUN);
 }
 
@@ -150,6 +152,6 @@ void weapon_grenadelauncher_init(weapon_t * w) {
     w->_reload = 0.650;
     w->_projectile_type_ng = ENTITY_ID_PROJECTILE_GRENADE;
     w->_projectile_speed = 900;
-    
+
     weapon_set_model(w, ENTITY_ID_PICKUP_GRENADELAUNCHER);
 }

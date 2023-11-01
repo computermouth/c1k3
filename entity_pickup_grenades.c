@@ -5,16 +5,16 @@
 #include "weapon.h"
 #include "audio.h"
 
-void entity_pickup_grenades_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_pickup_grenades_init(entity_t * e);
 void entity_pickup_grenades_pickup(entity_t * e);
 
-void entity_pickup_grenades_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_pickup_constructor(e, pos, p1, p2);
+void entity_pickup_grenades_constructor(entity_t * e, vec3_t pos) {
+    entity_pickup_constructor(e, pos);
     e->_pickup = entity_pickup_grenades_pickup;
-    entity_pickup_grenades_init(e, p1, p2);
+    entity_pickup_grenades_init(e);
 }
 
-void entity_pickup_grenades_init(entity_t * e, uint8_t p1, uint8_t p2) {
+void entity_pickup_grenades_init(entity_t * e) {
     entity_set_model(e);
 }
 

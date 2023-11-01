@@ -8,7 +8,7 @@
 #include "map.h"
 #include "vector.h"
 
-void entity_enemy_mutant_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_enemy_mutant_init(entity_t * e);
 void entity_enemy_mutant_attack(entity_t * e);
 
 // todo, once animations are actually parse-able
@@ -47,13 +47,13 @@ enemy_state_t mutant_enemy_states[_ENEMY_STATE_NULL] = {
 // todo, do something less stupid with this
 model_t model_mutant = { 0 };
 
-void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_enemy_constructor(e, pos, p1, p2);
+void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos) {
+    entity_enemy_constructor(e, pos, 0);
     e->_attack = entity_enemy_mutant_attack;
-    entity_enemy_mutant_init(e, p1, p2);
+    entity_enemy_mutant_init(e);
 }
 
-void entity_enemy_mutant_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
+void entity_enemy_mutant_init(entity_t * e) {
     e->_health = 40;
     e->_speed = 0;
 
@@ -73,7 +73,7 @@ void entity_enemy_mutant_init(entity_t * e, uint8_t patrol_dir, uint8_t p2) {
         e->_params->entity_generic_params.ref_entt,
         mutant_animations,
         sizeof(mutant_animations)/sizeof(mutant_animations[0]),
-        last_ref_entt
+        &last_ref_entt
     );
 
     entity_set_model(e);

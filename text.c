@@ -243,10 +243,11 @@ void text_push_timed_surface(timed_surface_t time_surf) {
 }
 
 void text_push_surface(text_surface_t * ts) {
-    SDL_BlitSurface(ts->data, NULL, overlay_surface, &(SDL_Rect) {
+    SDL_Rect o = {
         .x = ts->x,
         .y = ts->y,
-    });
+    };
+    SDL_BlitSurface(ts->data, NULL, overlay_surface, &o);
 }
 
 void text_free_surface(text_surface_t * ts) {

@@ -7,22 +7,22 @@
 #include "render.h"
 #include "audio.h"
 
-void entity_projectile_plasma_init(entity_t * e, uint8_t p1, uint8_t p2);
+void entity_projectile_plasma_init(entity_t * e);
 void entity_projectile_plasma_update(entity_t * e);
 void entity_projectile_plasma_did_collide(entity_t * e, int axis);
 void entity_projectile_plasma_did_collide_with_entity(entity_t * e, entity_t * other);
 
-void entity_projectile_plasma_constructor(entity_t * e, vec3_t pos, uint8_t p1, uint8_t p2) {
-    entity_constructor(e, pos, p1, p2);
+void entity_projectile_plasma_constructor(entity_t * e, vec3_t pos) {
+    entity_constructor(e, pos);
 
     e->_update = entity_projectile_plasma_update;
     e->_did_collide = entity_projectile_plasma_did_collide;
     e->_did_collide_with_entity = entity_projectile_plasma_did_collide_with_entity;
 
-    entity_projectile_plasma_init(e, p1, p2);
+    entity_projectile_plasma_init(e);
 }
 
-void entity_projectile_plasma_init(entity_t * e, uint8_t p1, uint8_t p2) {
+void entity_projectile_plasma_init(entity_t * e) {
     e->_gravity = 0;
     e->_expires = true;
     e->_die_at = game_time + 3;

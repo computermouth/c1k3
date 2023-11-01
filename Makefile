@@ -108,6 +108,8 @@ tools/mapc: $(EXT_OBJ)
 
 lint:
 	astyle -n $(INT_SRC) $(INT_H)
+	cppcheck $(INT_SRC) $(INT_H)
+	clang-tidy $(INT_SRC) $(INT_H)
 
 test:
 	## super overkill with the linking and building in all objects
