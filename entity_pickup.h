@@ -4,7 +4,7 @@
 
 #include "entity.h"
 
-void entity_pickup_constructor(entity_t *e, vec3_t pos);
+void entity_pickup_constructor(entity_t *e);
 void entity_pickup_update(entity_t * e);
 
 #endif

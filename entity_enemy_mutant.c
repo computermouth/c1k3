@@ -16,7 +16,7 @@ animation_t mutant_animations[] = {
     {   // 0: Idle
         .time = 0.25,
         .num_frames = 9,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "default"},
             {.name = "MutantMesh.001"},
             {.name = "MutantMesh.002"},
@@ -47,8 +47,8 @@ enemy_state_t mutant_enemy_states[_ENEMY_STATE_NULL] = {
 // todo, do something less stupid with this
 model_t model_mutant = { 0 };
 
-void entity_enemy_mutant_constructor(entity_t * e, vec3_t pos) {
-    entity_enemy_constructor(e, pos, 0);
+void entity_enemy_mutant_constructor(entity_t * e) {
+    entity_enemy_constructor(e, 0);
     e->_attack = entity_enemy_mutant_attack;
     entity_enemy_mutant_init(e);
 }

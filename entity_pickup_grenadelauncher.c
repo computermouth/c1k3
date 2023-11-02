@@ -9,8 +9,8 @@ void entity_pickup_grenadelauncher_init(entity_t * e);
 void entity_pickup_grenadelauncher_update(entity_t * e);
 void entity_pickup_grenadelauncher_pickup(entity_t * e);
 
-void entity_pickup_grenadelauncher_constructor(entity_t * e, vec3_t pos) {
-    entity_pickup_constructor(e, pos);
+void entity_pickup_grenadelauncher_constructor(entity_t * e) {
+    entity_pickup_constructor(e);
     e->_update = entity_pickup_grenadelauncher_update;
     e->_pickup = entity_pickup_grenadelauncher_pickup;
     entity_pickup_grenadelauncher_init(e);

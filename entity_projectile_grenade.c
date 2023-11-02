@@ -14,8 +14,8 @@ void entity_projectile_grenade_did_collide(entity_t * e, int axis);
 void entity_projectile_grenade_did_collide_with_entity(entity_t * e, entity_t * other);
 void entity_projectile_grenade_kill(entity_t * e);
 
-void entity_projectile_grenade_constructor(entity_t * e, vec3_t pos) {
-    entity_constructor(e, pos);
+void entity_projectile_grenade_constructor(entity_t * e) {
+    entity_constructor(e);
 
     e->_update = entity_projectile_grenade_update;
     e->_did_collide = entity_projectile_grenade_did_collide;
@@ -75,8 +75,8 @@ void entity_projectile_grenade_kill(entity_t * e) {
 
     entity_params_t l = {
         .id = ENTITY_ID_LIGHT,
+        .position = vec3_add(e->p, vec3(0,16,0)),
         .entity_light_params = {
-            .position = vec3_add(e->p, vec3(0,16,0)),
             .rgba[0] = 0xE0,
             .rgba[1] = 0x60,
             .rgba[2] = 0x80,

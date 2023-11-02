@@ -17,27 +17,27 @@ animation_t default_animations[] = {
     {   // 0: Idle
         .time = 1,
         .num_frames = 1,
-        .frames_ng = (animation_frame_t[]){ 0 },
+        .frames = (animation_frame_t[]){ 0 },
     },
     {   // 1: Walk
         .time = 0.40f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]){ 0 },
+        .frames = (animation_frame_t[]){ 0 },
     },
     {   // 2: Run
         .time = 0.20f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]){ 0 },
+        .frames = (animation_frame_t[]){ 0 },
     },
     {   // 3: Attack prepare
         .time = 0.25f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]){ 0 },
+        .frames = (animation_frame_t[]){ 0 },
     },
     {   // 4: Attack
         .time = 0.25f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]){ 0 },
+        .frames = (animation_frame_t[]){ 0 },
     },
 };
 
@@ -60,9 +60,9 @@ void entity_enemy_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 void entity_enemy_kill(entity_t * e);
 void entity_enemy_did_collide(entity_t * e, int axis);
 
-void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t patrol) {
+void entity_enemy_constructor(entity_t *e, uint8_t patrol) {
 
-    entity_constructor(e, pos);
+    entity_constructor(e);
 
     // todo, still hate this
     e->_STATE_IDLE              = ENEMY_STATE_IDLE;
@@ -228,7 +228,7 @@ void entity_enemy_update(entity_t * e) {
 entity_t * entity_enemy_spawn_projectile(entity_t * e, entity_id_t eid, float speed, float yaw_offset, float pitch_offset) {
 
     entity_params_t ep = map_entt_params_from_eid(eid);
-    ep.entity_generic_params.position = e->p;
+    ep.position = e->p;
 
     entity_t * projectile = game_spawn_ng(&ep);
     projectile->_check_against = ENTITY_GROUP_PLAYER;

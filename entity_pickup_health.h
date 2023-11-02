@@ -4,6 +4,6 @@
 
 #include "entity.h"
 
-void entity_pickup_health_constructor(entity_t *e, vec3_t pos);
+void entity_pickup_health_constructor(entity_t *e);
 
 #endif

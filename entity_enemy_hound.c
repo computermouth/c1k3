@@ -9,14 +9,14 @@ animation_t hound_animations[] = {
         .time = 1,
         .num_frames = 1,
         // .frames = (uint32_t[]){0, 0},
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "default"},
         },
     },
     {   // 2: Run
         .time = 0.15f,
         .num_frames = 2,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "run1"},
             {.name = "run2"},
         },
@@ -24,7 +24,7 @@ animation_t hound_animations[] = {
     {   // 2: Run
         .time = 0.15f,
         .num_frames = 2,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "run1"},
             {.name = "run2"},
         },
@@ -32,14 +32,14 @@ animation_t hound_animations[] = {
     {   // 3: Attack prepare
         .time = 1,
         .num_frames = 1,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "run1"},
         },
     },
     {   // 4: Attack
         .time = 0.1f,
         .num_frames = 7,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "run1"},
             {.name = "run2"},
             {.name = "run2"},
@@ -69,14 +69,14 @@ void entity_enemy_hound_init(entity_t * e);
 void entity_enemy_hound_did_collide_with_entity(entity_t * e, entity_t * other);
 void entity_enemy_hound_attack(entity_t * e);
 
-void entity_enemy_hound_constructor(entity_t * e, vec3_t pos) {
+void entity_enemy_hound_constructor(entity_t * e) {
 
     char * str_p1 = entity_param_lookup("patrol", e->_params->entity_generic_params.extras);
     uint8_t patrol = 0;
     if (str_p1)
         patrol = atoi(str_p1);
 
-    entity_enemy_constructor(e, pos, patrol);
+    entity_enemy_constructor(e, patrol);
     e->_did_collide_with_entity = entity_enemy_hound_did_collide_with_entity;
     e->_attack = entity_enemy_hound_attack;
     entity_enemy_hound_init(e);

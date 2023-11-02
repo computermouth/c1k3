@@ -4,6 +4,6 @@
 
 #include "entity.h"
 
-void entity_projectile_plasma_constructor(entity_t *e, vec3_t pos);
+void entity_projectile_plasma_constructor(entity_t *e);
 
 #endif

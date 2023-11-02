@@ -9,9 +9,9 @@ void entity_door_init(entity_t * e, uint8_t dir);
 void entity_door_update(entity_t * e);
 void entity_door_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 
-void entity_door_constructor(entity_t *e, vec3_t pos) {
+void entity_door_constructor(entity_t *e) {
 
-    entity_constructor(e, pos);
+    entity_constructor(e);
 
     e->_update = entity_door_update;
     e->_receive_damage = entity_door_receive_damage;

@@ -14,7 +14,7 @@
 
 animation_t default_anim[] = {
     {
-        .frames_ng = (animation_frame_t[]){ 0 },
+        .frames = (animation_frame_t[]){ 0 },
         .num_frames = 1,
         .time = 1,
     }
@@ -53,13 +53,13 @@ void entity_parse_animation_frames(ref_entt_t * curr_entt, animation_t * animati
     for(size_t i = 0; i < anim_len; i++) {
         animation_t tmp_anim = animations[i];
         for(size_t j = 0; j < tmp_anim.num_frames; j++) {
-            char * needle = tmp_anim.frames_ng[j].name;
+            char * needle = tmp_anim.frames[j].name;
             int64_t f = entity_frame_from_name(needle, curr_entt->frame_names, curr_entt->frame_len);
             if(f < 0) {
                 fprintf(stderr, "E: couldn't find frame %s for %s\n", needle, curr_entt->entity_name);
                 continue;
             }
-            tmp_anim.frames_ng[j].id = f;
+            tmp_anim.frames[j].id = f;
         }
     }
 
@@ -75,9 +75,9 @@ void entity_set_model(entity_t * e) {
     e->s = e->_params->entity_generic_params.ref_entt->size;
 }
 
-void entity_constructor(entity_t *e, vec3_t pos) {
+void entity_constructor(entity_t *e) {
 
-    e->p = pos;
+    e->p = e->_params->position;
     e->s = (vec3_t) {
         2.0f, 2.0f, 2.0f
     };
@@ -278,12 +278,11 @@ void entity_draw_model(entity_t * e) {
     float f = e->_anim_time / (float)e->_anim->time;
     float mix = f - floorf(f);
 
-    // todo, consolidate after frame_ng is in place
     uint32_t frame_cur = 0;
     uint32_t frame_next = 0;
 
-    frame_cur = e->_anim->frames_ng[(uint32_t)f % e->_anim->num_frames].id;
-    frame_next = e->_anim->frames_ng[(1 + (uint32_t)f) % e->_anim->num_frames].id;
+    frame_cur = e->_anim->frames[(uint32_t)f % e->_anim->num_frames].id;
+    frame_next = e->_anim->frames[(1 + (uint32_t)f) % e->_anim->num_frames].id;
 
     // Swap frames if we're looping to the first frame again
     if (frame_next < frame_cur) {
@@ -314,7 +313,7 @@ void entity_spawn_particles(entity_t * e, int amount, int speed, entity_id_t eid
     vec3_t move_dist = vec3_mulf(e->v, game_tick);
     vec3_t tickdist = vec3_divf(move_dist, 16.0f);
 
-    ep.entity_generic_params.position = vec3_sub(e->p, tickdist);
+    ep.position = vec3_sub(e->p, tickdist);
 
     for (uint32_t i = 0; i < amount; i++) {
         entity_t * particle = game_spawn_ng(&ep);

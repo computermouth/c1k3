@@ -13,8 +13,8 @@ void entity_barrel_init(entity_t * e);
 void entity_barrel_kill(entity_t * e);
 void entity_barrel_update(entity_t * e);
 
-void entity_barrel_constructor(entity_t *e, vec3_t pos) {
-    entity_constructor(e, pos);
+void entity_barrel_constructor(entity_t *e) {
+    entity_constructor(e);
 
     e->_kill = entity_barrel_kill;
     e->_update = entity_barrel_update;
@@ -56,8 +56,8 @@ void entity_barrel_kill(entity_t * e) {
 
     entity_params_t l = {
         .id = ENTITY_ID_LIGHT,
+        .position = vec3_add(e->p, vec3(0,16,0)),
         .entity_light_params = {
-            .position = vec3_add(e->p, vec3(0,16,0)),
             .rgba[0] = 0xE0,
             .rgba[1] = 0x60,
             .rgba[2] = 0x80,

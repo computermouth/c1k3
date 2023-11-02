@@ -8,14 +8,14 @@ animation_t zombie_animations[] = {
     {   // 0: Idle
         .time = 1,
         .num_frames = 1,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "default"},
         },
     },
     {   // 1: Walk
         .time = 0.40f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "run_1"},
             {.name = "run_2"},
             {.name = "run_3"},
@@ -25,7 +25,7 @@ animation_t zombie_animations[] = {
     {   // 2: Run
         .time = 0.20f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "run_1"},
             {.name = "run_2"},
             {.name = "run_3"},
@@ -35,7 +35,7 @@ animation_t zombie_animations[] = {
     {   // 3: Attack prepare
         .time = 0.25f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "default"},
             {.name = "default"},
             {.name = "shoot"},
@@ -45,7 +45,7 @@ animation_t zombie_animations[] = {
     {   // 4: Attack
         .time = 0.25f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "shoot"},
             {.name = "default"},
             {.name = "default"},
@@ -72,8 +72,8 @@ void entity_enemy_zombie_init(entity_t * e);
 void entity_enemy_zombie_receive_damage(entity_t * e, entity_t *from, int32_t amount);
 void entity_enemy_zombie_attack(entity_t * e);
 
-void entity_enemy_zombie_constructor(entity_t * e, vec3_t pos) {
-    entity_enemy_constructor(e, pos, 0);
+void entity_enemy_zombie_constructor(entity_t * e) {
+    entity_enemy_constructor(e, 0);
     e->_receive_damage = entity_enemy_zombie_receive_damage;
     e->_attack = entity_enemy_zombie_attack;
     entity_enemy_zombie_init(e);

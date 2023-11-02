@@ -4,7 +4,7 @@
 
 #include "entity.h"
 
-void entity_enemy_constructor(entity_t *e, vec3_t pos, uint8_t patrol);
+void entity_enemy_constructor(entity_t *e, uint8_t patrol);
 void entity_enemy_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 
 #endif

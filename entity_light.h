@@ -5,6 +5,6 @@
 #include "entity.h"
 #include "map.h"
 
-void entity_light_constructor(entity_t *e, vec3_t pos);
+void entity_light_constructor(entity_t *e);
 
 #endif

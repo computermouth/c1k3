@@ -60,7 +60,7 @@ typedef struct {
 typedef struct {
     float time;
     uint32_t num_frames;
-    animation_frame_t * frames_ng;
+    animation_frame_t * frames;
 } animation_t;
 
 typedef struct {
@@ -159,7 +159,7 @@ int64_t entity_frame_from_name(char * needle, char (*haystack)[][100], size_t le
 char * entity_param_lookup(char * key, vector * v);
 void entity_parse_animation_frames(ref_entt_t * curr_entt, animation_t * animations, size_t anim_len, ref_entt_t ** last_entt);
 void entity_set_model(entity_t * e);
-void entity_constructor(entity_t *e, vec3_t pos);
+void entity_constructor(entity_t *e);
 void entity_init(entity_t * e);
 void entity_update(entity_t * e);
 void entity_update_physics(entity_t * e);

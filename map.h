@@ -71,16 +71,10 @@ typedef struct {
 } entity_extra_params_t;
 
 typedef struct {
-    vec3_t position;
-} entity_player_params_t;
-
-typedef struct {
-    vec3_t position;
     uint8_t rgba[4];
 } entity_light_params_t;
 
 typedef struct {
-    vec3_t position;
     ref_entt_t * ref_entt;
     vector * extras;
 } entity_generic_params_t;
@@ -90,8 +84,8 @@ typedef struct {
 
 typedef struct {
     entity_id_t id;
+    vec3_t position;
     union {
-        entity_player_params_t entity_player_params;
         entity_light_params_t entity_light_params;
         entity_generic_params_t entity_generic_params;
     };

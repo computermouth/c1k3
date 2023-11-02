@@ -26,9 +26,9 @@ void entity_player_update(entity_t * e);
 void entity_player_receive_damage(entity_t * e, entity_t * from, int32_t amount);
 void entity_player_kill(entity_t * e);
 
-void entity_player_constructor(entity_t * e, vec3_t pos) {
+void entity_player_constructor(entity_t * e) {
 
-    entity_constructor(e, pos);
+    entity_constructor(e);
 
     // todo, parameter for spawn face direction
     //
@@ -187,8 +187,8 @@ void entity_player_update(entity_t * e) {
 
             entity_params_t l = {
                 .id = ENTITY_ID_LIGHT,
+                .position = e->p,
                 .entity_light_params = {
-                    .position = e->p,
                     .rgba[0] = 0xff,
                     .rgba[1] = 0xff,
                     .rgba[2] = 0xff,

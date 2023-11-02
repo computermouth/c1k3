@@ -11,8 +11,8 @@ void entity_projectile_nail_update(entity_t * e);
 void entity_projectile_nail_did_collide(entity_t * e, int axis);
 void entity_projectile_nail_did_collide_with_entity(entity_t * e, entity_t * other);
 
-void entity_projectile_nail_constructor(entity_t * e, vec3_t pos) {
-    entity_constructor(e, pos);
+void entity_projectile_nail_constructor(entity_t * e) {
+    entity_constructor(e);
 
     e->_update = entity_projectile_nail_update;
     e->_did_collide = entity_projectile_nail_did_collide;
@@ -41,8 +41,8 @@ void entity_projectile_nail_did_collide(entity_t * e, int axis) {
 
     entity_params_t l = {
         .id = ENTITY_ID_LIGHT,
+        .position = e->p,
         .entity_light_params = {
-            .position = e->p,
             .rgba[0] = 0xff,
             .rgba[1] = 0xff,
             .rgba[2] = 0xff,

@@ -142,38 +142,55 @@ entity_t * game_spawn (void (*init)(entity_t *, vec3_t), vec3_t pos, entity_para
 }
 
 // todo, fix this import
-typedef void (*constfunc)(entity_t *, vec3_t);
+typedef void (*constfunc)(entity_t *);
 extern constfunc map_constfunc_from_eid(entity_id_t eid);
 
 entity_t * game_spawn_ng (entity_params_t * ep) {
 
-    void (*constructor)(entity_t *, vec3_t) = map_constfunc_from_eid(ep->id);
+    void (*constructor)(entity_t *) = map_constfunc_from_eid(ep->id);
     // todo, spawn the things with parameters
     if(ep->id >= __ENTITY_ID_END) {
         fprintf(stderr, "E: unimp -- %d\n", ep->id);
         return NULL;
     }
 
-    entity_t * e = NULL;
-    // todo, set e->_params, and use that position
-    if(ep->id == ENTITY_ID_LIGHT) {
-        e = game_spawn(
-                constructor,
-                ep->entity_light_params.position, ep);
-    } else if(ep->id == ENTITY_ID_PLAYER) {
-        e = game_spawn(
-                constructor,
-                ep->entity_player_params.position, ep);
-    } else {
-        e = game_spawn(
-                constructor,
-                ep->entity_generic_params.position, ep);
-        // todo
-        // free kv
-    }
+    entity_t * e = calloc(1, sizeof(entity_t));
+    e->_params = ep;
+    vector_push(__game_entities, &e);
+    constructor(e);
 
     return e;
 }
+
+// entity_t * bak_game_spawn_ng (entity_params_t * ep) {
+
+//     void (*constructor)(entity_t *, vec3_t) = map_constfunc_from_eid(ep->id);
+//     // todo, spawn the things with parameters
+//     if(ep->id >= __ENTITY_ID_END) {
+//         fprintf(stderr, "E: unimp -- %d\n", ep->id);
+//         return NULL;
+//     }
+
+//     entity_t * e = NULL;
+//     // todo, set e->_params, and use that position
+//     if(ep->id == ENTITY_ID_LIGHT) {
+//         e = game_spawn(
+//                 constructor,
+//                 ep->entity_light_params.position, ep);
+//     } else if(ep->id == ENTITY_ID_PLAYER) {
+//         e = game_spawn(
+//                 constructor,
+//                 ep->entity_player_params.position, ep);
+//     } else {
+//         e = game_spawn(
+//                 constructor,
+//                 ep->entity_generic_params.position, ep);
+//         // todo
+//         // free kv
+//     }
+
+//     return e;
+// }
 
 void game_run(float time_now) {
 

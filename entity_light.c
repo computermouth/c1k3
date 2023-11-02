@@ -11,8 +11,8 @@
 void entity_light_init(entity_t * e);
 void entity_light_update(entity_t * e);
 
-void entity_light_constructor(entity_t * e, vec3_t pos) {
-    entity_constructor(e, pos);
+void entity_light_constructor(entity_t * e) {
+    entity_constructor(e);
 
     e->_update = entity_light_update;
 

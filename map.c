@@ -45,7 +45,7 @@ vector * map_data = NULL;
 
 typedef struct {
     char * entity_string;
-    void (*constructor_func)(entity_t *, vec3_t);
+    void (*constructor_func)(entity_t *);
 } map_entity_table_t;
 
 map_entity_table_t map_entity_table[__ENTITY_ID_END] = { 0 };
@@ -154,7 +154,7 @@ void map_init() {
     };
 }
 
-typedef void (*constfunc)(entity_t *, vec3_t);
+typedef void (*constfunc)(entity_t *);
 constfunc map_constfunc_from_eid(entity_id_t eid) {
     return map_entity_table[eid].constructor_func;
 }
@@ -455,7 +455,7 @@ void mpack_map_parse(const char * data, const size_t data_len) {
         case ENTITY_ID_PLAYER:
             vector_push(map_entities, &(entity_params_t) {
                 .id = id,
-                .entity_player_params.position = {
+                .position = {
                     .x = mpack_node_float(mpack_node_array_at(mp_me_pos, 0)),
                     .y = mpack_node_float(mpack_node_array_at(mp_me_pos, 1)),
                     .z = mpack_node_float(mpack_node_array_at(mp_me_pos, 2)),
@@ -465,7 +465,7 @@ void mpack_map_parse(const char * data, const size_t data_len) {
         case ENTITY_ID_LIGHT:
             vector_push(map_entities, &(entity_params_t) {
                 .id = id,
-                .entity_light_params.position = {
+                .position = {
                     .x = mpack_node_float(mpack_node_array_at(mp_me_pos, 0)),
                     .y = mpack_node_float(mpack_node_array_at(mp_me_pos, 1)),
                     .z = mpack_node_float(mpack_node_array_at(mp_me_pos, 2)),
@@ -481,12 +481,12 @@ void mpack_map_parse(const char * data, const size_t data_len) {
         default:
             vector_push(map_entities, &(entity_params_t) {
                 .id = id,
-                .entity_generic_params.ref_entt = vector_at(tmp_map->ref_entities, id),
-                .entity_generic_params.position = {
+                .position = {
                     .x = mpack_node_float(mpack_node_array_at(mp_me_pos, 0)),
                     .y = mpack_node_float(mpack_node_array_at(mp_me_pos, 1)),
                     .z = mpack_node_float(mpack_node_array_at(mp_me_pos, 2)),
                 },
+                .entity_generic_params.ref_entt = vector_at(tmp_map->ref_entities, id),
                 .entity_generic_params.extras = map_get_entity_kv(mp_ml_extras)
             });
         }
@@ -520,11 +520,7 @@ void map_load (map_t * m) {
     for (uint32_t i = 0; i < map->e_size; i++) {
         entity_params_t * ref_ep = vector_at(map->map_entities, i);
         entity_params_t ep = *ref_ep;
-        vec3_t * pos = &ep.entity_generic_params.position;
-        if (ep.id == ENTITY_ID_PLAYER)
-            pos = &ep.entity_player_params.position;
-        if (ep.id == ENTITY_ID_LIGHT)
-            pos = &ep.entity_light_params.position;
+        vec3_t * pos = &ep.position;
 
         pos->x *= 32;
         pos->y *= 16;

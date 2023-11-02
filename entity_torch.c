@@ -12,7 +12,7 @@ animation_t torch_animation[] = {
     {   // 0: Idle
         .time = .25,
         .num_frames = 14,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "default"},
             {.name = "torch1"},
             {.name = "torch2"},
@@ -38,8 +38,8 @@ static ref_entt_t * last_ref_entt = NULL;
 void entity_torch_init(entity_t * e);
 void entity_torch_update(entity_t * e);
 
-void entity_torch_constructor(entity_t * e, vec3_t pos) {
-    entity_constructor(e, pos);
+void entity_torch_constructor(entity_t * e) {
+    entity_constructor(e);
 
     e->_update = entity_torch_update;
 

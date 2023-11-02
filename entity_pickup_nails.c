@@ -8,8 +8,8 @@
 void entity_pickup_nails_init(entity_t * e);
 void entity_pickup_nail_pickup(entity_t * e);
 
-void entity_pickup_nails_constructor(entity_t * e, vec3_t pos) {
-    entity_pickup_constructor(e, pos);
+void entity_pickup_nails_constructor(entity_t * e) {
+    entity_pickup_constructor(e);
     e->_pickup = entity_pickup_nail_pickup;
     entity_pickup_nails_init(e);
 }

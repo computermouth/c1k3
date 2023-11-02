@@ -15,14 +15,14 @@ animation_t grunt_animations[] = {
     {   // 0: Idle
         .time = 1,
         .num_frames = 1,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "default"},
         },
     },
     {   // 1: Walk
         .time = 0.40f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "run_1"},
             {.name = "run_2"},
             {.name = "run_3"},
@@ -32,7 +32,7 @@ animation_t grunt_animations[] = {
     {   // 2: Run
         .time = 0.20f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "run_1"},
             {.name = "run_2"},
             {.name = "run_3"},
@@ -42,7 +42,7 @@ animation_t grunt_animations[] = {
     {   // 3: Attack prepare
         .time = 0.25f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "default"},
             {.name = "shoot"},
             {.name = "shoot"},
@@ -52,7 +52,7 @@ animation_t grunt_animations[] = {
     {   // 4: Attack
         .time = 0.25f,
         .num_frames = 4,
-        .frames_ng = (animation_frame_t[]) {
+        .frames = (animation_frame_t[]) {
             {.name = "shoot"},
             {.name = "default"},
             {.name = "default"},
@@ -64,14 +64,14 @@ animation_t grunt_animations[] = {
 // hack for caching parsed frame names per-map
 static ref_entt_t * last_ref_entt = NULL;
 
-void entity_enemy_grunt_constructor(entity_t * e, vec3_t pos) {
+void entity_enemy_grunt_constructor(entity_t * e) {
 
     char * str_p1 = entity_param_lookup("patrol", e->_params->entity_generic_params.extras);
     uint8_t patrol = 0;
     if (str_p1)
         patrol = atoi(str_p1);
 
-    entity_enemy_constructor(e, pos, patrol);
+    entity_enemy_constructor(e, patrol);
     e->_attack = entity_enemy_grunt_attack;
     entity_enemy_grunt_init(e);
 }
@@ -102,8 +102,8 @@ void entity_enemy_grunt_attack(entity_t * e) {
 
     entity_params_t l = {
         .id = ENTITY_ID_LIGHT,
+        .position = vec3_add(e->p, vec3(0,30,0)),
         .entity_light_params = {
-            .position = vec3_add(e->p, vec3(0,30,0)),
             .rgba[0] = 0xff,
             .rgba[1] = 0xff,
             .rgba[2] = 0xff,

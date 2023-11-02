@@ -10,8 +10,8 @@ void entity_projectile_gib_update(entity_t * e);
 void entity_projectile_gib_did_collide(entity_t * e, int axis);
 void entity_projectile_gib_did_collide_with_entity(entity_t * e, entity_t * other);
 
-void entity_projectile_gib_constructor(entity_t * e, vec3_t pos) {
-    entity_constructor(e, pos);
+void entity_projectile_gib_constructor(entity_t * e) {
+    entity_constructor(e);
 
     e->_update = entity_projectile_gib_update;
     e->_did_collide = entity_projectile_gib_did_collide;

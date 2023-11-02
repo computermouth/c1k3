@@ -6,8 +6,8 @@
 void entity_particle_init(entity_t * e);
 void entity_particle_update(entity_t * e);
 
-void entity_particle_constructor(entity_t * e, vec3_t pos) {
-    entity_constructor(e, pos);
+void entity_particle_constructor(entity_t * e) {
+    entity_constructor(e);
 
     e->_update = entity_particle_update;
     entity_particle_init(e);
