@@ -61,8 +61,6 @@ typedef struct {
     float time;
     uint32_t num_frames;
     animation_frame_t * frames_ng;
-    uint32_t * frames;
-    // todo, remove ^
 } animation_t;
 
 typedef struct {

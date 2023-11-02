@@ -17,27 +17,27 @@ animation_t default_animations[] = {
     {   // 0: Idle
         .time = 1,
         .num_frames = 1,
-        .frames = (uint32_t[]){0},
+        .frames_ng = (animation_frame_t[]){ 0 },
     },
     {   // 1: Walk
         .time = 0.40f,
         .num_frames = 4,
-        .frames = (uint32_t[]){1,2,3,4},
+        .frames_ng = (animation_frame_t[]){ 0 },
     },
     {   // 2: Run
         .time = 0.20f,
         .num_frames = 4,
-        .frames = (uint32_t[]){1,2,3,4},
+        .frames_ng = (animation_frame_t[]){ 0 },
     },
     {   // 3: Attack prepare
         .time = 0.25f,
         .num_frames = 4,
-        .frames = (uint32_t[]){0,5,5,5},
+        .frames_ng = (animation_frame_t[]){ 0 },
     },
     {   // 4: Attack
         .time = 0.25f,
         .num_frames = 4,
-        .frames = (uint32_t[]){5,0,0,0},
+        .frames_ng = (animation_frame_t[]){ 0 },
     },
 };
 

@@ -8,12 +8,32 @@
 #include "map.h"
 #include "render.h"
 
-uint32_t torch_anim_frames[] = {0,1,2,1,2,0,0,1,2,1,2,1,2,0};
-animation_t torch_animation = {
-    .time = 0.25,
-    .frames = torch_anim_frames,
-    .num_frames = sizeof(torch_anim_frames)/sizeof(torch_anim_frames[0]),
+animation_t torch_animation[] = {
+    {   // 0: Idle
+        .time = .25,
+        .num_frames = 14,
+        .frames_ng = (animation_frame_t[]) {
+            {.name = "default"},
+            {.name = "torch1"},
+            {.name = "torch2"},
+            {.name = "torch1"},
+            {.name = "torch2"},
+            {.name = "default"},
+            {.name = "default"},
+            {.name = "torch1"},
+            {.name = "torch2"},
+            {.name = "torch1"},
+            {.name = "torch2"},
+            {.name = "torch1"},
+            {.name = "torch2"},
+            {.name = "default"},
+        },
+    }
 };
+
+// hack for caching parsed frame names per-map
+static ref_entt_t * last_ref_entt = NULL;
+
 
 void entity_torch_init(entity_t * e);
 void entity_torch_update(entity_t * e);
@@ -27,8 +47,6 @@ void entity_torch_constructor(entity_t * e, vec3_t pos) {
 }
 
 void entity_torch_init(entity_t * e) {
-
-    e->_anim = &torch_animation;
 
     e->p.x -= 16;
     e->p.z -= 16;
@@ -54,6 +72,20 @@ void entity_torch_init(entity_t * e) {
     }
 
     e->_light = 0;
+
+    entity_parse_animation_frames(
+        e->_params->entity_generic_params.ref_entt,
+        torch_animation,
+        sizeof(torch_animation)/sizeof(torch_animation[0]),
+        &last_ref_entt
+    );
+
+    e->_animation_collection = (animation_collection_t) {
+        .animations = torch_animation,
+        .num_animations = sizeof(torch_animation)/sizeof(torch_animation[0]),
+    };
+
+    e->_anim = &(torch_animation[0]);
 
     entity_set_model(e);
 }

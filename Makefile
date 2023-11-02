@@ -17,7 +17,7 @@ IFLAGS += -I./external/lodepng -I./external/libdsa -I./external/mpack -I./extern
 IFLAGS += -I./tools
 
 # todo -Wextra
-CFLAGS = -Wall -Wextra $(IFLAGS) $(shell sdl2-config --cflags) $(shell pkg-config --cflags SDL2_mixer SDL2_ttf) -std=c11 -pedantic
+CFLAGS = -Wall -Wextra -D_FORTIFY_SOURCE=2 $(IFLAGS) $(shell sdl2-config --cflags) $(shell pkg-config --cflags SDL2_mixer SDL2_ttf) -std=c11 -pedantic
 LFLAGS = -lm $(shell sdl2-config --libs) $(shell pkg-config --libs SDL2_mixer SDL2_ttf)
 
 UNAME   := $(shell uname)

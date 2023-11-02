@@ -12,11 +12,9 @@
 #include "entity_particle.h"
 #include "audio.h"
 
-uint32_t no_idea_placeholder[] = {0};
-
 animation_t default_anim[] = {
     {
-        .frames = (uint32_t[]){ 0 },
+        .frames_ng = (animation_frame_t[]){ 0 },
         .num_frames = 1,
         .time = 1,
     }
@@ -284,13 +282,8 @@ void entity_draw_model(entity_t * e) {
     uint32_t frame_cur = 0;
     uint32_t frame_next = 0;
 
-    if (e->_anim->frames_ng) {
-        frame_cur = e->_anim->frames_ng[(uint32_t)f % e->_anim->num_frames].id;
-        frame_next = e->_anim->frames_ng[(1 + (uint32_t)f) % e->_anim->num_frames].id;
-    } else {
-        frame_cur = e->_anim->frames[(uint32_t)f % e->_anim->num_frames];
-        frame_next = e->_anim->frames[(1 + (uint32_t)f) % e->_anim->num_frames];
-    }
+    frame_cur = e->_anim->frames_ng[(uint32_t)f % e->_anim->num_frames].id;
+    frame_next = e->_anim->frames_ng[(1 + (uint32_t)f) % e->_anim->num_frames].id;
 
     // Swap frames if we're looping to the first frame again
     if (frame_next < frame_cur) {
