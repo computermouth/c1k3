@@ -36,6 +36,7 @@
 #include "entity_door.h"
 #include "entity_pickup_key.h"
 #include "entity_torch.h"
+#include "entity_demon.h"
 
 #include "mpack.h"
 #include "vector.h"
@@ -151,6 +152,9 @@ void map_init() {
     };
     map_entity_table[ENTITY_ID_GIBS006] = (map_entity_table_t) {
         "gibs.006", entity_particle_constructor
+    };
+    map_entity_table[ENTITY_ID_DEMON] = (map_entity_table_t) {
+        "demon", entity_demon_constructor
     };
 }
 

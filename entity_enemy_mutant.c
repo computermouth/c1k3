@@ -44,9 +44,6 @@ enemy_state_t mutant_enemy_states[_ENEMY_STATE_NULL] = {
     [ENEMY_STATE_EVADE]          = {ENEMY_ANIMATION_IDLE,   0.0, 0.8, _ENEMY_STATE_NULL},
 };
 
-// todo, do something less stupid with this
-model_t model_mutant = { 0 };
-
 void entity_enemy_mutant_constructor(entity_t * e) {
     entity_enemy_constructor(e, 0);
     e->_attack = entity_enemy_mutant_attack;
