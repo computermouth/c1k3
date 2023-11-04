@@ -355,7 +355,7 @@ void mpack_map_parse(const char * data, const size_t data_len) {
         }
         tmp_entt.size = vec3_mul(vec3_sub(max_size, min_size),vec3(32,16,32));
         tmp_entt.frame_len = frame_arr_len;
-        tmp_entt.frames = model_load_ng(frames, frame_arr_len, ulen, u, v);
+        tmp_entt.frames = model_load(frames, frame_arr_len, ulen, u, v);
         free(u);
         free(v);
         free(frames);
@@ -526,7 +526,7 @@ void map_load (map_t * m) {
         pos->y *= 16;
         pos->z *= 32;
 
-        game_spawn_ng(&ep);
+        game_spawn(&ep);
     }
 
 }

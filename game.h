@@ -27,8 +27,7 @@ void game_entities_enemies_pop(entity_t ** e);
 void game_entities_friendly_push(entity_t ** e);
 void game_entities_friendly_pop(entity_t ** e);
 void game_init(int map_index);
-entity_t * game_spawn (void (*func)(entity_t *, vec3_t), vec3_t pos, entity_params_t *);
-entity_t * game_spawn_ng (entity_params_t *);
+entity_t * game_spawn (entity_params_t *);
 void game_run(float time_now);
 void game_next_level();
 

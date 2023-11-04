@@ -17,27 +17,47 @@ animation_t default_animations[] = {
     {   // 0: Idle
         .time = 1,
         .num_frames = 1,
-        .frames = (animation_frame_t[]){ 0 },
+        .frames = (animation_frame_t[]) {
+            {
+                0
+            }
+        },
     },
     {   // 1: Walk
         .time = 0.40f,
         .num_frames = 4,
-        .frames = (animation_frame_t[]){ 0 },
+        .frames = (animation_frame_t[]) {
+            {
+                0
+            }
+        },
     },
     {   // 2: Run
         .time = 0.20f,
         .num_frames = 4,
-        .frames = (animation_frame_t[]){ 0 },
+        .frames = (animation_frame_t[]) {
+            {
+                0
+            }
+        },
     },
     {   // 3: Attack prepare
         .time = 0.25f,
         .num_frames = 4,
-        .frames = (animation_frame_t[]){ 0 },
+        .frames = (animation_frame_t[]) {
+            {
+                0
+            }
+        },
     },
     {   // 4: Attack
         .time = 0.25f,
         .num_frames = 4,
-        .frames = (animation_frame_t[]){ 0 },
+        .frames = (animation_frame_t[]) {
+            {
+                0
+            }
+        },
     },
 };
 
@@ -230,7 +250,7 @@ entity_t * entity_enemy_spawn_projectile(entity_t * e, entity_id_t eid, float sp
     entity_params_t ep = map_entt_params_from_eid(eid);
     ep.position = e->p;
 
-    entity_t * projectile = game_spawn_ng(&ep);
+    entity_t * projectile = game_spawn(&ep);
     projectile->_check_against = ENTITY_GROUP_PLAYER;
     projectile->_yaw = e->_yaw + PI/2.0f;
 

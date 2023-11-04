@@ -89,6 +89,9 @@ void audio_play(Mix_Chunk * c) {
 }
 
 uint32_t audio_schedule(uint32_t interval, void *param) {
+    // silence unused warnings
+    interval = interval;
+
     audio_play(param);
     return 0;
 }

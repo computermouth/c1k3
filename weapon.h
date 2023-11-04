@@ -22,7 +22,7 @@ typedef struct {
     vec3_t _projectile_offset;
     uint32_t _ammo;
     Mix_Chunk * _sound;
-    entity_id_t _projectile_type_ng;
+    entity_id_t _projectile_type;
     float _projectile_speed;
     uint32_t _texture;
     model_t _model;

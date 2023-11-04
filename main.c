@@ -120,6 +120,9 @@ void quit() {
 }
 
 int main(int argc, char* argv[]) {
+    // silence unused
+    argc = argc;
+    argv = argv;
 
     // todo, more randy
     time_t t;

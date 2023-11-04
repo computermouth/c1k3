@@ -14,9 +14,13 @@
 
 animation_t default_anim[] = {
     {
-        .frames = (animation_frame_t[]){ 0 },
-        .num_frames = 1,
         .time = 1,
+        .num_frames = 1,
+        .frames = (animation_frame_t[]) {
+            {
+                0
+            }
+        },
     }
 };
 
@@ -120,7 +124,9 @@ void entity_constructor(entity_t *e) {
 }
 
 // only to do something dynamic to every entity
-void entity_init(entity_t * e) {}
+void entity_init(entity_t * e) {
+    e = e;
+}
 
 void entity_update(entity_t * e) {
     e->_draw_model(e);
@@ -267,9 +273,15 @@ bool entity_collides(entity_t * e, vec3_t p) {
     return map_block_at_box(vec3_sub(p, e->s), vec3_add(p, e->s));
 }
 
-void entity_did_collide(entity_t * e, int axis) {}
+void entity_did_collide(entity_t * e, int axis) {
+    e = e;
+    axis = axis;
+}
 
-void entity_did_collide_with_entity(entity_t * e, entity_t * other) {}
+void entity_did_collide_with_entity(entity_t * e, entity_t * other) {
+    e = e;
+    other = other;
+}
 
 void entity_draw_model(entity_t * e) {
     e->_anim_time += game_tick;
@@ -304,7 +316,7 @@ void entity_draw_model(entity_t * e) {
     r_draw(call);
 }
 
-void entity_spawn_particles(entity_t * e, int amount, int speed, entity_id_t eid, float lifetime) {
+void entity_spawn_particles(entity_t * e, uint32_t amount, float speed, entity_id_t eid, float lifetime) {
 
     entity_params_t ep = map_entt_params_from_eid(eid);
 
@@ -316,7 +328,7 @@ void entity_spawn_particles(entity_t * e, int amount, int speed, entity_id_t eid
     ep.position = vec3_sub(e->p, tickdist);
 
     for (uint32_t i = 0; i < amount; i++) {
-        entity_t * particle = game_spawn_ng(&ep);
+        entity_t * particle = game_spawn(&ep);
         particle->_expires = true;
         particle->_die_at = game_time + lifetime + randf() * lifetime * 0.2;
         particle->v = vec3(
@@ -328,6 +340,9 @@ void entity_spawn_particles(entity_t * e, int amount, int speed, entity_id_t eid
 }
 
 void entity_receive_damage(entity_t * e, entity_t * from, int32_t amount) {
+    // silence Wunused
+    from = from;
+
     if (e->_dead)
         return;
 
@@ -346,9 +361,23 @@ void entity_kill(entity_t * e) {
     e->_dead = 1;
 }
 
-void entity_pickup(entity_t * e) {}
-void entity_set_state(entity_t * e, uint32_t state) {}
-void entity_attack(entity_t * e) {}
+void entity_pickup(entity_t * e) {
+    e = e;
+}
+void entity_set_state(entity_t * e, uint32_t state) {
+    e = e;
+    state = state;
+}
+void entity_attack(entity_t * e) {
+    e = e;
+}
 entity_t * entity_spawn_projectile(entity_t * e, entity_id_t eid, float speed, float yaw_offset, float pitch_offset) {
+    // silence Wunused
+    e = e;
+    eid = eid;
+    speed = speed;
+    yaw_offset = yaw_offset;
+    pitch_offset = pitch_offset;
+
     return NULL;
 }

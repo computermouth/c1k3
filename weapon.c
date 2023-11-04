@@ -52,7 +52,7 @@ void weapon_shoot(weapon_t * w, vec3_t pos, float yaw, float pitch) {
 
 void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
 
-    entity_params_t ep = map_entt_params_from_eid(w->_projectile_type_ng);
+    entity_params_t ep = map_entt_params_from_eid(w->_projectile_type);
     ep.position = vec3_add(
                       pos,
                       vec3_add(
@@ -64,7 +64,7 @@ void weapon_spawn_projectile(weapon_t * w, vec3_t pos, float yaw, float pitch) {
                       )
                   );
 
-    entity_t * projectile = game_spawn_ng(&ep);
+    entity_t * projectile = game_spawn(&ep);
 
     projectile->v = vec3_rotate_yaw_pitch(
                         vec3(0, 0, w->_projectile_speed),
@@ -97,7 +97,7 @@ void weapon_shotgun_init(weapon_t * w) {
     w->_sound = sfx_shotgun_shoot;
     w->_needs_ammo = 0;
     w->_reload = 0.9f;
-    w->_projectile_type_ng = ENTITY_ID_PROJECTILE_SHELL;
+    w->_projectile_type = ENTITY_ID_PROJECTILE_SHELL;
     w->_projectile_speed = 10000;
 
     weapon_set_model(w, ENTITY_ID_PICKUP_SHOTGUN);
@@ -127,7 +127,7 @@ void weapon_nailgun_init(weapon_t * w) {
     w->_sound = sfx_nailgun_shoot;
     w->_ammo = 100;
     w->_reload = 0.09;
-    w->_projectile_type_ng = ENTITY_ID_PROJECTILE_NAIL;
+    w->_projectile_type = ENTITY_ID_PROJECTILE_NAIL;
     w->_projectile_speed = 1300;
     w->_projectile_offset = vec3(6,0,8);
 
@@ -150,7 +150,7 @@ void weapon_grenadelauncher_init(weapon_t * w) {
     w->_sound = sfx_grenade_shoot;
     w->_ammo = 10;
     w->_reload = 0.650;
-    w->_projectile_type_ng = ENTITY_ID_PROJECTILE_GRENADE;
+    w->_projectile_type = ENTITY_ID_PROJECTILE_GRENADE;
     w->_projectile_speed = 900;
 
     weapon_set_model(w, ENTITY_ID_PICKUP_GRENADELAUNCHER);

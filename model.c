@@ -8,7 +8,7 @@
 #include "render.h"
 #include "vector.h"
 
-vector * model_load_ng(void * void_verts, uint32_t frame_len, uint32_t vert_len, float * u, float * v) {
+vector * model_load(void * void_verts, uint32_t frame_len, uint32_t vert_len, float * u, float * v) {
     // todo, scale??
     vector * frame_ids = vector_init(sizeof(uint32_t));
     float (*model_verts)[frame_len][vert_len][3] = void_verts;

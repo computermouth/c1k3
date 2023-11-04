@@ -40,7 +40,7 @@ void entity_projectile_grenade_update(entity_t * e) {
     e->_pitch += (fabs(e->v.x) + fabs(e->v.y) + fabs(e->v.z)) * .02 * game_tick;
 
     e->_draw_model(e);
-    r_push_light(vec3_add(e->p, vec3(0,16,0)), (sinf(game_time*10)+2)*0.5, 255, 32, 0);
+    r_push_light(vec3_add(e->p, vec3(0,16,0)), (sinf(game_time*10)+2)*5, 255, 32, 0);
     e->f = e->_on_ground ? 5 : 0.5;
 }
 
@@ -52,6 +52,9 @@ void entity_projectile_grenade_did_collide(entity_t * e, int axis) {
 }
 
 void entity_projectile_grenade_did_collide_with_entity(entity_t * e, entity_t * other) {
+    // silence unused
+    other = other;
+
     e->_kill(e);
 }
 
@@ -71,8 +74,6 @@ void entity_projectile_grenade_kill(entity_t * e) {
     e->_play_sound(e, sfx_grenade_explode);
     e->_spawn_particles(e, 2, 800, ENTITY_ID_PARTICLE_SLUG, 1);
 
-
-
     entity_params_t l = {
         .id = ENTITY_ID_LIGHT,
         .position = vec3_add(e->p, vec3(0,16,0)),
@@ -83,7 +84,7 @@ void entity_projectile_grenade_kill(entity_t * e) {
             .rgba[3] = 0xFF,
         },
     };
-    entity_t * tmplight = game_spawn_ng(&l);
+    entity_t * tmplight = game_spawn(&l);
 
     tmplight->_expires = true;
     tmplight->_die_at = game_time + 0.2;

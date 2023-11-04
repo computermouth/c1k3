@@ -79,4 +79,8 @@ void entity_door_update(entity_t * e) {
     e->p = vec3_add(e->_start_pos, vec3_rotate_y(vec3(96 * e->_open,0,0), e->_yaw));
 }
 
-void entity_door_receive_damage(entity_t * e, entity_t * from, int32_t amount) {}
+void entity_door_receive_damage(entity_t * e, entity_t * from, int32_t amount) {
+    e = e;
+    from = from;
+    amount = amount;
+}

@@ -89,4 +89,6 @@ void entity_enemy_mutant_init(entity_t * e) {
     };
 }
 
-void entity_enemy_mutant_attack(entity_t * e) {}
+void entity_enemy_mutant_attack(entity_t * e) {
+    e = e;
+}

@@ -180,11 +180,6 @@ void entity_player_update(entity_t * e) {
         else {
             weapon->_shoot(weapon, e->p, e->_yaw, e->_pitch);
 
-            typedef struct {
-                vec3_t position;
-                uint8_t rgba[4];
-            } entity_light_params_t;
-
             entity_params_t l = {
                 .id = ENTITY_ID_LIGHT,
                 .position = e->p,
@@ -195,13 +190,13 @@ void entity_player_update(entity_t * e) {
                     .rgba[3] = 0x0a,
                 },
             };
-            entity_t * tmp_light = game_spawn_ng(&l);
+            entity_t * tmp_light = game_spawn(&l);
             tmp_light->_expires = game_time + 0.1;
             tmp_light->_die_at = game_time + 0.1;
         }
     }
 
-    e->_bob += vec3_length(e->a) * 0.0001;
+    e->_bob += vec3_length(e->a) * game_tick * 0.01;
     e->f = e->_on_ground ? 10 : 2.5;
     e->_update_physics(e);
 
@@ -264,6 +259,10 @@ void entity_player_receive_damage(entity_t * e, entity_t * from, int32_t amount)
 }
 
 uint32_t entity_player_reset_level(uint32_t interval, void *param) {
+    // silence unused
+    interval = interval;
+    param = param;
+
     game_reset_level = 1;
     return 0;
 }

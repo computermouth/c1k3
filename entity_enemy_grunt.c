@@ -110,7 +110,7 @@ void entity_enemy_grunt_attack(entity_t * e) {
             .rgba[3] = 0x0a,
         },
     };
-    entity_t * tmplight = game_spawn_ng(&l);
+    entity_t * tmplight = game_spawn(&l);
 
     tmplight->_expires = true;
     tmplight->_die_at = game_time + 0.1;

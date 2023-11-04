@@ -44,7 +44,7 @@ SAN_OPT = ASAN_OPTIONS=abort_on_error=1:fast_unwind_on_malloc=0:detect_leaks=0 U
 
 DEBUG_CFLAGS = $(CFLAGS) -g
 DBGSN_CFLAGS = $(DEBUG_CFLAGS) $(SAN_FLAGS)
-RELEA_CFLAGS = $(CFLAGS) -flto -Os
+RELEA_CFLAGS = $(CFLAGS) -flto -O3
 
 all: OPT_FLAGS = $(DBGSN_CFLAGS)
 all: assets $(INT_OBJ) $(EXT_OBJ)
@@ -98,10 +98,8 @@ memtest: valbuild
 assets: tools/mapc
 	make -C c1k3-assets
 
-tools/mapc: OPT_FLAGS = $(DBGSN_CFLAGS)
-## tools/mapc: OPT_FLAGS = $(RELEA_CFLAGS)
 tools/mapc: $(EXT_OBJ)
-	$(CC) $(OPT_FLAGS) tools/mapc.c -o tools/mapc $(EXT_OBJ) $(LFLAGS)
+	$(CC) $(DBGSN_CFLAGS) tools/mapc.c -o tools/mapc $(EXT_OBJ) $(LFLAGS)
 
 %.o: %.c
 	$(CC) $(OPT_FLAGS) -c $< -o $@

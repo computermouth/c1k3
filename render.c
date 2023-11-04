@@ -260,7 +260,7 @@ void r_end_frame() {
     glUniform3fv(r_u_lights, r_num_lights * 6, r_light_buffer);
 
     long int vo = 0;
-    int last_texture = -1;
+    uint64_t last_texture = -1;
 
     uint32_t len = vector_size(r_draw_calls);
     for(uint32_t i = 0; i < len; i++) {
@@ -300,7 +300,6 @@ void r_end_frame() {
     r_va_p2 = r_vertex_attrib(shader_program, "p2", 3, 8, 0);
     r_va_n2 = r_vertex_attrib(shader_program, "n2", 3, 8, 5);
 
-    // memset(r_draw_calls, 0, sizeof(draw_call_t) * r_num_draw_calls);
     vector_clear(r_draw_calls);
 }
 
@@ -370,12 +369,13 @@ int r_push_block(float x, float y, float z, float sx, float sy, float sz, int te
 
 void r_push_light(vec3_t pos, float intensity, float r, float g, float b) {
     // Calculate the distance to the light, fade it out between 768--1024
+    // but not all the way to zero, just to 1%
     float fade = clamp(
                      scale(
                          vec3_dist(pos, r_camera),
                          768, 1024, 1, 0
                      ),
-                     0, 1
+                     .01, 1
                  ) * intensity * 10;
 
     if (fade && r_num_lights < R_MAX_LIGHT_V3/2) {

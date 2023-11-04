@@ -122,33 +122,22 @@ void game_next_level() {
 }
 
 uint32_t game_finish(uint32_t interval, void *param) {
+    // silence unused warnings
+    interval = interval;
+    param = param;
+
     game_map_index = 0;
     game_reset_level = 1;
     return 0;
-}
-
-// todo, is this fuckin goofy?
-// it is, the pointer that gets returned here is potentially destroyed after update
-// functions are ran and game_entities is completely replaced with new values in new
-// memory from the new alive_entities collection
-entity_t * game_spawn (void (*init)(entity_t *, vec3_t), vec3_t pos, entity_params_t * ep) {
-
-    entity_t * e = calloc(1, sizeof(entity_t));
-    e->_params = ep;
-    vector_push(__game_entities, &e);
-    init(e, pos);
-
-    return e;
 }
 
 // todo, fix this import
 typedef void (*constfunc)(entity_t *);
 extern constfunc map_constfunc_from_eid(entity_id_t eid);
 
-entity_t * game_spawn_ng (entity_params_t * ep) {
+entity_t * game_spawn (entity_params_t * ep) {
 
     void (*constructor)(entity_t *) = map_constfunc_from_eid(ep->id);
-    // todo, spawn the things with parameters
     if(ep->id >= __ENTITY_ID_END) {
         fprintf(stderr, "E: unimp -- %d\n", ep->id);
         return NULL;
@@ -161,36 +150,6 @@ entity_t * game_spawn_ng (entity_params_t * ep) {
 
     return e;
 }
-
-// entity_t * bak_game_spawn_ng (entity_params_t * ep) {
-
-//     void (*constructor)(entity_t *, vec3_t) = map_constfunc_from_eid(ep->id);
-//     // todo, spawn the things with parameters
-//     if(ep->id >= __ENTITY_ID_END) {
-//         fprintf(stderr, "E: unimp -- %d\n", ep->id);
-//         return NULL;
-//     }
-
-//     entity_t * e = NULL;
-//     // todo, set e->_params, and use that position
-//     if(ep->id == ENTITY_ID_LIGHT) {
-//         e = game_spawn(
-//                 constructor,
-//                 ep->entity_light_params.position, ep);
-//     } else if(ep->id == ENTITY_ID_PLAYER) {
-//         e = game_spawn(
-//                 constructor,
-//                 ep->entity_player_params.position, ep);
-//     } else {
-//         e = game_spawn(
-//                 constructor,
-//                 ep->entity_generic_params.position, ep);
-//         // todo
-//         // free kv
-//     }
-
-//     return e;
-// }
 
 void game_run(float time_now) {
 

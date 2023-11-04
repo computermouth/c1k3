@@ -64,7 +64,7 @@ void entity_barrel_kill(entity_t * e) {
             .rgba[3] = 0xFF,
         },
     };
-    entity_t * tmp_light = game_spawn_ng(&l);
+    entity_t * tmp_light = game_spawn(&l);
 
     tmp_light->_expires = true;
     tmp_light->_die_at = game_time + 0.2;

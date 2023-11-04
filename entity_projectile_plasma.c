@@ -38,6 +38,9 @@ void entity_projectile_plasma_update(entity_t * e) {
 }
 
 void entity_projectile_plasma_did_collide(entity_t * e, int axis) {
+    // silence Wunused
+    axis = axis;
+
     e->_kill(e);
     e->_play_sound(e, sfx_nailgun_hit);
     e->_spawn_particles(e, 2, 80, ENTITY_ID_PARTICLE_SLUG, 0.4);
@@ -52,7 +55,7 @@ void entity_projectile_plasma_did_collide(entity_t * e, int axis) {
             .rgba[3] = 0x05,
         },
     };
-    entity_t * tmplight = game_spawn_ng(&l);
+    entity_t * tmplight = game_spawn(&l);
 
     tmplight->_expires = true;
     tmplight->_die_at = game_time + 0.1;
