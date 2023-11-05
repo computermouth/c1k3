@@ -521,13 +521,13 @@ void map_parse() {
     mpack_map_parse((char *)data_menu, data_menu_len);
 }
 
-void map_set_level(size_t i){
+void map_set_level(size_t i) {
     map_t * m = vector_at(map_data, i);
     map = m;
 }
 
 void map_load () {
-    
+
     // loads from global map_t * map;
     for (uint32_t i = 0; i < map->e_size; i++) {
         entity_params_t * ref_ep = vector_at(map->map_entities, i);

@@ -99,7 +99,11 @@ assets: tools/mapc
 	make -C c1k3-assets
 
 tools/mapc: $(EXT_OBJ)
+ifeq ($(OS),linux)
 	$(CC) $(DBGSN_CFLAGS) tools/mapc.c -o tools/mapc $(EXT_OBJ) $(LFLAGS)
+else
+	$(CC) $(DEBUG_CFLAGS) tools/mapc.c -o tools/mapc $(EXT_OBJ) $(LFLAGS)
+endif
 
 %.o: %.c
 	$(CC) $(OPT_FLAGS) -c $< -o $@

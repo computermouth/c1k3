@@ -54,7 +54,7 @@ text_surface_t * dq = NULL;
 text_surface_t * dennis = NULL;
 entity_t * demon = NULL;
 
-void menu_init(){
+void menu_init() {
     // set level to menu
     map_set_level(2);
 
