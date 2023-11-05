@@ -784,6 +784,8 @@ int main(int argc, char * argv[]) {
     out_plyr_vec = vector_init(sizeof(mapc_out_plyr_t));
     out_trgr_vec = vector_init(sizeof(mapc_out_entt_t));
 
+    group_meshes(data);
+
     prep_out();
 
     // mpack time
