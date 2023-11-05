@@ -236,6 +236,10 @@ int main(int argc, char* argv[]) {
                 text_free_surface(c1k3);
             if (dq)
                 text_free_surface(dq);
+            if (dennis)
+                text_free_surface(dennis);
+            if (demon)
+                free(demon);
         }
 
         // perform based on state
