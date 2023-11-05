@@ -107,7 +107,8 @@ extern vector * map_data;
 
 void map_init();
 void map_parse();
-void map_load (map_t * m);
+void map_set_level(size_t i);
+void map_load ();
 uint8_t map_block_at(int32_t x, int32_t y, int32_t z);
 int map_block_at_box(vec3_t box_start, vec3_t box_end);
 void map_draw();

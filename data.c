@@ -66,6 +66,11 @@ const uint32_t data_sfx_shotgun_shoot_len = audio_sfx_shotgun_shoot_ogg_len;
 const uint8_t * data_song = audio_song_ogg;
 const uint32_t data_song_len = audio_song_ogg_len;
 
+#include "menu.h"
+
+const uint8_t * data_menu = blend_menu_map;
+const uint32_t data_menu_len = blend_menu_map_len;
+
 #include "map1.h"
 
 const uint8_t * data_map1 = blend_map1_map;

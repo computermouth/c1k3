@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+extern const uint8_t * data_menu;
+extern const uint32_t data_menu_len;
+
 extern const uint8_t * data_map1;
 extern const uint32_t data_map1_len;
 

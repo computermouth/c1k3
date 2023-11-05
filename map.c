@@ -515,12 +515,20 @@ void map_parse() {
     // todo, be smarter
     mpack_map_parse((char *)data_map1, data_map1_len);
     mpack_map_parse((char *)data_map3, data_map3_len);
+
+    // todo, be smarter
+    // load menu assets
+    mpack_map_parse((char *)data_menu, data_menu_len);
 }
 
-void map_load (map_t * m) {
-    // todo, should this just be an index into a global map_collection_t?
+void map_set_level(size_t i){
+    map_t * m = vector_at(map_data, i);
     map = m;
+}
 
+void map_load () {
+    
+    // loads from global map_t * map;
     for (uint32_t i = 0; i < map->e_size; i++) {
         entity_params_t * ref_ep = vector_at(map->map_entities, i);
         entity_params_t ep = *ref_ep;

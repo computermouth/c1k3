@@ -10,6 +10,7 @@
 
 #include "audio.h"
 #include "data.h"
+#include "entity.h"
 #include "input.h"
 #include "render.h"
 #include "map.h"
@@ -17,6 +18,7 @@
 #include "game.h"
 #include "text.h"
 #include "vector.h"
+#include "entity_demon.h"
 
 void game_load() {
     // text has to come before render init
@@ -49,6 +51,23 @@ void game_load() {
 
 text_surface_t * c1k3 = NULL;
 text_surface_t * dq = NULL;
+text_surface_t * dennis = NULL;
+entity_t * demon = NULL;
+
+void menu_init(){
+    // set level to menu
+    map_set_level(2);
+
+    entity_params_t d = {
+        .id = ENTITY_ID_DEMON,
+        .position = vec3(0,-12,-18),
+        .entity_generic_params.ref_entt = map_ref_entt_from_eid(ENTITY_ID_DEMON),
+    };
+    demon = calloc(sizeof(entity_t), 1);
+    demon->_params = &d;
+    demon->_yaw = PI * 36.0f/40.0f;
+    entity_demon_constructor(demon);
+}
 
 void menu_run(float time_now) {
 
@@ -56,21 +75,39 @@ void menu_run(float time_now) {
         c1k3 = text_create_surface((font_input_t) {
             .text = "C1K3",
             .color = { .r = 255, .g = 255, .b = 255, .a = 255 },
-            .size = FONT_LG
+            .size = FONT_MD
         });
         c1k3->x = INTERNAL_W / 2 - c1k3->w / 2;
         c1k3->y = INTERNAL_H / 2 - c1k3->h / 2;
 
         dq = text_create_surface((font_input_t) {
-            .text = "-- dequake fps --",
+            .text = "dequake fps",
             .color = { .r = 200, .g = 200, .b = 200, .a = 200 },
             .size = FONT_SM
         });
         dq->x = INTERNAL_W / 2 - dq->w / 2;
         dq->y = INTERNAL_H / 2 + dq->h;
+
+        dennis = text_create_surface((font_input_t) {
+            .text = "-- DENNIS FPS --",
+            .color = { .r = 200, .g = 16, .b = 16, .a = 255 },
+            .size = FONT_LG
+        });
+        dennis->x = INTERNAL_W / 2 - dennis->w / 2;
+        dennis->y = INTERNAL_H / 2 - dennis->h / 2 + 20;
     }
 
+    time_now *= 0.001f;
+    game_tick = (time_now - game_time);
+    if (game_tick <= 0.001f)
+        game_tick = 0.001f;
+    game_time = time_now;
+
+    demon->_yaw += PI * sinf(game_time / 4)/40.f * game_tick;
+
     r_prepare_frame(0.0f, 0.0f, 0.0f);
+
+    entity_demon_update(demon);
 
     // ref_entt_t * re = map_ref_entt_from_eid(ENTITY_ID_TORCH);
     // uint32_t * uframes = vector_begin(re->frames);
@@ -101,6 +138,7 @@ void menu_run(float time_now) {
 
     text_push_surface(c1k3);
     text_push_surface(dq);
+    text_push_surface(dennis);
 
     r_end_frame();
 
@@ -160,6 +198,9 @@ int main(int argc, char* argv[]) {
     // todo, vsync?
 
     game_load();
+
+    // load menu assets
+    menu_init();
 
     time(&t);
     int oldtime = t;
