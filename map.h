@@ -61,6 +61,7 @@ typedef enum {
     ENTITY_ID_GIBS005,
     ENTITY_ID_GIBS006,
     ENTITY_ID_DEMON,
+    ENTITY_ID_MINOBAUR,
     __ENTITY_ID_END,
 } entity_id_t;
 

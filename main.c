@@ -19,6 +19,7 @@
 #include "text.h"
 #include "vector.h"
 #include "entity_demon.h"
+#include "entity_minobaur.h"
 
 void game_load() {
     // text has to come before render init
@@ -53,20 +54,35 @@ text_surface_t * c1k3 = NULL;
 text_surface_t * dq = NULL;
 text_surface_t * dennis = NULL;
 entity_t * demon = NULL;
+entity_t * minobaur = NULL;
 
 void menu_init() {
     // set level to menu
     map_set_level(2);
 
-    entity_params_t d = {
-        .id = ENTITY_ID_DEMON,
-        .position = vec3(0,-12,-18),
-        .entity_generic_params.ref_entt = map_ref_entt_from_eid(ENTITY_ID_DEMON),
-    };
-    demon = calloc(sizeof(entity_t), 1);
-    demon->_params = &d;
-    demon->_yaw = PI * 36.0f/40.0f;
-    entity_demon_constructor(demon);
+    {
+        entity_params_t d = {
+            .id = ENTITY_ID_DEMON,
+            .position = vec3(0,-12,-18),
+            .entity_generic_params.ref_entt = map_ref_entt_from_eid(ENTITY_ID_DEMON),
+        };
+        demon = calloc(sizeof(entity_t), 1);
+        demon->_params = &d;
+        demon->_yaw = PI * 36.0f/40.0f;
+        entity_demon_constructor(demon);
+    }
+
+    {
+        entity_params_t mb = {
+            .id = ENTITY_ID_MINOBAUR,
+            .position = vec3(0,0,32),
+            .entity_generic_params.ref_entt = map_ref_entt_from_eid(ENTITY_ID_MINOBAUR),
+        };
+        minobaur = calloc(sizeof(entity_t), 1);
+        minobaur->_params = &mb;
+        minobaur->_yaw = PI;
+        entity_minobaur_constructor(minobaur);
+    }
 }
 
 void menu_run(float time_now) {
@@ -107,7 +123,8 @@ void menu_run(float time_now) {
 
     r_prepare_frame(0.0f, 0.0f, 0.0f);
 
-    entity_demon_update(demon);
+    // entity_demon_update(demon);
+    entity_minobaur_update(minobaur);
 
     // ref_entt_t * re = map_ref_entt_from_eid(ENTITY_ID_TORCH);
     // uint32_t * uframes = vector_begin(re->frames);
@@ -240,6 +257,8 @@ int main(int argc, char* argv[]) {
                 text_free_surface(dennis);
             if (demon)
                 free(demon);
+            if (minobaur)
+                free(minobaur);
         }
 
         // perform based on state

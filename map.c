@@ -37,6 +37,7 @@
 #include "entity_pickup_key.h"
 #include "entity_torch.h"
 #include "entity_demon.h"
+#include "entity_minobaur.h"
 
 #include "mpack.h"
 #include "vector.h"
@@ -155,6 +156,9 @@ void map_init() {
     };
     map_entity_table[ENTITY_ID_DEMON] = (map_entity_table_t) {
         "demon", entity_demon_constructor
+    };
+    map_entity_table[ENTITY_ID_MINOBAUR] = (map_entity_table_t) {
+        "minobaur", entity_minobaur_constructor
     };
 }
 
