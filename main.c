@@ -211,7 +211,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     SDL_GL_CreateContext(window);
-    // SDL_GL_SetSwapInterval(0);
+    SDL_GL_SetSwapInterval(0);
     // todo, vsync?
 
     game_load();
