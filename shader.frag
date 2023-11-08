@@ -6,6 +6,9 @@
 
 	"uniform sampler2D s;"
 
+	// count of (the vectors) of lights (2* num_lights)
+	"uniform int light_count;"
+
 	// Lights [(x,y,z), [r,g,b], ...]
 	"uniform vec3 l["STR(R_MAX_LIGHT_V3)"];"
 
@@ -17,7 +20,7 @@
 
 		// Calculate all lights
 		"vec3 vl = vec3(0,0,0);"
-		"for(int i=0;i<"STR(R_MAX_LIGHT_V3)";i+=2) {"
+		"for(int i=0;i<light_count;i+=2) {"
 			"vl+="
 				// Angle to normal
 				"max("

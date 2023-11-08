@@ -12,6 +12,7 @@
 #include "render.h"
 #include "lodepng.h"
 #include "text.h"
+#include "vector.h"
 
 typedef struct {
     int antialias;
@@ -39,12 +40,13 @@ float r_buffer[R_MAX_VERTS*8] = {0};
 uint32_t r_num_verts = 0;
 
 // 2 vec3 per light [(x,y,z), [r,g,b], ...]
-float r_light_buffer[R_MAX_LIGHT_V3*3] = {0};
+float r_light_buffer[R_MAX_LIGHT_V3 * 3] = {0};
 uint32_t r_num_lights = 0;
 
 // Uniform locations
 GLint r_u_camera;
 GLint r_u_lights;
+GLint r_u_light_count;
 GLint r_u_mouse;
 GLint r_u_pos;
 GLint r_u_rotation;
@@ -143,6 +145,7 @@ void r_init() {
     glUseProgram(shader_program);
     r_u_camera = glGetUniformLocation(shader_program, "c");
     r_u_lights = glGetUniformLocation(shader_program, "l");
+    r_u_light_count = glGetUniformLocation(shader_program, "light_count");
     r_u_mouse = glGetUniformLocation(shader_program, "m");
     r_u_pos = glGetUniformLocation(shader_program, "mp");
     r_u_rotation = glGetUniformLocation(shader_program, "mr");
@@ -238,7 +241,6 @@ void r_prepare_frame(float r, float g, float b) {
     glClearColor(r, g, b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     r_num_lights = 0;
-    memset(r_light_buffer, 0.0f, R_MAX_LIGHT_V3*3 * sizeof(float));
     text_prepare_frame();
 }
 
@@ -257,31 +259,34 @@ void r_end_frame() {
 
     glUniform4f(r_u_camera, r_camera.x, r_camera.y, r_camera.z, 16.0f/9.0f);
     glUniform2f(r_u_mouse, r_camera_yaw, r_camera_pitch);
-    glUniform3fv(r_u_lights, r_num_lights * 6, r_light_buffer);
+    glUniform3fv(r_u_lights, r_num_lights * 3 * 2, r_light_buffer);
+    glUniform1i(r_u_light_count, r_num_lights * 2);
 
-    long int vo = 0;
+    GLint vo = 0;
     uint64_t last_texture = -1;
 
     uint32_t len = vector_size(r_draw_calls);
+    draw_call_t * draw_calls = vector_begin(r_draw_calls);
+    meta_tex_t * meta_texts = vector_begin(r_textures);
     for(uint32_t i = 0; i < len; i++) {
-        draw_call_t * c = vector_at(r_draw_calls, i);
+        // todo, raw index
+        draw_call_t c = draw_calls[i];
 
-        if (last_texture != c->texture) {
-            last_texture = c->texture;
-            meta_tex_t * tx = vector_at(r_textures, last_texture);
-            glBindTexture(GL_TEXTURE_2D, tx->texture);
+        if (last_texture != c.texture) {
+            last_texture = c.texture;
+            glBindTexture(GL_TEXTURE_2D, meta_texts[last_texture].texture);
         }
 
-        glUniform3f(r_u_pos, c->pos.x, c->pos.y, c->pos.z);
-        glUniform2f(r_u_rotation, c->yaw, c->pitch);
-        glUniform1f(r_u_frame_mix, c->mix);
+        glUniform3f(r_u_pos, c.pos.x, c.pos.y, c.pos.z);
+        glUniform2f(r_u_rotation, c.yaw, c.pitch);
+        glUniform1f(r_u_frame_mix, c.mix);
 
-        if (vo != (c->f2 - c->f1)) {
-            vo = (c->f2 - c->f1);
-            glVertexAttribPointer(r_va_p2, 3, GL_FLOAT, GL_FALSE, 8 * 4, (void *)(vo*8*4));
-            glVertexAttribPointer(r_va_n2, 3, GL_FLOAT, GL_FALSE, 8 * 4, (void *)((vo*8+5)*4));
+        if (vo != (c.f2 - c.f1)) {
+            vo = (c.f2 - c.f1);
+            glVertexAttribPointer(r_va_p2, 3, GL_FLOAT, GL_FALSE, 8 * 4, (void *)((size_t)vo*8*4));
+            glVertexAttribPointer(r_va_n2, 3, GL_FLOAT, GL_FALSE, 8 * 4, (void *)(((size_t)vo*8+5)*4));
         }
-        glDrawArrays(GL_TRIANGLES, c->f1, c->num_verts);
+        glDrawArrays(GL_TRIANGLES, c.f1, c.num_verts);
     }
 
     // todo works here, but eeeeggghhhh
@@ -312,15 +317,17 @@ void r_submit_buffer() {
 }
 
 void r_push_vert(vec3_t pos, vec3_t normal, float u, float v) {
-    // todo, memcpy?
-    r_buffer[r_num_verts*8 + 0] = pos.x;
-    r_buffer[r_num_verts*8 + 1] = pos.y;
-    r_buffer[r_num_verts*8 + 2] = pos.z;
-    r_buffer[r_num_verts*8 + 3] = u;
-    r_buffer[r_num_verts*8 + 4] = v;
-    r_buffer[r_num_verts*8 + 5] = normal.x;
-    r_buffer[r_num_verts*8 + 6] = normal.y;
-    r_buffer[r_num_verts*8 + 7] = normal.z;
+
+    size_t vindex = r_num_verts*8;
+
+    r_buffer[vindex++] = pos.x;
+    r_buffer[vindex++] = pos.y;
+    r_buffer[vindex++] = pos.z;
+    r_buffer[vindex++] = u;
+    r_buffer[vindex++] = v;
+    r_buffer[vindex++] = normal.x;
+    r_buffer[vindex++] = normal.y;
+    r_buffer[vindex] = normal.z;
 
     r_num_verts++;
 }
@@ -347,16 +354,16 @@ int r_push_block(float x, float y, float z, float sx, float sy, float sz, int te
     float tz = sz/tex_w;
 
     // top
-    vec3_t v0 = vec3(x, y + sy, z);
-    vec3_t v1 = vec3(x + sx, y + sy, z);
-    vec3_t v2 = vec3(x, y + sy, z + sz);
-    vec3_t v3 = vec3(x + sx, y + sy, z + sz);
+    vec3_t v0 = {x, y + sy, z};
+    vec3_t v1 = {x + sx, y + sy, z};
+    vec3_t v2 = {x, y + sy, z + sz};
+    vec3_t v3 = {x + sx, y + sy, z + sz};
 
     // bottom
-    vec3_t v4 = vec3(x, y, z + sz);
-    vec3_t v5 = vec3(x + sx, y, z + sz);
-    vec3_t v6 = vec3(x, y, z);
-    vec3_t v7 = vec3(x + sx, y, z);
+    vec3_t v4 = {x, y, z + sz};
+    vec3_t v5 = {x + sx, y, z + sz};
+    vec3_t v6 = {x, y, z};
+    vec3_t v7 = {x + sx, y, z};
 
     r_push_quad(v0, v1, v2, v3, tx, tz); // top
     r_push_quad(v4, v5, v6, v7, tx, tz); // bottom
@@ -369,27 +376,31 @@ int r_push_block(float x, float y, float z, float sx, float sy, float sz, int te
 
 void r_push_light(vec3_t pos, float intensity, float r, float g, float b) {
     // Calculate the distance to the light, fade it out between 768--1024
-    // but not all the way to zero, just to 1%
     float fade = clamp(
                      scale(
                          vec3_dist(pos, r_camera),
                          768, 1024, 1, 0
                      ),
-                     .01, 1
+                     0, 1
                  ) * intensity * 10;
 
-    if (fade && r_num_lights < R_MAX_LIGHT_V3/2) {
+    if (!fade)
+        return;
 
-        // todo, memcpy?
-        r_light_buffer[r_num_lights*6 + 0] = pos.x;
-        r_light_buffer[r_num_lights*6 + 1] = pos.y;
-        r_light_buffer[r_num_lights*6 + 2] = pos.z;
-        r_light_buffer[r_num_lights*6 + 3] = r*fade;
-        r_light_buffer[r_num_lights*6 + 4] = g*fade;
-        r_light_buffer[r_num_lights*6 + 5] = b*fade;
-
-        r_num_lights++;
+    if (r_num_lights * 2 >= R_MAX_LIGHT_V3) {
+        fprintf(stderr, "max lights reached\n");
+        return;
     }
+
+    size_t lindex = r_num_lights * 6;
+    r_light_buffer[lindex++] = pos.x;
+    r_light_buffer[lindex++] = pos.y;
+    r_light_buffer[lindex++] = pos.z;
+    r_light_buffer[lindex++] = r*fade;
+    r_light_buffer[lindex++] = g*fade;
+    r_light_buffer[lindex] = b*fade;
+
+    r_num_lights++;
 }
 
 void render_quit() {
