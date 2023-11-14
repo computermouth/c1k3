@@ -25,6 +25,7 @@ typedef struct {
     GLint f1; // todo, first frame of interpolation
     GLint f2; // second frame of interpolation
     float mix;
+    int unlit;
     int num_verts;
 } draw_call_t;
 

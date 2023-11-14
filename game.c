@@ -159,7 +159,7 @@ void game_run(float time_now) {
         game_tick = 0.001f;
     game_time = time_now;
 
-    r_prepare_frame(0.1, 0.2, 0.5);
+    r_prepare_frame(0.0, 0.0, 0.0);
 
     vector_clear(game_entities_list_all);
     vector_clear(game_entities_list_enemies);

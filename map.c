@@ -14,6 +14,7 @@
 #include "render.h"
 #include "entity.h"
 #include "entity_player.h"
+#include "entity_skybox.h"
 #include "entity_enemy_grunt.h"
 #include "entity_enemy_mutant.h"
 #include "entity_enemy_enforcer.h"
@@ -56,6 +57,9 @@ void map_init() {
     // populate entity_table for map parsing
     map_entity_table[ENTITY_ID_PLAYER] = (map_entity_table_t) {
         "player", entity_player_constructor
+    };
+    map_entity_table[ENTITY_ID_SKYBOX] = (map_entity_table_t) {
+        "skybox", entity_skybox_constructor
     };
     map_entity_table[ENTITY_ID_ENEMY_GRUNT] = (map_entity_table_t) {
         "grunt", entity_enemy_grunt_constructor

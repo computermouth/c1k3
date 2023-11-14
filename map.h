@@ -28,6 +28,7 @@ typedef struct {
 // todo, move entity table and init to another file?
 typedef enum {
     ENTITY_ID_PLAYER,
+    ENTITY_ID_SKYBOX,
     ENTITY_ID_ENEMY_GRUNT,
     ENTITY_ID_ENEMY_MUTANT,
     ENTITY_ID_ENEMY_ENFORCER,

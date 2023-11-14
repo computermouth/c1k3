@@ -25,6 +25,10 @@
 	// Blend factor between the two vertex positions
 	"uniform float f;"
 
+	// Flag to turn off lighting in the frag shadeer
+	"uniform int unlit;"
+	"varying float f_unlit;"
+
 	// Generate a rotation Matrix around the x,y,z axis;
 	// Used for model rotation and camera yaw
 	"mat4 rx(float r){"
@@ -55,6 +59,8 @@
 	"}"
 
 	"void main(void){"
+		"f_unlit = float(unlit);"
+
 		// Rotation Matrixes for model rotation
 		"mat4 "
 			"mry=ry(mr.x),"

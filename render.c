@@ -51,6 +51,7 @@ GLint r_u_mouse;
 GLint r_u_pos;
 GLint r_u_rotation;
 GLint r_u_frame_mix;
+GLint r_u_unlit;
 
 // Vertex attribute location for mixing
 GLint r_va_p2;
@@ -150,6 +151,7 @@ void r_init() {
     r_u_pos = glGetUniformLocation(shader_program, "mp");
     r_u_rotation = glGetUniformLocation(shader_program, "mr");
     r_u_frame_mix = glGetUniformLocation(shader_program, "f");
+    r_u_unlit = glGetUniformLocation(shader_program, "unlit");
 
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
@@ -280,6 +282,7 @@ void r_end_frame() {
         glUniform3f(r_u_pos, c.pos.x, c.pos.y, c.pos.z);
         glUniform2f(r_u_rotation, c.yaw, c.pitch);
         glUniform1f(r_u_frame_mix, c.mix);
+        glUniform1i(r_u_unlit, c.unlit);
 
         if (vo != (c.f2 - c.f1)) {
             vo = (c.f2 - c.f1);
@@ -295,15 +298,7 @@ void r_end_frame() {
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, offscreen_fbo);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, default_fbo);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBlitFramebuffer(0, 0, INTERNAL_W, INTERNAL_H, r_padx, r_pady, r_current_window_width - r_padx, r_current_window_height - r_pady, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    r_vertex_attrib(shader_program, "p", 3, 8, 0);
-    r_vertex_attrib(shader_program, "t", 2, 8, 3);
-    r_vertex_attrib(shader_program, "n", 3, 8, 5);
-    r_va_p2 = r_vertex_attrib(shader_program, "p2", 3, 8, 0);
-    r_va_n2 = r_vertex_attrib(shader_program, "n2", 3, 8, 5);
 
     vector_clear(r_draw_calls);
 }

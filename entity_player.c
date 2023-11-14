@@ -121,6 +121,11 @@ void entity_player_init(entity_t * e) {
     hud.health = e->_health;
     hud.ammo = -1;
 
+    // spawn skybox
+    entity_params_t skybox_ep = map_entt_params_from_eid(ENTITY_ID_SKYBOX);
+    skybox_ep.position = e->p;
+    game_spawn(&skybox_ep);
+
     entity_player_hud_update_health(hud.health);
     entity_player_hud_update_ammo(hud.ammo);
 }

@@ -12,6 +12,9 @@
 	// Lights [(x,y,z), [r,g,b], ...]
 	"uniform vec3 l["STR(R_MAX_LIGHT_V3)"];"
 
+	// flag to turn off lighting
+	"varying float f_unlit;"
+
 	"void main(void){"
 		"gl_FragColor=texture2D(s,vt);"
 
@@ -33,8 +36,11 @@
 		// Debug: full bright lights
 		// "vl = vec3(2,2,2);"
 
+		"vec3 p = pow(vl,vec3(0.75));"
+		"if (f_unlit != 0.) { p = vec3(0.75); }"
+
 		"gl_FragColor.rgb=floor("
-			"gl_FragColor.rgb*pow(vl,vec3(0.75))" // Light, Gamma
+			"gl_FragColor.rgb*p" // Light, Gamma
 			"*16.0+0.5"
 		")/16.0;" // Reduce final output color for some extra dirty looks
 	"}"
