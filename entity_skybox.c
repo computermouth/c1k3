@@ -28,7 +28,7 @@ void entity_skybox_update(entity_t * e) {
     }
 
     e->_yaw += 0.001 * game_tick;
-    e->_pitch += 0.001 * game_tick;
+    // e->_pitch += 0.001 * game_tick;
 
     e->_draw_model(e);
 }
