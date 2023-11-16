@@ -18,7 +18,9 @@ void entity_skybox_constructor(entity_t * e) {
 void entity_skybox_init(entity_t * e) {
     // todo
     entity_set_model(e);
-    e->s = (vec3_t){0};
+    e->s = (vec3_t) {
+        0
+    };
 }
 
 void entity_skybox_update(entity_t * e) {

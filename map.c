@@ -619,17 +619,6 @@ void map_draw() {
     }
 }
 
-typedef struct {
-    vector * blocks;
-    uint8_t * e;
-    // map_entities and ref_entities is for new map format only
-    vector * map_entities; // entity_params_t
-    vector * ref_entities; // ref_entt_t
-    vector * ref_ent_index; // size_t
-    uint32_t e_size;
-    uint8_t cm[((map_size * map_size * map_size) >> 3)];
-} map_ts;
-
 void map_quit() {
     uint32_t len = vector_size(map_data);
     for(uint32_t i = 0; i < len; i++) {
