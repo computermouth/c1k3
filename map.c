@@ -375,6 +375,8 @@ void mpack_map_parse(const char * data, const size_t data_len) {
         // insert tmp_entt into ref_entt_list[ENTITY_ID_X]
         entity_id_t id = map_lookup_entity(name, name_len);
         if(id == __ENTITY_ID_END) {
+            vector_free(tmp_entt.frames);
+            free(tmp_entt.frame_names);
             continue;
         }
         vector_set(ref_entt_list, id, &tmp_entt);
