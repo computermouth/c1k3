@@ -37,7 +37,7 @@
 		// "vl = vec3(2,2,2);"
 
 		"vec3 p = pow(vl,vec3(0.75));"
-		"if (f_unlit != 0.) { p = vec3(0.75); }"
+		"if (f_unlit != 0.) { p = vec3(1.25); }"
 
 		"gl_FragColor.rgb=floor("
 			"gl_FragColor.rgb*p" // Light, Gamma

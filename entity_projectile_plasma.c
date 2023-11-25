@@ -11,6 +11,7 @@ void entity_projectile_plasma_init(entity_t * e);
 void entity_projectile_plasma_update(entity_t * e);
 void entity_projectile_plasma_did_collide(entity_t * e, int axis);
 void entity_projectile_plasma_did_collide_with_entity(entity_t * e, entity_t * other);
+void entity_projectile_plasma_draw_model(entity_t * e);
 
 void entity_projectile_plasma_constructor(entity_t * e) {
     entity_constructor(e);
@@ -18,6 +19,7 @@ void entity_projectile_plasma_constructor(entity_t * e) {
     e->_update = entity_projectile_plasma_update;
     e->_did_collide = entity_projectile_plasma_did_collide;
     e->_did_collide_with_entity = entity_projectile_plasma_did_collide_with_entity;
+    e->_draw_model = entity_projectile_plasma_draw_model;
 
     entity_projectile_plasma_init(e);
 }
@@ -64,4 +66,19 @@ void entity_projectile_plasma_did_collide(entity_t * e, int axis) {
 void entity_projectile_plasma_did_collide_with_entity(entity_t * e, entity_t * other) {
     e->_kill(e);
     other->_receive_damage(other, e, 15);
+}
+
+void entity_projectile_plasma_draw_model(entity_t * e) {
+    draw_call_t call = {
+        .pos = e->p,
+        .yaw = e->_yaw,
+        .pitch = e->_pitch,
+        .texture = e->_texture,
+        .f1 = e->_model.frames[0],
+        .f2 = e->_model.frames[0],
+        .mix = 0.0f,
+        .unlit = 1,
+        .num_verts = e->_model.nv
+    };
+    r_draw(call);
 }
