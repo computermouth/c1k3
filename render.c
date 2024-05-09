@@ -21,7 +21,7 @@ options_t options = { .antialias = 0 };
 
 // todo, dynamic, both of these
 #define R_MAX_VERTS (1024 * 128 * 64)
-#define R_MAX_LIGHT_V3 64
+#define R_MAX_LIGHT_V3 32 * 2
 
 // god forgive me
 #define STR_PREP(x) #x
